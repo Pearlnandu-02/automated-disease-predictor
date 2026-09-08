@@ -2,7 +2,7 @@ import os
 import sys
 import json
 import secrets
-from flask import Flask, request, jsonify, render_template_string, redirect, url_for, session, make_response
+from flask import Flask, request, jsonify, render_template_string, redirect, url_for, session
 
 # Add root directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -12,24 +12,9 @@ from ml.prediction.predict import predict_disease
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(16))
 
-# Helper to load dataset evaluation results if available
-def get_eval_results():
-    eval_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ml', 'evaluation_results.json')
-    if os.path.exists(eval_path):
-        with open(eval_path, 'r') as f:
-            return json.load(f)
-    return {}
-
-# In-memory session database for Vercel serverless environment
-DEMO_USERS = {
-    "student@college.edu": {
-        "name": "Academic Student",
-        "email": "student@college.edu",
-        "password": "password123"
-    }
-}
-
-HTML_HEADER = """
+def render_page(content_html, **kwargs):
+    user = session.get('user')
+    base_template = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -89,7 +74,6 @@ HTML_HEADER = """
             <a class="navbar-brand fw-bold d-flex align-items-center text-white" href="/">
                 <i class="bi bi-heart-pulse-fill text-info me-2 fs-4"></i>
                 <span>HealthRisk<span class="text-info">AI</span></span>
-                <span class="badge bg-info text-dark ms-2" style="font-size: 0.65rem;">Vercel Live</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
                 <span class="navbar-toggler-icon"></span>
@@ -97,10 +81,10 @@ HTML_HEADER = """
             <div class="collapse navbar-collapse" id="navMain">
                 <ul class="navbar-nav ms-auto align-items-center gap-2">
                     <li class="nav-item"><a class="nav-link text-white" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="/assessment">New Assessment</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="/simulator">What-If Simulator</a></li>
                     {% if user %}
                         <li class="nav-item"><a class="nav-link text-white" href="/dashboard">Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="/assessment">New Assessment</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="/simulator">What-If Simulator</a></li>
                         <li class="nav-item"><a class="btn btn-outline-light btn-sm rounded-pill px-3" href="/logout">Logout ({{ user.name }})</a></li>
                     {% else %}
                         <li class="nav-item"><a class="btn btn-outline-info btn-sm rounded-pill px-3" href="/login">Login</a></li>
@@ -112,9 +96,7 @@ HTML_HEADER = """
     </nav>
     <main class="py-4">
         <div class="container">
-"""
-
-HTML_FOOTER = """
+            """ + content_html + """
         </div>
     </main>
     <footer>
@@ -129,16 +111,12 @@ HTML_FOOTER = """
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-"""
-
-# ROUTES
+    """
+    return render_template_string(base_template, user=user, **kwargs)
 
 @app.route('/')
 def home():
-    user = session.get('user')
-    eval_data = get_eval_results()
-    content = f"""
-    {HTML_HEADER.replace('{% if user %}', 'true' if user else '').replace('{{ user.name }}', user['name'] if user else '')}
+    content = """
     <div class="row align-items-center my-4 py-5 px-4 rounded-4 bg-dark text-white shadow-lg" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
         <div class="col-lg-7">
             <span class="badge bg-info text-dark fw-bold px-3 py-2 rounded-pill mb-3"><i class="bi bi-cpu me-1"></i> AI & ML Healthcare Technology</span>
@@ -187,28 +165,17 @@ def home():
             </div>
         </div>
     </div>
-    {HTML_FOOTER}
     """
-    return content
+    return render_page(content)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    error = None
     if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        
-        user = DEMO_USERS.get(email)
-        if user and user['password'] == password:
-            session['user'] = user
-            return redirect('/dashboard')
-        else:
-            # Create session for any login on demo Vercel environment
-            session['user'] = {"name": email.split('@')[0].capitalize(), "email": email}
-            return redirect('/dashboard')
+        email = request.form.get('email', 'student@college.edu')
+        session['user'] = {"name": email.split('@')[0].capitalize(), "email": email}
+        return redirect('/dashboard')
             
-    return f"""
-    {HTML_HEADER}
+    content = """
     <div class="row justify-content-center py-5">
         <div class="col-md-5">
             <div class="card-custom p-4 p-md-5 shadow-lg">
@@ -231,8 +198,8 @@ def login():
             </div>
         </div>
     </div>
-    {HTML_FOOTER}
     """
+    return render_page(content)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -242,8 +209,7 @@ def register():
         session['user'] = {"name": name, "email": email}
         return redirect('/dashboard')
         
-    return f"""
-    {HTML_HEADER}
+    content = """
     <div class="row justify-content-center py-5">
         <div class="col-md-5">
             <div class="card-custom p-4 p-md-5 shadow-lg">
@@ -269,8 +235,8 @@ def register():
             </div>
         </div>
     </div>
-    {HTML_FOOTER}
     """
+    return render_page(content)
 
 @app.route('/logout')
 def logout():
@@ -281,8 +247,6 @@ def logout():
 def dashboard():
     user = session.get('user', {"name": "Guest Academic User", "email": "guest@college.edu"})
     history = session.get('history', [])
-    
-    latest = history[-1] if history else None
     
     history_html = ""
     for idx, h in enumerate(reversed(history)):
@@ -299,8 +263,7 @@ def dashboard():
     if not history_html:
         history_html = '<tr><td colspan="5" class="text-center text-muted py-3">No assessment history recorded yet. <a href="/assessment">Start Assessment</a></td></tr>'
         
-    return f"""
-    {HTML_HEADER}
+    content = f"""
     <div class="row gy-4 py-3">
         <div class="col-12">
             <div class="card-custom p-4 bg-dark text-white" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
@@ -333,8 +296,8 @@ def dashboard():
             </div>
         </div>
     </div>
-    {HTML_FOOTER}
     """
+    return render_page(content)
 
 @app.route('/assessment', methods=['GET', 'POST'])
 def assessment():
@@ -379,8 +342,7 @@ def assessment():
         
         return redirect('/result')
         
-    return f"""
-    {HTML_HEADER}
+    content = """
     <div class="row justify-content-center py-4">
         <div class="col-lg-9">
             <div class="card-custom p-4 p-md-5 shadow-lg">
@@ -428,19 +390,19 @@ def assessment():
         </div>
     </div>
     <script>
-    function toggleForm() {{
+    function toggleForm() {
         var d = document.getElementById('disease_type').value;
-        if(d === 'diabetes') {{
+        if(d === 'diabetes') {
             document.getElementById('diabetes_inputs').style.display = 'block';
             document.getElementById('heart_inputs').style.display = 'none';
-        }} else {{
+        } else {
             document.getElementById('diabetes_inputs').style.display = 'none';
             document.getElementById('heart_inputs').style.display = 'block';
-        }}
-    }}
+        }
+    }
     </script>
-    {HTML_FOOTER}
     """
+    return render_page(content)
 
 @app.route('/result')
 def result():
@@ -461,8 +423,7 @@ def result():
     
     rec_html = "".join([f'<div class="col-md-6"><div class="p-3 bg-light rounded border h-100 small"><i class="bi bi-check-circle-fill text-success me-2"></i>{rec}</div></div>' for rec in res.get('recommendations', [])])
     
-    return f"""
-    {HTML_HEADER}
+    content = f"""
     <div class="row justify-content-center py-4">
         <div class="col-lg-10">
             <div class="card-custom p-4 p-md-5 mb-4 shadow-lg text-center">
@@ -510,8 +471,8 @@ def result():
         }});
     }});
     </script>
-    {HTML_FOOTER}
     """
+    return render_page(content)
 
 @app.route('/simulator', methods=['GET', 'POST'])
 def simulator():
@@ -536,8 +497,16 @@ def simulator():
             }
         sim_result = predict_disease(disease, data)
         
-    return f"""
-    {HTML_HEADER}
+    sim_card = ""
+    if sim_result:
+        sim_card = f"""
+        <div class="card-custom p-4 text-center shadow-lg bg-white mt-4">
+            <h4 class="fw-bold text-success">Simulated Risk Level: <span class="badge-risk-{sim_result.get('risk_level')}">{sim_result.get('risk_level')}</span></h4>
+            <h2 class="display-4 fw-bold text-dark">{sim_result.get('probability')}% Probability</h2>
+        </div>
+        """
+        
+    content = f"""
     <div class="row justify-content-center py-4">
         <div class="col-lg-9">
             <div class="card-custom p-4 p-md-5 mb-4 shadow-lg">
@@ -557,17 +526,11 @@ def simulator():
                     <button type="submit" class="btn btn-primary-custom btn-lg w-100 mt-3 shadow">Run What-If Simulation</button>
                 </form>
             </div>
-            
-            {f'''
-            <div class="card-custom p-4 text-center shadow-lg bg-white">
-                <h4 class="fw-bold text-success">Simulated Risk Level: <span class="badge-risk-{sim_result.get('risk_level')}">{sim_result.get('risk_level')}</span></h4>
-                <h2 class="display-4 fw-bold text-dark">{sim_result.get('probability')}% Probability</h2>
-            </div>
-            ''' if sim_result else ''}
+            {sim_card}
         </div>
     </div>
-    {HTML_FOOTER}
     """
+    return render_page(content)
 
 @app.route('/report')
 def report():
@@ -619,7 +582,6 @@ def api_predict():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Serverless export
 app_handler = app
 
 if __name__ == '__main__':
