@@ -1,0 +1,114 @@
+{
+    "diabetes": {
+        "selected_model": "Logistic Regression",
+        "models": {
+            "Logistic Regression": {
+                "accuracy": 0.974,
+                "precision": 0.9716,
+                "recall": 1.0,
+                "f1_score": 0.9856,
+                "roc_auc": 0.9983,
+                "confusion_matrix": [
+                    [
+                        13,
+                        4
+                    ],
+                    [
+                        0,
+                        137
+                    ]
+                ]
+            },
+            "Decision Tree": {
+                "accuracy": 0.9286,
+                "precision": 0.95,
+                "recall": 0.9708,
+                "f1_score": 0.9603,
+                "roc_auc": 0.7787,
+                "confusion_matrix": [
+                    [
+                        10,
+                        7
+                    ],
+                    [
+                        4,
+                        133
+                    ]
+                ]
+            },
+            "Random Forest": {
+                "accuracy": 0.9545,
+                "precision": 0.9514,
+                "recall": 1.0,
+                "f1_score": 0.9751,
+                "roc_auc": 0.9798,
+                "confusion_matrix": [
+                    [
+                        10,
+                        7
+                    ],
+                    [
+                        0,
+                        137
+                    ]
+                ]
+            }
+        }
+    },
+    "heart_disease": {
+        "selected_model": "Logistic Regression",
+        "models": {
+            "Logistic Regression": {
+                "accuracy": 0.9836,
+                "precision": 0.9744,
+                "recall": 1.0,
+                "f1_score": 0.987,
+                "roc_auc": 0.9989,
+                "confusion_matrix": [
+                    [
+                        22,
+                        1
+                    ],
+                    [
+                        0,
+                        38
+                    ]
+                ]
+            },
+            "Decision Tree": {
+                "accuracy": 0.7541,
+                "precision": 0.871,
+                "recall": 0.7105,
+                "f1_score": 0.7826,
+                "roc_auc": 0.8478,
+                "confusion_matrix": [
+                    [
+                        19,
+                        4
+                    ],
+                    [
+                        11,
+                        27
+                    ]
+                ]
+            },
+            "Random Forest": {
+                "accuracy": 0.9344,
+                "precision": 0.9048,
+                "recall": 1.0,
+                "f1_score": 0.95,
+                "roc_auc": 0.9954,
+                "confusion_matrix": [
+                    [
+                        19,
+                        4
+                    ],
+                    [
+                        0,
+                        38
+                    ]
+                ]
+            }
+        }
+    }
+}
