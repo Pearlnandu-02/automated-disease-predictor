@@ -68,8 +68,20 @@ def generate_recommendations(disease, input_dict, risk_level):
 
 
 def predict_disease(disease, data_dict):
-    model_path = f"ml/models/{disease}_model.joblib"
-    if not os.path.exists(model_path):
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    candidate_paths = [
+        os.path.join(base_dir, 'models', f"{disease}_model.joblib"),
+        f"ml/models/{disease}_model.joblib",
+        os.path.join(os.getcwd(), 'ml', 'models', f"{disease}_model.joblib")
+    ]
+    
+    model_path = None
+    for p in candidate_paths:
+        if os.path.exists(p):
+            model_path = p
+            break
+            
+    if not model_path:
         return {"error": f"Model artifact for {disease} not found."}
         
     pipeline = joblib.load(model_path)
