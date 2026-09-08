@@ -127,7 +127,7 @@ def render_page(content_html, **kwargs):
             color: #fff;
         }
 
-        /* Enhanced Logout Button Styling */
+        /* Enhanced Logout Button */
         .btn-logout-custom {
             background: rgba(239, 68, 68, 0.1);
             color: #ef4444;
@@ -476,33 +476,36 @@ def assessment():
     if request.method == 'POST':
         disease = request.form.get('disease_type', 'diabetes')
         data = {}
-        if disease == 'diabetes':
-            data = {
-                'Glucose': float(request.form.get('Glucose', 120)),
-                'BMI': float(request.form.get('BMI', 28.5)),
-                'BloodPressure': float(request.form.get('BloodPressure', 75)),
-                'Age': float(request.form.get('Age', 42)),
-                'Pregnancies': float(request.form.get('Pregnancies', 1)),
-                'Insulin': float(request.form.get('Insulin', 80)),
-                'SkinThickness': float(request.form.get('SkinThickness', 20)),
-                'DiabetesPedigreeFunction': float(request.form.get('DiabetesPedigreeFunction', 0.47))
-            }
-        else:
-            data = {
-                'age': float(request.form.get('age', 52)),
-                'sex': int(request.form.get('sex', 1)),
-                'cp': int(request.form.get('cp', 0)),
-                'trestbps': float(request.form.get('trestbps', 130)),
-                'chol': float(request.form.get('chol', 240)),
-                'fbs': int(request.form.get('fbs', 0)),
-                'restecg': int(request.form.get('restecg', 0)),
-                'thalach': float(request.form.get('thalach', 150)),
-                'exang': int(request.form.get('exang', 0)),
-                'oldpeak': float(request.form.get('oldpeak', 1.0)),
-                'slope': int(request.form.get('slope', 1)),
-                'ca': int(request.form.get('ca', 0)),
-                'thal': int(request.form.get('thal', 2))
-            }
+        try:
+            if disease == 'diabetes':
+                data = {
+                    'Glucose': float(request.form.get('Glucose', 120)),
+                    'BMI': float(request.form.get('BMI', 28.5)),
+                    'BloodPressure': float(request.form.get('BloodPressure', 75)),
+                    'Age': float(request.form.get('Age', 42)),
+                    'Pregnancies': float(request.form.get('Pregnancies', 1)),
+                    'Insulin': float(request.form.get('Insulin', 80)),
+                    'SkinThickness': float(request.form.get('SkinThickness', 20)),
+                    'DiabetesPedigreeFunction': float(request.form.get('DiabetesPedigreeFunction', 0.47))
+                }
+            else:
+                data = {
+                    'age': float(request.form.get('age', 52)),
+                    'sex': int(request.form.get('sex', 1)),
+                    'cp': int(request.form.get('cp', 0)),
+                    'trestbps': float(request.form.get('trestbps', 130)),
+                    'chol': float(request.form.get('chol', 240)),
+                    'fbs': int(request.form.get('fbs', 0)),
+                    'restecg': int(request.form.get('restecg', 0)),
+                    'thalach': float(request.form.get('thalach', 150)),
+                    'exang': int(request.form.get('exang', 0)),
+                    'oldpeak': float(request.form.get('oldpeak', 1.0)),
+                    'slope': int(request.form.get('slope', 1)),
+                    'ca': int(request.form.get('ca', 0)),
+                    'thal': int(request.form.get('thal', 2))
+                }
+        except (ValueError, TypeError):
+            data = {'Glucose': 120, 'BMI': 28.5, 'BloodPressure': 75, 'Age': 42}
             
         res = predict_disease(disease, data)
         res['input_data'] = data
@@ -624,9 +627,14 @@ def result():
     idx = request.args.get('idx', None)
     history = session.get('history', [])
     
-    if idx is not None and int(idx) < len(history):
-        res = history[int(idx)]
-    else:
+    res = None
+    if idx is not None:
+        try:
+            res = history[int(idx)]
+        except (IndexError, ValueError):
+            res = None
+            
+    if not res:
         res = session.get('last_result', None)
         
     if not res:
@@ -708,26 +716,31 @@ def simulator():
     sim_result = None
     if request.method == 'POST':
         disease = request.form.get('disease_type', 'diabetes')
-        if disease == 'diabetes':
-            data = {
-                'Glucose': float(request.form.get('Glucose', 130)),
-                'BMI': float(request.form.get('BMI', 27.0)),
-                'BloodPressure': float(request.form.get('BloodPressure', 75)),
-                'Age': float(request.form.get('Age', 45)),
-                'Pregnancies': 1, 'Insulin': 80, 'SkinThickness': 20, 'DiabetesPedigreeFunction': 0.45
-            }
-        else:
-            data = {
-                'age': float(request.form.get('age', 52)),
-                'trestbps': float(request.form.get('trestbps', 130)),
-                'chol': float(request.form.get('chol', 230)),
-                'thalach': float(request.form.get('thalach', 150)),
-                'sex': 1, 'cp': 0, 'fbs': 0, 'restecg': 0, 'exang': 0, 'oldpeak': 1.0, 'slope': 1, 'ca': 0, 'thal': 2
-            }
+        data = {}
+        try:
+            if disease == 'diabetes':
+                data = {
+                    'Glucose': float(request.form.get('Glucose', 130)),
+                    'BMI': float(request.form.get('BMI', 27.0)),
+                    'BloodPressure': float(request.form.get('BloodPressure', 75)),
+                    'Age': float(request.form.get('Age', 45)),
+                    'Pregnancies': 1, 'Insulin': 80, 'SkinThickness': 20, 'DiabetesPedigreeFunction': 0.45
+                }
+            else:
+                data = {
+                    'age': float(request.form.get('age', 52)),
+                    'trestbps': float(request.form.get('trestbps', 130)),
+                    'chol': float(request.form.get('chol', 230)),
+                    'thalach': float(request.form.get('thalach', 150)),
+                    'sex': 1, 'cp': 0, 'fbs': 0, 'restecg': 0, 'exang': 0, 'oldpeak': 1.0, 'slope': 1, 'ca': 0, 'thal': 2
+                }
+        except (ValueError, TypeError):
+            data = {'Glucose': 130, 'BMI': 27.0}
+            
         sim_result = predict_disease(disease, data)
         
     sim_card = ""
-    if sim_result:
+    if sim_result and isinstance(sim_result, dict):
         sim_card = f"""
         <div class="card-custom p-4 text-center mt-4">
             <h5 class="text-muted text-uppercase fw-bold mb-2">Simulated Risk Prediction</h5>
@@ -831,6 +844,8 @@ def api_predict():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# WSGI Application Handlers for Vercel Python runtime
+handler = app
 app_handler = app
 
 if __name__ == '__main__':
