@@ -68,11 +68,16 @@ def generate_recommendations(disease, input_dict, risk_level):
 
 
 def predict_disease(disease, data_dict):
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    base_dir = os.path.dirname(script_dir)
+    root_dir = os.path.dirname(base_dir)
+    
     candidate_paths = [
         os.path.join(base_dir, 'models', f"{disease}_model.joblib"),
+        os.path.join(root_dir, 'ml', 'models', f"{disease}_model.joblib"),
+        os.path.join(os.getcwd(), 'ml', 'models', f"{disease}_model.joblib"),
         f"ml/models/{disease}_model.joblib",
-        os.path.join(os.getcwd(), 'ml', 'models', f"{disease}_model.joblib")
+        os.path.join('/tmp', f"{disease}_model.joblib")
     ]
     
     model_path = None
