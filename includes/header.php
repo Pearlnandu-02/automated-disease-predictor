@@ -27,7 +27,6 @@ $user = get_logged_in_user();
             <a class="navbar-brand d-flex align-items-center" href="index.php">
                 <i class="bi bi-heart-pulse-fill text-info me-2 fs-4"></i>
                 <span>HealthRisk<span class="text-info">AI</span></span>
-                <span class="brand-badge">Academic ML</span>
             </a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
                 <span class="navbar-toggler-icon"></span>
@@ -50,15 +49,10 @@ $user = get_logged_in_user();
                         <li class="nav-item">
                             <a class="nav-link <?= $current_page == 'simulator.php' ? 'active' : '' ?>" href="simulator.php">What-If Simulator</a>
                         </li>
-                        <li class="nav-item dropdown ms-lg-2">
-                            <a class="btn btn-outline-light rounded-pill px-3 py-1 btn-sm dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle me-1"></i> <?= sanitize($user['name']) ?>
+                        <li class="nav-item ms-lg-2">
+                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1 fw-semibold d-inline-flex align-items-center" href="logout.php">
+                                <i class="bi bi-box-arrow-right me-1"></i> Logout (<?= sanitize($user['name']) ?>)
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow">
-                                <li><a class="dropdown-item" href="profile.php"><i class="bi bi-person me-2"></i>My Profile</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="logout.php"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-                            </ul>
                         </li>
                     <?php else: ?>
                         <li class="nav-item ms-lg-2">

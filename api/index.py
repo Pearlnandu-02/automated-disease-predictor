@@ -127,6 +127,29 @@ def render_page(content_html, **kwargs):
             color: #fff;
         }
 
+        /* Enhanced Logout Button Styling */
+        .btn-logout-custom {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 6px 16px;
+            border-radius: 20px;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-logout-custom:hover {
+            background: #ef4444;
+            color: #ffffff;
+            border-color: #ef4444;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+            transform: translateY(-1px);
+        }
+
         .disclaimer-banner {
             background: rgba(245, 158, 11, 0.1);
             border-left: 4px solid #f59e0b;
@@ -161,7 +184,7 @@ def render_page(content_html, **kwargs):
     </style>
 </head>
 <body>
-    <!-- Clean Navbar -->
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top py-3">
         <div class="container">
             <a class="navbar-brand fw-bold d-flex align-items-center text-white" href="/">
@@ -178,7 +201,11 @@ def render_page(content_html, **kwargs):
                     <li class="nav-item"><a class="nav-link text-light fw-medium" href="/simulator">What-If Simulator</a></li>
                     {% if user %}
                         <li class="nav-item"><a class="nav-link text-light fw-medium" href="/dashboard">Dashboard</a></li>
-                        <li class="nav-item"><a class="btn btn-outline-light btn-sm rounded-pill px-3 ms-lg-2" href="/logout">Logout ({{ user.name }})</a></li>
+                        <li class="nav-item ms-lg-2">
+                            <a class="btn-logout-custom" href="/logout">
+                                <i class="bi bi-box-arrow-right me-1 fs-6"></i> Logout ({{ user.name }})
+                            </a>
+                        </li>
                     {% else %}
                         <li class="nav-item"><a class="btn btn-outline-info btn-sm rounded-pill px-4 ms-lg-2" href="/login">Login</a></li>
                         <li class="nav-item"><a class="btn btn-info text-white btn-sm rounded-pill px-4" href="/register">Register</a></li>
