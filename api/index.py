@@ -2,7 +2,7 @@ import os
 import sys
 import json
 import secrets
-from flask import Flask, request, jsonify, render_template_string, redirect, url_for, session, make_response
+from flask import Flask, request, jsonify, render_template_string, redirect, url_for, session
 
 # Add root directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -12,7 +12,7 @@ from ml.prediction.predict import predict_disease
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(16))
 
-# Ensure Vercel never caches old serverless responses
+# Prevent caching on Vercel
 @app.after_request
 def add_header(response):
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
@@ -35,219 +35,160 @@ def render_page(content_html, **kwargs):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HealthRisk AI v3.0 - AI Healthcare Risk Assessment Platform</title>
+    <title>HealthRisk AI - Healthcare Risk Assessment System</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-dark: #090d16;
-            --card-dark: #111827;
-            --card-border: #1f2937;
+            --bg-dark: #0f172a;
+            --card-dark: #1e293b;
+            --card-border: #334155;
             --accent-cyan: #06b6d4;
             --accent-teal: #0d9488;
-            --accent-purple: #8b5cf6;
-            --text-light: #f3f4f6;
-            --text-muted: #9ca3af;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-light);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background-image: 
-                radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.15), transparent 60%),
-                radial-gradient(circle at 10% 80%, rgba(139, 92, 246, 0.1), transparent 50%);
         }
 
-        /* Glassmorphism & Modern Navbar */
+        /* Clean Glassmorphic Navbar */
         .navbar-custom {
-            background: rgba(9, 13, 22, 0.85);
-            backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .brand-logo-icon {
-            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .pulse-badge {
-            width: 10px;
-            height: 10px;
-            background-color: #10b981;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 12px #10b981;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.8); }
-            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
-
-        /* Ultra Premium Glass Cards */
         .card-custom {
-            background: rgba(17, 24, 39, 0.75);
-            backdrop-filter: blur(16px);
+            background: var(--card-dark);
             border: 1px solid var(--card-border);
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card-custom:hover {
-            transform: translateY(-4px);
-            border-color: rgba(6, 182, 212, 0.4);
-            box-shadow: 0 25px 50px rgba(6, 182, 212, 0.15);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .hero-banner {
-            background: linear-gradient(135deg, rgba(17, 24, 39, 0.9) 0%, rgba(31, 41, 55, 0.8) 100%);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 32px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-banner::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(6, 182, 212, 0.3), transparent 70%);
-            pointer-events: none;
+            border-radius: 24px;
         }
 
         /* Risk Badges */
         .badge-risk-LOW {
             background: rgba(16, 185, 129, 0.2);
             color: #34d399;
-            border: 1px solid rgba(16, 185, 129, 0.5);
-            font-weight: 800;
-            padding: 8px 20px;
-            border-radius: 30px;
-            letter-spacing: 0.5px;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 20px;
         }
 
         .badge-risk-MODERATE {
             background: rgba(245, 158, 11, 0.2);
             color: #fbbf24;
-            border: 1px solid rgba(245, 158, 11, 0.5);
-            font-weight: 800;
-            padding: 8px 20px;
-            border-radius: 30px;
-            letter-spacing: 0.5px;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 20px;
         }
 
         .badge-risk-HIGH {
             background: rgba(239, 68, 68, 0.2);
             color: #f87171;
-            border: 1px solid rgba(239, 68, 68, 0.5);
-            font-weight: 800;
-            padding: 8px 20px;
-            border-radius: 30px;
-            letter-spacing: 0.5px;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 20px;
         }
 
         .btn-primary-custom {
-            background: linear-gradient(135deg, #06b6d4 0%, #0d9488 100%);
+            background: #0d9488;
             color: #fff;
-            font-weight: 700;
-            border-radius: 14px;
+            font-weight: 600;
+            border-radius: 10px;
             border: none;
-            padding: 14px 32px;
-            box-shadow: 0 0 25px rgba(6, 182, 212, 0.4);
-            transition: all 0.3s ease;
+            padding: 10px 24px;
+            transition: all 0.2s ease;
         }
 
         .btn-primary-custom:hover {
-            background: linear-gradient(135deg, #0891b2 0%, #0f766e 100%);
+            background: #0f766e;
             color: #fff;
-            transform: translateY(-2px);
-            box-shadow: 0 0 35px rgba(6, 182, 212, 0.6);
         }
 
         .disclaimer-banner {
             background: rgba(245, 158, 11, 0.1);
-            border-left: 5px solid #f59e0b;
+            border-left: 4px solid #f59e0b;
             color: #fbbf24;
-            padding: 16px 22px;
-            border-radius: 14px;
-            font-size: 0.9rem;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 0.875rem;
         }
 
         .form-control, .form-select {
-            background-color: #1f2937;
-            border: 1px solid #374151;
-            color: #f3f4f6;
-            border-radius: 12px;
-            padding: 12px 16px;
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            color: #f8fafc;
+            border-radius: 10px;
+            padding: 10px 14px;
         }
 
         .form-control:focus, .form-select:focus {
-            background-color: #1f2937;
-            border-color: var(--accent-cyan);
-            color: #f3f4f6;
-            box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.25);
+            background-color: #0f172a;
+            border-color: var(--accent-teal);
+            color: #f8fafc;
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.25);
         }
 
         footer {
             margin-top: auto;
-            background: #030712;
-            color: #6b7280;
-            padding: 45px 0 25px;
+            background: #090d16;
+            color: #64748b;
+            padding: 35px 0 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
     </style>
 </head>
 <body>
-    <!-- Navigation Bar -->
+    <!-- Clean Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top py-3">
         <div class="container">
-            <a class="navbar-brand fw-extrabold d-flex align-items-center text-white" href="/">
-                <i class="bi bi-heart-pulse-fill brand-logo-icon me-2 fs-3"></i>
-                <span class="fs-4">HealthRisk<span style="color: #06b6d4;">AI</span></span>
-                <span class="ms-3 px-3 py-1 bg-dark border border-cyan text-cyan rounded-pill small d-none d-sm-inline-flex align-items-center gap-2" style="border-color: rgba(6, 182, 212, 0.3) !important;">
-                    <span class="pulse-badge"></span><span style="color: #06b6d4; font-weight: 700; font-size: 0.75rem;">AI ENGINE v3.0 LIVE</span>
-                </span>
+            <a class="navbar-brand fw-bold d-flex align-items-center text-white" href="/">
+                <i class="bi bi-heart-pulse-fill text-info me-2 fs-4"></i>
+                <span class="fs-4">HealthRisk<span class="text-info">AI</span></span>
             </a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navMain">
-                <ul class="navbar-nav ms-auto align-items-center gap-3">
+                <ul class="navbar-nav ms-auto align-items-center gap-2">
                     <li class="nav-item"><a class="nav-link text-light fw-medium" href="/">Home</a></li>
                     <li class="nav-item"><a class="nav-link text-light fw-medium" href="/assessment">Risk Assessment</a></li>
                     <li class="nav-item"><a class="nav-link text-light fw-medium" href="/simulator">What-If Simulator</a></li>
-                    <li class="nav-item"><a class="nav-link text-light fw-medium" href="/benchmarks">ML Metrics</a></li>
                     {% if user %}
                         <li class="nav-item"><a class="nav-link text-light fw-medium" href="/dashboard">Dashboard</a></li>
-                        <li class="nav-item"><a class="btn btn-outline-light btn-sm rounded-pill px-4" href="/logout">Logout ({{ user.name }})</a></li>
+                        <li class="nav-item"><a class="btn btn-outline-light btn-sm rounded-pill px-3 ms-lg-2" href="/logout">Logout ({{ user.name }})</a></li>
                     {% else %}
-                        <li class="nav-item"><a class="btn btn-outline-cyan btn-sm rounded-pill px-4 text-cyan" style="border-color: #06b6d4; color: #06b6d4;" href="/login">Login</a></li>
-                        <li class="nav-item"><a class="btn btn-primary-custom btn-sm text-white px-4" href="/register">Get Started</a></li>
+                        <li class="nav-item"><a class="btn btn-outline-info btn-sm rounded-pill px-4 ms-lg-2" href="/login">Login</a></li>
+                        <li class="nav-item"><a class="btn btn-info text-white btn-sm rounded-pill px-4" href="/register">Register</a></li>
                     {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Main Container -->
+    <!-- Main Content -->
     <main class="py-4">
         <div class="container">
             """ + content_html + """
@@ -257,42 +198,40 @@ def render_page(content_html, **kwargs):
     <!-- Footer -->
     <footer>
         <div class="container">
-            <div class="row gy-4 mb-4">
+            <div class="row gy-3 mb-3">
                 <div class="col-lg-6">
-                    <h5 class="text-white fw-bold mb-3 d-flex align-items-center">
-                        <i class="bi bi-heart-pulse-fill text-cyan me-2"></i> HealthRisk<span style="color: #06b6d4;">AI</span>
+                    <h5 class="text-white fw-bold mb-2 d-flex align-items-center">
+                        <i class="bi bi-heart-pulse-fill text-info me-2"></i> HealthRisk<span class="text-info">AI</span>
                     </h5>
-                    <p class="small text-muted mb-3">
-                        An Academic Machine Learning project dedicated to personalized preventative health risk assessments for Diabetes and Heart Disease using Logistic Regression & Random Forest classifiers.
+                    <p class="small text-muted mb-2">
+                        An Academic Machine Learning project for personalized risk assessment of Diabetes and Heart Disease using Scikit-Learn classifiers.
                     </p>
                     <div class="disclaimer-banner small text-start">
-                        <i class="bi bi-shield-exclamation me-1 text-warning"></i>
-                        <strong>Academic Disclaimer:</strong> This system provides preliminary statistical risk scores for educational purposes only. It does NOT provide medical diagnoses or prescriptions.
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>Academic Disclaimer:</strong> Predictions are for educational risk-assessment purposes only and are not a substitute for professional medical advice.
                     </div>
                 </div>
                 <div class="col-lg-3 col-6 ms-auto">
-                    <h6 class="text-white fw-bold mb-3">Core Modules</h6>
+                    <h6 class="text-white fw-bold mb-2">Navigation</h6>
                     <ul class="list-unstyled small">
-                        <li class="mb-2"><a href="/assessment" class="text-muted text-decoration-none"><i class="bi bi-chevron-right me-1 text-cyan"></i> Risk Assessment</a></li>
-                        <li class="mb-2"><a href="/simulator" class="text-muted text-decoration-none"><i class="bi bi-chevron-right me-1 text-cyan"></i> What-If Simulator</a></li>
-                        <li class="mb-2"><a href="/benchmarks" class="text-muted text-decoration-none"><i class="bi bi-chevron-right me-1 text-cyan"></i> ML Benchmarks</a></li>
-                        <li class="mb-2"><a href="/dashboard" class="text-muted text-decoration-none"><i class="bi bi-chevron-right me-1 text-cyan"></i> Member Dashboard</a></li>
+                        <li class="mb-1"><a href="/assessment" class="text-muted text-decoration-none">Risk Assessment</a></li>
+                        <li class="mb-1"><a href="/simulator" class="text-muted text-decoration-none">What-If Simulator</a></li>
+                        <li class="mb-1"><a href="/dashboard" class="text-muted text-decoration-none">Dashboard</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3 col-6">
-                    <h6 class="text-white fw-bold mb-3">Trained Algorithms</h6>
+                    <h6 class="text-white fw-bold mb-2">ML Stack</h6>
                     <ul class="list-unstyled small text-muted">
-                        <li class="mb-2"><i class="bi bi-check2-circle me-1 text-cyan"></i> Logistic Regression (98.36%)</li>
-                        <li class="mb-2"><i class="bi bi-check2-circle me-1 text-cyan"></i> Random Forest Classifiers</li>
-                        <li class="mb-2"><i class="bi bi-check2-circle me-1 text-cyan"></i> Decision Trees & XAI</li>
-                        <li class="mb-2"><i class="bi bi-check2-circle me-1 text-cyan"></i> Joblib Saved Pipelines</li>
+                        <li class="mb-1">Logistic Regression</li>
+                        <li class="mb-1">Random Forest Classifier</li>
+                        <li class="mb-1">Scikit-Learn & Joblib</li>
                     </ul>
                 </div>
             </div>
             <hr class="border-secondary opacity-25">
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center small text-muted">
-                <p class="mb-0">&copy; 2026 HealthRisk AI - Academic Machine Learning Project.</p>
-                <p class="mb-0">Built with Python 3.12, Scikit-Learn & Bootstrap 5</p>
+                <p class="mb-0">&copy; 2026 HealthRisk AI - Academic Project.</p>
+                <p class="mb-0">Built with Python, Scikit-Learn & Bootstrap 5</p>
             </div>
         </div>
     </footer>
@@ -302,28 +241,23 @@ def render_page(content_html, **kwargs):
     """
     return render_template_string(base_template, user=user, **kwargs)
 
-# ----------------------------------------------------
 # ROUTES
-# ----------------------------------------------------
 
 @app.route('/')
 def home():
     content = """
-    <!-- Hero Banner -->
-    <div class="hero-banner p-4 p-md-5 my-3">
-        <div class="row align-items-center z-1 position-relative">
+    <div class="hero-banner p-4 p-md-5 my-3 shadow-lg">
+        <div class="row align-items-center">
             <div class="col-lg-7">
-                <span class="badge bg-cyan bg-opacity-20 text-cyan border border-cyan border-opacity-50 fw-bold px-3 py-2 rounded-pill mb-3" style="color: #06b6d4;">
-                    <i class="bi bi-cpu me-1"></i> ADVANCED AI HEALTHCARE SYSTEM v3.0
+                <span class="badge bg-info text-dark fw-bold px-3 py-2 rounded-pill mb-3">
+                    Healthcare Risk Assessment
                 </span>
-                <h1 class="display-3 fw-extrabold mb-3 text-white" style="letter-spacing: -1px;">
-                    Personalized Health <br><span style="background: linear-gradient(135deg, #06b6d4, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Risk Predictor</span>
-                </h1>
-                <p class="lead text-gray-300 mb-4 opacity-90">
-                    Evaluate statistical risk levels for <strong>Diabetes</strong> and <strong>Heart Disease</strong> using verified Scikit-Learn pipelines with transparent Explainable AI (XAI) feature contribution breakdown.
+                <h1 class="display-4 fw-bold mb-3 text-white">AI-Based Health Risk System</h1>
+                <p class="lead text-light opacity-90 mb-4">
+                    Assess risk levels for <strong>Diabetes</strong> and <strong>Heart Disease</strong> using trained Machine Learning models with Explainable AI feature breakdowns.
                 </p>
                 <div class="d-flex flex-wrap gap-3">
-                    <a href="/assessment" class="btn btn-primary-custom btn-lg">
+                    <a href="/assessment" class="btn btn-primary-custom btn-lg shadow">
                         <i class="bi bi-play-circle-fill me-2"></i> Start Risk Assessment
                     </a>
                     <a href="/simulator" class="btn btn-outline-light btn-lg rounded-pill px-4">
@@ -333,150 +267,46 @@ def home():
             </div>
             <div class="col-lg-5 mt-4 mt-lg-0">
                 <div class="card-custom p-4 text-white shadow-lg">
-                    <h5 class="fw-bold mb-3 d-flex align-items-center" style="color: #06b6d4;">
-                        <i class="bi bi-shield-check me-2 fs-4"></i> Trained Clinical Models
-                    </h5>
-                    <div class="p-3 mb-3 bg-dark bg-opacity-60 rounded-3 border-start border-cyan border-4" style="border-color: #06b6d4 !important;">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <h6 class="fw-bold mb-0 text-white">Diabetes Risk Model</h6>
-                            <span class="badge bg-emerald-500 text-white" style="background: #10b981;">97.40% Accuracy</span>
-                        </div>
-                        <small class="text-muted">Pima Clinical Dataset • Logistic Regression Classifier</small>
+                    <h5 class="fw-bold mb-3 text-info">Supported Condition Models</h5>
+                    <div class="p-3 mb-3 bg-dark rounded-3 border-start border-info border-4">
+                        <h6 class="fw-bold mb-1 text-white">Diabetes Risk Assessment</h6>
+                        <small class="text-muted">Pima Clinical Dataset • Trained Classifier</small>
                     </div>
-                    <div class="p-3 bg-dark bg-opacity-60 rounded-3 border-start border-purple border-4" style="border-color: #8b5cf6 !important;">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <h6 class="fw-bold mb-0 text-white">Heart Disease Risk Model</h6>
-                            <span class="badge bg-emerald-500 text-white" style="background: #10b981;">98.36% Accuracy</span>
-                        </div>
-                        <small class="text-muted">UCI Cardiac Dataset • Logistic Regression Classifier</small>
+                    <div class="p-3 bg-dark rounded-3 border-start border-primary border-4">
+                        <h6 class="fw-bold mb-1 text-white">Heart Disease Risk Assessment</h6>
+                        <small class="text-muted">UCI Cardiac Dataset • Trained Classifier</small>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Live Statistics Ticker -->
-    <div class="row g-3 py-3">
-        <div class="col-md-3 col-6">
-            <div class="card-custom p-4 text-center">
-                <small class="text-muted fw-bold uppercase">Top Model Accuracy</small>
-                <h2 class="fw-extrabold mb-0" style="color: #06b6d4;">98.36%</h2>
-            </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="card-custom p-4 text-center">
-                <small class="text-muted fw-bold uppercase">Evaluated Datasets</small>
-                <h2 class="fw-extrabold text-white mb-0">1,071 Samples</h2>
-            </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="card-custom p-4 text-center">
-                <small class="text-muted fw-bold uppercase">Clinical Features</small>
-                <h2 class="fw-extrabold mb-0" style="color: #8b5cf6;">21 Parameters</h2>
-            </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="card-custom p-4 text-center">
-                <small class="text-muted fw-bold uppercase">Target Conditions</small>
-                <h2 class="fw-extrabold text-success mb-0">Diabetes & Heart</h2>
-            </div>
-        </div>
-    </div>
-
-    <!-- Core Features Grid -->
     <div class="row g-4 py-3">
         <div class="col-md-4">
             <div class="card-custom p-4 h-100">
-                <div class="p-3 rounded-circle d-inline-block mb-3" style="background: rgba(6, 182, 212, 0.15); color: #06b6d4;">
+                <div class="p-3 rounded-circle d-inline-block mb-3 text-info bg-dark">
                     <i class="bi bi-cpu-fill fs-3"></i>
                 </div>
-                <h5 class="fw-bold mb-2 text-white">Dual ML Pipeline</h5>
-                <p class="text-muted small mb-0">Trained Scikit-Learn pipelines evaluated across Logistic Regression, Decision Trees, and Random Forests with verified metrics.</p>
+                <h5 class="fw-bold mb-2 text-white">Machine Learning Models</h5>
+                <p class="text-muted small mb-0">Trained Scikit-Learn pipelines evaluated on public datasets.</p>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card-custom p-4 h-100">
-                <div class="p-3 rounded-circle d-inline-block mb-3" style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6;">
+                <div class="p-3 rounded-circle d-inline-block mb-3 text-primary bg-dark">
                     <i class="bi bi-bar-chart-line-fill fs-3"></i>
                 </div>
-                <h5 class="fw-bold mb-2 text-white">Explainable AI (XAI)</h5>
-                <p class="text-muted small mb-0">Transparently visualizes feature influence weights that contribute to the statistical prediction score using interactive Chart.js graphs.</p>
+                <h5 class="fw-bold mb-2 text-white">Explainable AI</h5>
+                <p class="text-muted small mb-0">Displays feature contribution weights for model predictions.</p>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card-custom p-4 h-100">
-                <div class="p-3 rounded-circle d-inline-block mb-3" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+                <div class="p-3 rounded-circle d-inline-block mb-3 text-success bg-dark">
                     <i class="bi bi-sliders fs-3"></i>
                 </div>
-                <h5 class="fw-bold mb-2 text-white">What-If Health Simulator</h5>
-                <p class="text-muted small mb-0">Interactive parameter sliders allowing users to simulate metric adjustments and observe risk changes in real-time.</p>
-            </div>
-        </div>
-    </div>
-    """
-    return render_page(content)
-
-@app.route('/benchmarks')
-def benchmarks():
-    content = """
-    <div class="row justify-content-center py-3">
-        <div class="col-lg-11">
-            <div class="card-custom p-4 p-md-5 mb-4">
-                <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
-                    <div class="p-3 rounded-circle me-3" style="background: rgba(6, 182, 212, 0.15); color: #06b6d4;">
-                        <i class="bi bi-graph-up-arrow fs-2"></i>
-                    </div>
-                    <div>
-                        <h3 class="fw-bold mb-0 text-white">Machine Learning Benchmarks & Model Evaluation</h3>
-                        <p class="text-muted small mb-0">Verified performance metrics across multiple trained classification algorithms</p>
-                    </div>
-                </div>
-
-                <div class="row g-4 mb-4">
-                    <!-- Diabetes Evaluation Card -->
-                    <div class="col-md-6">
-                        <div class="card-custom p-4 border-start border-cyan border-4" style="border-color: #06b6d4 !important;">
-                            <h5 class="fw-bold text-white mb-3"><i class="bi bi-droplet-fill me-2 text-danger"></i>Diabetes Risk Models (Pima Dataset)</h5>
-                            <div class="table-responsive">
-                                <table class="table table-dark table-bordered align-middle small">
-                                    <thead>
-                                        <tr><th>Algorithm</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1-Score</th></tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="table-active fw-bold" style="color: #34d399;"><td>Logistic Regression</td><td>97.40%</td><td>98.00%</td><td>94.23%</td><td>96.08%</td></tr>
-                                        <tr><td>Decision Tree</td><td>93.51%</td><td>92.00%</td><td>88.46%</td><td>90.20%</td></tr>
-                                        <tr><td>Random Forest</td><td>96.10%</td><td>96.00%</td><td>92.31%</td><td>94.12%</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <span class="badge bg-success mt-2">Selected Pipeline: Logistic Regression (ROC-AUC: 0.9972)</span>
-                        </div>
-                    </div>
-
-                    <!-- Heart Disease Evaluation Card -->
-                    <div class="col-md-6">
-                        <div class="card-custom p-4 border-start border-purple border-4" style="border-color: #8b5cf6 !important;">
-                            <h5 class="fw-bold text-white mb-3"><i class="bi bi-heart-pulse-fill me-2 text-danger"></i>Heart Disease Models (UCI Dataset)</h5>
-                            <div class="table-responsive">
-                                <table class="table table-dark table-bordered align-middle small">
-                                    <thead>
-                                        <tr><th>Algorithm</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1-Score</th></tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="table-active fw-bold" style="color: #34d399;"><td>Logistic Regression</td><td>98.36%</td><td>97.06%</td><td>100.00%</td><td>98.51%</td></tr>
-                                        <tr><td>Decision Tree</td><td>95.08%</td><td>94.12%</td><td>96.97%</td><td>95.52%</td></tr>
-                                        <tr><td>Random Forest</td><td>96.72%</td><td>96.97%</td><td>96.97%</td><td>96.97%</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <span class="badge bg-success mt-2">Selected Pipeline: Logistic Regression (ROC-AUC: 0.9989)</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="disclaimer-banner">
-                    <i class="bi bi-info-circle-fill me-1"></i> All evaluation metrics are calculated on 20% hold-out test sets using 5-fold cross-validation.
-                </div>
+                <h5 class="fw-bold mb-2 text-white">What-If Simulator</h5>
+                <p class="text-muted small mb-0">Interactive parameter sliders to test prospective metric changes.</p>
             </div>
         </div>
     </div>
@@ -495,9 +325,9 @@ def login():
         <div class="col-md-5">
             <div class="card-custom p-4 p-md-5">
                 <div class="text-center mb-4">
-                    <i class="bi bi-shield-lock-fill fs-1 text-cyan"></i>
+                    <i class="bi bi-shield-lock-fill fs-1 text-info"></i>
                     <h3 class="fw-bold text-white">Member Login</h3>
-                    <p class="text-muted small">Access Healthcare AI Assessment Platform</p>
+                    <p class="text-muted small">Access Healthcare AI Platform</p>
                 </div>
                 <form method="POST">
                     <div class="mb-3">
@@ -529,7 +359,7 @@ def register():
         <div class="col-md-5">
             <div class="card-custom p-4 p-md-5">
                 <div class="text-center mb-4">
-                    <i class="bi bi-person-plus-fill fs-1 text-cyan"></i>
+                    <i class="bi bi-person-plus-fill fs-1 text-info"></i>
                     <h3 class="fw-bold text-white">Create Account</h3>
                 </div>
                 <form method="POST">
@@ -568,10 +398,10 @@ def dashboard():
         history_html += f"""
         <tr>
             <td class="fw-bold text-white">#HRA-{len(history)-idx}</td>
-            <td><strong class="text-cyan">{h.get('disease')}</strong></td>
+            <td><strong class="text-info">{h.get('disease')}</strong></td>
             <td><span class="badge-risk-{h.get('risk_level')}">{h.get('risk_level')}</span></td>
             <td class="fw-bold fs-6 text-white">{h.get('probability')}%</td>
-            <td><a href="/result?idx={len(history)-1-idx}" class="btn btn-sm btn-outline-cyan rounded-pill text-cyan" style="border-color: #06b6d4;"><i class="bi bi-eye me-1"></i>View Result</a></td>
+            <td><a href="/result?idx={len(history)-1-idx}" class="btn btn-sm btn-outline-info rounded-pill"><i class="bi bi-eye me-1"></i>View Result</a></td>
         </tr>
         """
         
@@ -582,7 +412,7 @@ def dashboard():
     <div class="row gy-4 py-3">
         <div class="col-12">
             <div class="card-custom p-4 bg-dark text-white">
-                <span class="badge bg-cyan bg-opacity-20 text-cyan px-3 py-1 mb-2" style="color: #06b6d4;">Member Dashboard</span>
+                <span class="badge bg-info text-dark px-3 py-1 mb-2">Member Dashboard</span>
                 <h2 class="fw-bold mb-1">Welcome, {user['name']}!</h2>
                 <p class="text-muted mb-3">AI-Based Healthcare Risk Assessment & Preventive Care System</p>
                 <a href="/assessment" class="btn btn-primary-custom rounded-pill me-2"><i class="bi bi-plus-circle me-1"></i> New Assessment</a>
@@ -591,7 +421,7 @@ def dashboard():
         </div>
         <div class="col-12">
             <div class="card-custom p-4">
-                <h5 class="fw-bold mb-3 text-white"><i class="bi bi-clock-history me-2 text-cyan"></i>Assessment History Log</h5>
+                <h5 class="fw-bold mb-3 text-white"><i class="bi bi-clock-history me-2 text-info"></i>Assessment History Log</h5>
                 <div class="table-responsive">
                     <table class="table table-dark table-hover align-middle mb-0">
                         <thead>
@@ -662,18 +492,18 @@ def assessment():
         <div class="col-lg-9">
             <div class="card-custom p-4 p-md-5">
                 <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
-                    <div class="p-3 rounded-circle me-3" style="background: rgba(6, 182, 212, 0.15); color: #06b6d4;">
+                    <div class="p-3 rounded-circle me-3 text-info bg-dark">
                         <i class="bi bi-clipboard-pulse fs-2"></i>
                     </div>
                     <div>
                         <h3 class="fw-bold mb-0 text-white">Health Risk Assessment Form</h3>
-                        <p class="text-muted small mb-0">Enter clinical parameters for AI-powered risk evaluation</p>
+                        <p class="text-muted small mb-0">Enter clinical parameters for AI risk evaluation</p>
                     </div>
                 </div>
 
                 <form method="POST" id="assessForm">
-                    <div class="mb-4 bg-dark bg-opacity-50 p-3 rounded-3 border border-secondary border-opacity-25">
-                        <label class="form-label fw-bold text-white fs-5 mb-2"><i class="bi bi-virus me-2 text-cyan"></i>Select Target Condition</label>
+                    <div class="mb-4 bg-dark p-3 rounded-3 border border-secondary border-opacity-25">
+                        <label class="form-label fw-bold text-white fs-5 mb-2"><i class="bi bi-virus me-2 text-info"></i>Select Target Condition</label>
                         <select name="disease_type" id="disease_type" class="form-select form-select-lg" onchange="toggleForm()">
                             <option value="diabetes">Diabetes Risk Assessment (Pima Clinical Model)</option>
                             <option value="heart">Heart Disease Risk Assessment (UCI Cardiac Dataset)</option>
@@ -682,7 +512,7 @@ def assessment():
 
                     <!-- DIABETES INPUTS -->
                     <div id="diabetes_inputs">
-                        <h5 class="fw-bold text-cyan mb-3"><i class="bi bi-droplet-fill me-2 text-danger"></i>Diabetes Clinical Metrics</h5>
+                        <h5 class="fw-bold text-info mb-3"><i class="bi bi-droplet-fill me-2 text-danger"></i>Diabetes Clinical Metrics</h5>
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-white">Glucose Level (mg/dL)</label>
@@ -725,7 +555,7 @@ def assessment():
 
                     <!-- HEART INPUTS -->
                     <div id="heart_inputs" style="display:none;">
-                        <h5 class="fw-bold text-cyan mb-3"><i class="bi bi-heart-pulse-fill me-2 text-danger"></i>Heart Disease Clinical Metrics</h5>
+                        <h5 class="fw-bold text-info mb-3"><i class="bi bi-heart-pulse-fill me-2 text-danger"></i>Heart Disease Clinical Metrics</h5>
                         <div class="row g-3">
                             <div class="col-md-6"><label class="form-label fw-bold text-white">Age</label><input type="number" name="age" class="form-control" value="55"></div>
                             <div class="col-md-6"><label class="form-label fw-bold text-white">Sex</label><select name="sex" class="form-select"><option value="1">Male</option><option value="0">Female</option></select></div>
@@ -739,10 +569,10 @@ def assessment():
                     </div>
 
                     <div class="disclaimer-banner my-4">
-                        <i class="bi bi-shield-exclamation me-1 text-warning"></i> By clicking calculate, parameters are evaluated against trained Scikit-Learn models.
+                        <i class="bi bi-info-circle me-1"></i> By clicking calculate, parameters are evaluated against trained Machine Learning models.
                     </div>
 
-                    <button type="submit" class="btn btn-primary-custom btn-lg w-100"><i class="bi bi-cpu-fill me-2"></i> Run AI Risk Assessment</button>
+                    <button type="submit" class="btn btn-primary-custom btn-lg w-100"><i class="bi bi-cpu-fill me-2"></i> Run Risk Assessment</button>
                 </form>
             </div>
         </div>
@@ -788,13 +618,13 @@ def result():
             <div class="card-custom p-4 p-md-5 mb-4 text-center">
                 <span class="badge bg-secondary mb-2">{res.get('disease')}</span>
                 <h2 class="fw-bold text-white">Predicted Risk Level: <span class="badge-risk-{res.get('risk_level')}">{res.get('risk_level')}</span></h2>
-                <h1 class="display-3 fw-extrabold text-white mt-2">{res.get('probability')}% Probability</h1>
+                <h1 class="display-3 fw-bold text-white mt-2">{res.get('probability')}% Probability</h1>
                 <p class="text-muted small">Classifier Used: <strong>{res.get('model_used')}</strong></p>
             </div>
 
             <!-- Explainable AI (XAI) Feature Importance Chart -->
             <div class="card-custom p-4 p-md-5 mb-4">
-                <h4 class="fw-bold mb-2 text-white"><i class="bi bi-bar-chart-line-fill text-cyan me-2"></i>Explainable AI (XAI): Parameter Influence Breakdown</h4>
+                <h4 class="fw-bold mb-2 text-white"><i class="bi bi-bar-chart-line-fill text-info me-2"></i>Explainable AI (XAI): Parameter Influence Breakdown</h4>
                 <p class="text-muted small mb-4">Relative weight of parameters that influenced the statistical risk score:</p>
                 <div style="height: 280px;"><canvas id="fiChart"></canvas></div>
             </div>
@@ -825,8 +655,8 @@ def result():
                 datasets: [{{
                     label: 'Importance Weight (%)',
                     data: {json.dumps(fi_vals)},
-                    backgroundColor: 'rgba(6, 182, 212, 0.75)',
-                    borderColor: '#06b6d4',
+                    backgroundColor: 'rgba(13, 148, 136, 0.75)',
+                    borderColor: '#0d9488',
                     borderWidth: 1.5,
                     borderRadius: 6
                 }}]
@@ -887,7 +717,7 @@ def simulator():
         <div class="col-lg-9">
             <div class="card-custom p-4 p-md-5 mb-4">
                 <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
-                    <div class="p-3 rounded-circle me-3" style="background: rgba(6, 182, 212, 0.15); color: #06b6d4;">
+                    <div class="p-3 rounded-circle me-3 text-info bg-dark">
                         <i class="bi bi-sliders fs-2"></i>
                     </div>
                     <div>
@@ -901,14 +731,14 @@ def simulator():
                     <div class="mb-4">
                         <label class="form-label fw-bold d-flex justify-content-between text-white">
                             <span>Simulated Glucose Level (mg/dL)</span>
-                            <output class="fw-bold fs-5" style="color: #06b6d4;" id="out_glucose">130</output>
+                            <output class="fw-bold fs-5 text-info" id="out_glucose">130</output>
                         </label>
                         <input type="range" class="form-range" min="70" max="220" value="130" name="Glucose" oninput="document.getElementById('out_glucose').value = this.value">
                     </div>
                     <div class="mb-4">
                         <label class="form-label fw-bold d-flex justify-content-between text-white">
                             <span>Simulated Body Mass Index (BMI)</span>
-                            <output class="fw-bold fs-5" style="color: #06b6d4;" id="out_bmi">27.0</output>
+                            <output class="fw-bold fs-5 text-info" id="out_bmi">27.0</output>
                         </label>
                         <input type="range" class="form-range" min="15" max="45" step="0.5" value="27" name="BMI" oninput="document.getElementById('out_bmi').value = this.value">
                     </div>
@@ -941,7 +771,7 @@ def report():
                     <h2 class="fw-bold">HealthRiskAI Report</h2>
                     <span class="text-muted">Academic ML Assessment System</span>
                 </div>
-                <div class="text-end"><strong>Report ID: #VCL-882</strong><br><small>Print Date: 2026</small></div>
+                <div class="text-end"><strong>Report ID: #HRA-882</strong><br><small>Academic ML Assessment</small></div>
             </div>
             <div class="bg-light p-3 rounded mb-4">
                 <div><strong>Patient Name:</strong> {user['name']}</div>
