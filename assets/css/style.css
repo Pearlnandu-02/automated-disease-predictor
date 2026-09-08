@@ -1,16 +1,15 @@
-/* Custom Healthcare Styling System */
+/* Advanced Healthcare UI System */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   --primary-teal: #0d9488;
   --primary-hover: #0f766e;
   --navy-dark: #0f172a;
+  --navy-card: #1e293b;
   --slate-bg: #f8fafc;
   --card-border: #e2e8f0;
   --accent-blue: #0284c7;
-  --risk-low: #10b981;
-  --risk-mod: #f59e0b;
-  --risk-high: #ef4444;
+  --accent-purple: #6366f1;
 }
 
 body {
@@ -22,176 +21,113 @@ body {
   min-height: 100vh;
 }
 
-/* Header & Navbar */
+/* Glassmorphism & Navbar */
 .navbar-custom {
   background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.navbar-brand {
-  font-weight: 800;
-  font-size: 1.25rem;
-  letter-spacing: -0.5px;
-  color: #ffffff !important;
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: pulse 1.6s infinite;
 }
 
-.brand-badge {
-  background: linear-gradient(135deg, #0d9488, #0284c7);
-  color: #fff;
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
-  text-transform: uppercase;
-  margin-left: 8px;
+@keyframes pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
-.nav-link {
-  font-weight: 500;
-  color: #94a3b8 !important;
-  transition: all 0.2s ease;
-}
-
-.nav-link:hover, .nav-link.active {
-  color: #38bdf8 !important;
-}
-
-/* Premium Card Container */
+/* Cards & Gradient Accents */
 .card-custom {
   background: #ffffff;
   border: 1px solid var(--card-border);
-  border-radius: 16px;
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card-custom:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.1);
 }
 
-.hero-section {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+.hero-banner {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f766e 100%);
   color: #ffffff;
-  padding: 80px 0;
-  border-radius: 0 0 32px 32px;
+  border-radius: 28px;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Medical Disclaimer Alert */
-.disclaimer-banner {
-  background-color: #fffbe6;
-  border-left: 4px solid #f59e0b;
-  color: #78350f;
-  padding: 12px 18px;
-  border-radius: 8px;
-  font-size: 0.875rem;
-}
-
-/* Risk Badges */
+/* Custom Risk Badges */
 .badge-risk-LOW {
-  background-color: rgba(16, 185, 129, 0.15);
+  background: rgba(16, 185, 129, 0.15);
   color: #047857;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 20px;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  font-weight: 800;
+  padding: 8px 18px;
+  border-radius: 30px;
+  letter-spacing: 0.5px;
 }
 
 .badge-risk-MODERATE {
-  background-color: rgba(245, 158, 11, 0.15);
+  background: rgba(245, 158, 11, 0.15);
   color: #b45309;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 20px;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  font-weight: 800;
+  padding: 8px 18px;
+  border-radius: 30px;
+  letter-spacing: 0.5px;
 }
 
 .badge-risk-HIGH {
-  background-color: rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.15);
   color: #b91c1c;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 20px;
-}
-
-/* Probability Gauge Meter */
-.gauge-container {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  background: conic-gradient(var(--gauge-color) var(--gauge-percent), #e2e8f0 0deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.gauge-inner {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.gauge-value {
-  font-size: 1.6rem;
+  border: 1px solid rgba(239, 68, 68, 0.4);
   font-weight: 800;
-  color: var(--navy-dark);
-}
-
-.gauge-label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  color: #64748b;
-  font-weight: 600;
-}
-
-/* Form Styles */
-.form-label {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: #1e293b;
-}
-
-.form-control, .form-select {
-  border-radius: 10px;
-  border: 1px solid #cbd5e1;
-  padding: 10px 14px;
-  font-weight: 500;
-}
-
-.form-control:focus, .form-select:focus {
-  border-color: var(--primary-teal);
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+  padding: 8px 18px;
+  border-radius: 30px;
+  letter-spacing: 0.5px;
 }
 
 .btn-primary-custom {
-  background-color: var(--primary-teal);
-  border-color: var(--primary-teal);
-  color: #ffffff;
-  font-weight: 600;
-  border-radius: 10px;
-  padding: 10px 24px;
-  transition: all 0.2s ease;
+  background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 12px;
+  border: none;
+  padding: 12px 28px;
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.35);
+  transition: all 0.25s ease;
 }
 
 .btn-primary-custom:hover {
-  background-color: var(--primary-hover);
-  border-color: var(--primary-hover);
-  color: #ffffff;
+  background: linear-gradient(135deg, #0f766e 0%, #0369a1 100%);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(13, 148, 136, 0.45);
 }
 
-/* Footer */
+.disclaimer-banner {
+  background: #fffbe6;
+  border-left: 5px solid #f59e0b;
+  color: #78350f;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+}
+
 footer {
   margin-top: auto;
   background: var(--navy-dark);
   color: #94a3b8;
-  padding: 30px 0 20px;
+  padding: 40px 0 25px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
