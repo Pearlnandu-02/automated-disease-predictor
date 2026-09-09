@@ -1,155 +1,163 @@
 <?php
-// dashboard.php
 require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/functions.php';
 
 require_login();
 
 $user = get_logged_in_user();
 $user_id = $user['id'];
 
-$db = Database::getInstance();
+$pdo = get_db_connection();
 
-// Metrics
-$stmt = $db->prepare("SELECT COUNT(*) AS total FROM health_assessments WHERE user_id = ?");
-$stmt->execute([$user_id]);
-$total_assessments = $stmt->fetch()['total'];
+$total_predictions = 0;
+$recent_predictions = [];
 
-$stmt = $db->prepare("SELECT * FROM health_assessments WHERE user_id = ? ORDER BY created_at DESC LIMIT 5");
-$stmt->execute([$user_id]);
-$recent_history = $stmt->fetchAll();
+if ($pdo) {
+    try {
+        $stmt = $pdo->prepare("SELECT COUNT(*) AS total FROM prediction_history WHERE user_id = ?");
+        $stmt->execute([$user_id]);
+        $total_predictions = $stmt->fetch()['total'];
 
-$latest_assessment = $recent_history[0] ?? null;
+        $stmt = $pdo->prepare("SELECT * FROM prediction_history WHERE user_id = ? ORDER BY created_at DESC LIMIT 5");
+        $stmt->execute([$user_id]);
+        $recent_predictions = $stmt->fetchAll();
+    } catch (PDOException $e) {
+        $total_predictions = 0;
+    }
+}
 
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<div class="row gy-4 py-4">
+<div class="row gy-4 py-3">
     <!-- Welcome Header -->
     <div class="col-12">
-        <div class="card card-custom p-4 p-md-5 bg-dark text-white position-relative overflow-hidden" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+        <div class="card-custom p-4 p-md-5 hero-banner">
             <div class="row align-items-center">
                 <div class="col-lg-8">
-                    <span class="badge bg-info text-dark px-3 py-1 mb-2">Member Dashboard</span>
-                    <h2 class="fw-bold mb-2">Welcome, <?= sanitize($user['name']) ?>!</h2>
-                    <p class="text-light opacity-75 mb-3">
-                        Monitor your personalized healthcare assessments, track historical AI risk predictions, and run simulations.
+                    <span class="badge bg-info text-dark px-3 py-1 mb-2 fw-bold">User Dashboard</span>
+                    <h2 class="fw-extrabold text-white mb-2">Welcome back, <?= sanitize($user['name']) ?>!</h2>
+                    <p class="text-muted mb-3">
+                        Access your previous AI disease predictions, check current health symptoms, explore disease information, and run simulations.
                     </p>
-                    <a href="assessment.php" class="btn btn-info text-white rounded-pill px-4 me-2">
-                        <i class="bi bi-plus-circle me-1"></i> New Assessment
-                    </a>
-                    <a href="history.php" class="btn btn-outline-light rounded-pill px-4">
-                        <i class="bi bi-clock-history me-1"></i> History Log
-                    </a>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="prediction.php" class="btn btn-primary-custom rounded-pill px-4">
+                            <i class="bi bi-cpu-fill me-1"></i> AI Symptom Checker
+                        </a>
+                        <a href="diseases.php" class="btn btn-outline-info rounded-pill px-4">
+                            <i class="bi bi-journal-medical me-1"></i> Explore Diseases
+                        </a>
+                    </div>
                 </div>
                 <div class="col-lg-4 text-center mt-4 mt-lg-0">
-                    <div class="p-3 bg-white bg-opacity-10 rounded-4 backdrop-blur text-white">
-                        <small class="text-uppercase fw-bold opacity-75">Total Assessments Run</small>
-                        <h1 class="display-3 fw-extrabold text-info mb-0"><?= number_format($total_assessments) ?></h1>
+                    <div class="p-3 bg-dark bg-opacity-60 rounded-4 border border-secondary border-opacity-25">
+                        <small class="text-uppercase fw-bold text-muted">Total AI Predictions</small>
+                        <h1 class="display-3 fw-extrabold text-info mb-0"><?= number_format($total_predictions) ?></h1>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Quick Stats Cards -->
-    <div class="col-md-6 col-lg-4">
-        <div class="card card-custom p-4 h-100 border-0 shadow-sm">
+    <!-- Quick Access Cards -->
+    <div class="col-md-4">
+        <div class="card-custom p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="text-muted fw-bold small uppercase">Latest Assessment</span>
-                <i class="bi bi-activity text-info fs-4"></i>
+                <h5 class="fw-bold text-white mb-0">AI Disease Prediction</h5>
+                <i class="bi bi-cpu text-info fs-3"></i>
             </div>
-            <?php if ($latest_assessment): ?>
-                <h4 class="fw-bold text-dark mb-1"><?= sanitize($latest_assessment['disease']) ?></h4>
-                <div class="mt-2">
-                    <span class="badge-risk-<?= strtoupper($latest_assessment['risk_level']) ?>">
-                        <?= strtoupper($latest_assessment['risk_level']) ?> RISK
-                    </span>
-                    <span class="ms-2 fw-bold text-secondary"><?= number_format($latest_assessment['probability'], 1) ?>%</span>
-                </div>
-                <small class="text-muted d-block mt-3"><i class="bi bi-calendar3 me-1"></i><?= date('M d, Y', strtotime($latest_assessment['created_at'])) ?></small>
-            <?php else: ?>
-                <p class="text-muted small">No assessments performed yet.</p>
-                <a href="assessment.php" class="btn btn-sm btn-outline-info rounded-pill">Start Assessment</a>
-            <?php endif; ?>
+            <p class="text-muted small mb-3">Select symptoms and execute machine learning classification model inference.</p>
+            <a href="prediction.php" class="btn btn-outline-info btn-sm rounded-pill mt-auto">Run Symptom Check</a>
         </div>
     </div>
 
-    <div class="col-md-6 col-lg-4">
-        <div class="card card-custom p-4 h-100 border-0 shadow-sm">
+    <div class="col-md-4">
+        <div class="card-custom p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="text-muted fw-bold small uppercase">What-If Simulator</span>
-                <i class="bi bi-sliders text-success fs-4"></i>
+                <h5 class="fw-bold text-white mb-0">Disease Database</h5>
+                <i class="bi bi-search text-warning fs-3"></i>
             </div>
-            <h5 class="fw-bold text-dark mb-2">Interactive Risk Simulation</h5>
-            <p class="text-muted small mb-3">Simulate metric adjustments and evaluate prospective probability updates.</p>
-            <a href="simulator.php" class="btn btn-sm btn-success rounded-pill mt-auto">Open Simulator</a>
+            <p class="text-muted small mb-3">Explore 25 comprehensive medical conditions, causes, and prevention strategies.</p>
+            <a href="diseases.php" class="btn btn-outline-warning btn-sm rounded-pill mt-auto">Browse Diseases</a>
         </div>
     </div>
 
-    <div class="col-md-6 col-lg-4">
-        <div class="card card-custom p-4 h-100 border-0 shadow-sm">
+    <div class="col-md-4">
+        <div class="card-custom p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="text-muted fw-bold small uppercase">Health Reports</span>
-                <i class="bi bi-file-earmark-pdf text-primary fs-4"></i>
+                <h5 class="fw-bold text-white mb-0">What-If Simulator</h5>
+                <i class="bi bi-sliders text-success fs-3"></i>
             </div>
-            <h5 class="fw-bold text-dark mb-2">Printable PDF Assessment</h5>
-            <p class="text-muted small mb-3">Generate formatted health report documents for offline review.</p>
-            <?php if ($latest_assessment): ?>
-                <a href="report.php?id=<?= $latest_assessment['id'] ?>" target="_blank" class="btn btn-sm btn-primary rounded-pill mt-auto">Print Latest Report</a>
-            <?php else: ?>
-                <button class="btn btn-sm btn-secondary rounded-pill mt-auto" disabled>No Report Available</button>
-            <?php endif; ?>
+            <p class="text-muted small mb-3">Simulate metric adjustments and recalculate statistical risk scores.</p>
+            <a href="simulator.php" class="btn btn-outline-success btn-sm rounded-pill mt-auto">Open Simulator</a>
         </div>
     </div>
 
-    <!-- Recent History Table -->
+    <!-- Recent Predictions Table -->
     <div class="col-12">
-        <div class="card card-custom p-4 shadow-sm">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-clock-history me-2 text-info"></i>Recent Assessment History</h5>
-                <a href="history.php" class="text-info fw-bold small text-decoration-none">View All <i class="bi bi-arrow-right"></i></a>
-            </div>
+        <div class="card-custom p-4">
+            <h4 class="fw-bold text-white mb-3 d-flex align-items-center">
+                <i class="bi bi-clock-history text-info me-2"></i> Previous AI Predictions & Symptom Checks
+            </h4>
 
-            <?php if (empty($recent_history)): ?>
-                <div class="text-center py-4">
-                    <i class="bi bi-inbox fs-1 text-muted"></i>
-                    <p class="text-muted mt-2">You haven't completed any assessments yet.</p>
-                    <a href="assessment.php" class="btn btn-info text-white rounded-pill px-4">Take First Assessment</a>
-                </div>
-            <?php else: ?>
+            <?php if (!empty($recent_predictions)): ?>
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
+                    <table class="table table-dark table-hover align-middle small border-secondary">
+                        <thead>
+                            <tr class="text-info">
                                 <th>Date & Time</th>
-                                <th>Condition</th>
-                                <th>Risk Level</th>
-                                <th>Probability</th>
-                                <th class="text-end">Actions</th>
+                                <th>Selected Symptoms</th>
+                                <th>Predicted Condition</th>
+                                <th>AI Model Confidence</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($recent_history as $row): ?>
+                            <?php foreach ($recent_predictions as $p): ?>
                                 <tr>
-                                    <td><i class="bi bi-calendar-event me-2 text-muted"></i><?= date('M d, Y h:i A', strtotime($row['created_at'])) ?></td>
-                                    <td class="fw-bold text-dark"><?= sanitize($row['disease']) ?></td>
+                                    <td><?= date('M d, Y H:i', strtotime($p['created_at'])) ?></td>
+                                    <td><span class="text-truncate d-inline-block" style="max-width: 250px;"><?= sanitize($p['symptoms_selected']) ?></span></td>
+                                    <td class="fw-bold text-white"><?= sanitize($p['predicted_disease']) ?></td>
+                                    <td class="text-info fw-bold"><?= number_format($p['confidence'], 1) ?>%</td>
                                     <td>
-                                        <span class="badge-risk-<?= strtoupper($row['risk_level']) ?>">
-                                            <?= strtoupper($row['risk_level']) ?>
-                                        </span>
-                                    </td>
-                                    <td class="fw-bold"><?= number_format($row['probability'], 1) ?>%</td>
-                                    <td class="text-end">
-                                        <a href="result.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-outline-info rounded-pill">Details</a>
+                                        <a href="disease_detail.php?name=<?= urlencode($p['predicted_disease']) ?>" class="btn btn-sm btn-outline-info rounded-pill px-3">
+                                            Learn More
+                                        </a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
+            <?php else: ?>
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-info-circle fs-3 d-block mb-2"></i>
+                    <p class="mb-2">No previous predictions recorded yet.</p>
+                    <a href="prediction.php" class="btn btn-primary-custom btn-sm rounded-pill px-4">Start First Symptom Check</a>
+                </div>
             <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- User Profile Section -->
+    <div class="col-12">
+        <div class="card-custom p-4">
+            <h5 class="fw-bold text-white mb-3"><i class="bi bi-person-circle text-info me-2"></i> Account Profile Information</h5>
+            <div class="row g-3 text-muted small">
+                <div class="col-md-4">
+                    <strong>Full Name:</strong> <span class="text-white"><?= sanitize($user['name']) ?></span>
+                </div>
+                <div class="col-md-4">
+                    <strong>Email Address:</strong> <span class="text-white"><?= sanitize($user['email']) ?></span>
+                </div>
+                <div class="col-md-4">
+                    <strong>Account Status:</strong> <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-25">Active Student Account</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<?php require_once __DIR__ . '/includes/footer.php'; ?>
+<?php
+require_once __DIR__ . '/includes/footer.php';
+?>
