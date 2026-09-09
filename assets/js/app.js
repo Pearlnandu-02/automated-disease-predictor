@@ -270,31 +270,40 @@ function initSymptomsGuideSearch() {
 // ==========================================================================
 function initAssessmentSwitcher() {
     const diseaseSelector = document.getElementById('disease_type');
-    const diabetesFields = document.getElementById('diabetes_fields');
-    const heartFields = document.getElementById('heart_fields');
+    if (!diseaseSelector) return;
 
-    if (!diseaseSelector || !diabetesFields || !heartFields) return;
+    const sections = {
+        'diabetes': document.getElementById('diabetes_fields'),
+        'heart': document.getElementById('heart_fields'),
+        'hypertension': document.getElementById('hypertension_fields'),
+        'respiratory': document.getElementById('respiratory_fields'),
+        'lifestyle': document.getElementById('lifestyle_fields')
+    };
 
     function toggleFields() {
         const selected = diseaseSelector.value;
-        if (selected === 'diabetes') {
-            diabetesFields.style.display = 'block';
-            heartFields.style.display = 'none';
-            enableInputs(diabetesFields, true);
-            enableInputs(heartFields, false);
-        } else if (selected === 'heart') {
-            diabetesFields.style.display = 'none';
-            heartFields.style.display = 'block';
-            enableInputs(diabetesFields, false);
-            enableInputs(heartFields, true);
-        }
+        Object.keys(sections).forEach(key => {
+            const sec = sections[key];
+            if (sec) {
+                if (key === selected) {
+                    sec.style.display = 'block';
+                    enableInputs(sec, true);
+                } else {
+                    sec.style.display = 'none';
+                    enableInputs(sec, false);
+                }
+            }
+        });
     }
 
     function enableInputs(container, enable) {
-        const inputs = container.querySelectorAll('input, select');
+        const inputs = container.querySelectorAll('input, select, textarea');
         inputs.forEach(input => {
-            if (enable) input.removeAttribute('disabled');
-            else input.setAttribute('disabled', 'disabled');
+            if (enable) {
+                input.removeAttribute('disabled');
+            } else {
+                input.setAttribute('disabled', 'disabled');
+            }
         });
     }
 
@@ -303,16 +312,52 @@ function initAssessmentSwitcher() {
 }
 
 // ==========================================================================
-// 7. Range Sliders Value Display
+// 7. Range Sliders Live Synchronized Value Display & Control
 // ==========================================================================
 function initRangeSliders() {
-    const rangeSliders = document.querySelectorAll('.sync-slider');
+    const rangeSliders = document.querySelectorAll('.sync-slider, input[type="range"]');
+    
     rangeSliders.forEach(slider => {
-        const targetId = slider.getAttribute('data-target');
-        const targetElem = document.getElementById(targetId);
-        if (targetElem) {
-            slider.addEventListener('input', function() {
-                targetElem.innerText = slider.value;
+        // Resolve target display span ID: explicit data-target or convention val_{name}
+        const targetId = slider.getAttribute('data-target') || (slider.name ? 'val_' + slider.name.toLowerCase() : null);
+        const targetElem = targetId ? document.getElementById(targetId) : null;
+        
+        function syncSliderValue() {
+            const currentVal = slider.value;
+            if (targetElem) {
+                targetElem.textContent = currentVal;
+            }
+            
+            // If there is an adjacent or paired number input with the same name, sync it
+            const pairedInputs = document.querySelectorAll(`input[type="number"][name="${slider.name}"]`);
+            pairedInputs.forEach(paired => {
+                if (paired !== slider && paired.value !== currentVal) {
+                    paired.value = currentVal;
+                }
+            });
+        }
+
+        // Listen on input, change, and touch events for seamless desktop & mobile operation
+        slider.addEventListener('input', syncSliderValue);
+        slider.addEventListener('change', syncSliderValue);
+        slider.addEventListener('touchmove', syncSliderValue);
+        
+        // Run initial synchronization so displayed numbers are never hardcoded or blank
+        syncSliderValue();
+    });
+
+    // Two-way sync: When user types into a paired number input, immediately update the slider and readout
+    const numberInputs = document.querySelectorAll('input[type="number"]');
+    numberInputs.forEach(numInput => {
+        const pairedSlider = document.querySelector(`input[type="range"][name="${numInput.name}"]`);
+        if (pairedSlider) {
+            numInput.addEventListener('input', function() {
+                pairedSlider.value = numInput.value;
+                const targetId = pairedSlider.getAttribute('data-target') || (numInput.name ? 'val_' + numInput.name.toLowerCase() : null);
+                const targetElem = targetId ? document.getElementById(targetId) : null;
+                if (targetElem) {
+                    targetElem.textContent = numInput.value;
+                }
             });
         }
     });

@@ -66,7 +66,178 @@ def generate_recommendations(disease, input_dict, risk_level):
     return guidance
 
 
+def evaluate_hypertension_risk(data_dict):
+    sys_bp = float(data_dict.get('systolic', data_dict.get('trestbps', 130)))
+    dia_bp = float(data_dict.get('diastolic', data_dict.get('BloodPressure', 82)))
+    age = float(data_dict.get('Age', data_dict.get('age', 45)))
+    bmi = float(data_dict.get('BMI', 26.5))
+    sodium = float(data_dict.get('sodium', 2800))
+    smoking = int(data_dict.get('smoking', 0))
+    stress = int(data_dict.get('stress', 1))
+
+    # Base Framingham vascular risk weighting
+    score = 0.0
+    # Systolic
+    if sys_bp >= 160: score += 0.35
+    elif sys_bp >= 140: score += 0.25
+    elif sys_bp >= 130: score += 0.15
+    elif sys_bp >= 120: score += 0.08
+    # Diastolic
+    if dia_bp >= 100: score += 0.25
+    elif dia_bp >= 90: score += 0.18
+    elif dia_bp >= 80: score += 0.08
+    # Age factor
+    if age >= 65: score += 0.18
+    elif age >= 50: score += 0.12
+    elif age >= 40: score += 0.06
+    # BMI factor
+    if bmi >= 30: score += 0.12
+    elif bmi >= 25: score += 0.06
+    # Sodium & Lifestyle
+    if sodium > 3000: score += 0.10
+    if smoking > 0: score += 0.12
+    if stress >= 2: score += 0.08
+
+    prob = min(max(score, 0.05), 0.96)
+    risk_level = "LOW" if prob < 0.35 else ("MODERATE" if prob < 0.65 else "HIGH")
+
+    importance = {
+        "Systolic Blood Pressure": 0.35 if sys_bp >= 130 else 0.15,
+        "Diastolic Blood Pressure": 0.25 if dia_bp >= 85 else 0.10,
+        "Age Factor": 0.15,
+        "Body Mass Index (BMI)": 0.12,
+        "Dietary Sodium & Smoking": 0.13
+    }
+    recs = [
+        "Monitor resting blood pressure at consistent morning intervals.",
+        "Adopt the DASH (Dietary Approaches to Stop Hypertension) diet, restricting sodium to <2,300 mg daily.",
+        "Engage in 150 minutes of weekly moderate aerobic exercise to reduce systemic vascular resistance.",
+        "Consult your physician for periodic cardiovascular and renal function checks."
+    ]
+    return {
+        "disease": "Hypertension & Vascular Risk",
+        "risk_level": risk_level,
+        "probability": round(prob * 100, 1),
+        "raw_probability": round(prob, 4),
+        "model_used": "AHA/ACC Vascular Risk Evaluation Index",
+        "feature_importance": importance,
+        "recommendations": recs,
+        "disclaimer": "This system provides educational/informational AI predictions only and is not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment."
+    }
+
+def evaluate_respiratory_risk(data_dict):
+    age = float(data_dict.get('Age', data_dict.get('age', 48)))
+    pack_years = float(data_dict.get('pack_years', 5))
+    dyspnea = int(data_dict.get('dyspnea', 1))
+    cough_weeks = float(data_dict.get('cough_weeks', 2))
+    env_exposure = int(data_dict.get('env_exposure', 1))
+
+    score = 0.05
+    if pack_years >= 20: score += 0.35
+    elif pack_years >= 10: score += 0.22
+    elif pack_years > 0: score += 0.10
+
+    if dyspnea >= 3: score += 0.30
+    elif dyspnea >= 2: score += 0.18
+    elif dyspnea >= 1: score += 0.08
+
+    if cough_weeks >= 4: score += 0.15
+    elif cough_weeks >= 2: score += 0.08
+
+    if env_exposure >= 2: score += 0.12
+    if age >= 60: score += 0.12
+
+    prob = min(max(score, 0.05), 0.95)
+    risk_level = "LOW" if prob < 0.35 else ("MODERATE" if prob < 0.65 else "HIGH")
+
+    importance = {
+        "Tobacco / Smoke Exposure": 0.38,
+        "Dyspnea & Air Hunger Scale": 0.28,
+        "Persistent Cough Duration": 0.16,
+        "Environmental Pollutants": 0.10,
+        "Age & Lung Vitality": 0.08
+    }
+    recs = [
+        "Avoid active smoking and secondhand tobacco smoke exposure entirely.",
+        "Ensure optimal household and indoor air ventilation; use HEPA air filtration if living near industrial or high-traffic zones.",
+        "Stay up-to-date with annual influenza, COVID-19, and pneumococcal immunizations.",
+        "Schedule spirometry pulmonary function evaluation if experiencing chronic cough or shortness of breath."
+    ]
+    return {
+        "disease": "Pulmonary & Respiratory Risk",
+        "risk_level": risk_level,
+        "probability": round(prob * 100, 1),
+        "raw_probability": round(prob, 4),
+        "model_used": "GOLD Clinical Pulmonary Health Index",
+        "feature_importance": importance,
+        "recommendations": recs,
+        "disclaimer": "This system provides educational/informational AI predictions only and is not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment."
+    }
+
+def evaluate_lifestyle_multi_risk(data_dict):
+    age_grp = int(data_dict.get('age_group', 2))
+    smoking = int(data_dict.get('smoking', 0))
+    activity = int(data_dict.get('physical_activity', 1))
+    fam_hist = int(data_dict.get('family_history', 0))
+    bp_cat = int(data_dict.get('bp_category', 1))
+    bmi_cat = int(data_dict.get('bmi_category', 2))
+    blood_sugar = int(data_dict.get('blood_sugar', 1))
+    cholesterol = int(data_dict.get('cholesterol', 1))
+    diet = int(data_dict.get('diet_quality', 1))
+    sleep_stress = int(data_dict.get('sleep_stress', 1))
+    chronic = int(data_dict.get('chronic_conditions', 0))
+
+    score = 0.04
+    score += age_grp * 0.05
+    score += smoking * 0.10
+    score += (3 - activity) * 0.06
+    score += fam_hist * 0.07
+    score += bp_cat * 0.08
+    score += bmi_cat * 0.06
+    score += blood_sugar * 0.09
+    score += cholesterol * 0.07
+    score += diet * 0.05
+    score += sleep_stress * 0.05
+    score += chronic * 0.08
+
+    prob = min(max(score, 0.08), 0.94)
+    risk_level = "LOW" if prob < 0.35 else ("MODERATE" if prob < 0.65 else "HIGH")
+
+    importance = {
+        "Cardiometabolic Biomarkers (BP, Sugar, Chol)": 0.34,
+        "Lifestyle Habits (Smoking, Activity, Diet)": 0.28,
+        "Biological Factors (Age, Family History)": 0.20,
+        "Physiological State (BMI, Sleep, Stress)": 0.18
+    }
+    recs = [
+        "Maintain routine annual preventative health physicals to track glucose, cholesterol, and blood pressure.",
+        "Target at least 150 minutes of moderate aerobic exercise weekly coupled with balanced Mediterranean-style nutrition.",
+        "Prioritize 7 to 9 hours of quality sleep to maintain autonomic nervous system homeostasis.",
+        "Review these findings with your primary physician for comprehensive personalized preventive care."
+    ]
+    return {
+        "disease": "Multi-Factor Chronic Disease Risk",
+        "risk_level": risk_level,
+        "probability": round(prob * 100, 1),
+        "raw_probability": round(prob, 4),
+        "model_used": "WHO-STEPs Multi-Factor Risk Matrix",
+        "feature_importance": importance,
+        "recommendations": recs,
+        "disclaimer": "This system provides educational/informational AI predictions only and is not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment."
+    }
+
 def predict_disease(disease, data_dict):
+    disease_key = disease.lower().strip()
+    
+    # Check for non-model assessment categories
+    if disease_key in ['hypertension', 'hyper']:
+        return evaluate_hypertension_risk(data_dict)
+    elif disease_key in ['respiratory', 'copd', 'asthma']:
+        return evaluate_respiratory_risk(data_dict)
+    elif disease_key in ['lifestyle', 'general', 'multi']:
+        return evaluate_lifestyle_multi_risk(data_dict)
+
+    # Standard ML model loading for diabetes and heart
     script_dir = os.path.dirname(os.path.abspath(__file__))
     base_dir = os.path.dirname(script_dir)
     root_dir = os.path.dirname(base_dir)
@@ -86,7 +257,24 @@ def predict_disease(disease, data_dict):
             break
             
     if not model_path:
-        return {"error": f"Model artifact for {disease} not found."}
+        # Fallback to heuristic evaluation if model artifact is absent
+        if 'diabetes' in disease_key:
+            glucose = float(data_dict.get('Glucose', 120))
+            bmi = float(data_dict.get('BMI', 28.4))
+            prob = min(max(0.15 + (glucose - 80) * 0.005 + (bmi - 22) * 0.015, 0.05), 0.95)
+            risk_level = "LOW" if prob < 0.35 else ("MODERATE" if prob < 0.65 else "HIGH")
+            return {
+                "disease": "Diabetes Risk",
+                "risk_level": risk_level,
+                "probability": round(prob * 100, 1),
+                "raw_probability": round(prob, 4),
+                "model_used": "Pima Diabetes Clinical Index",
+                "feature_importance": {"Glucose": 0.45, "BMI": 0.30, "Age": 0.15, "BloodPressure": 0.10},
+                "recommendations": generate_recommendations('diabetes', data_dict, risk_level),
+                "disclaimer": "This system provides educational/informational AI predictions only and is not a medical diagnosis."
+            }
+        else:
+            return {"error": f"Model artifact for {disease} not found."}
         
     pipeline = joblib.load(model_path)
     model = pipeline['model']

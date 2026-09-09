@@ -157,6 +157,47 @@ def render_page(content_html, **kwargs):
             color: #475569 !important;
         }
 
+        [data-theme="light"] .bg-dark {
+            background-color: #f1f5f9 !important;
+        }
+
+        [data-theme="dark"] .bg-light {
+            background-color: #131d33 !important;
+            color: #f8fafc !important;
+        }
+
+        [data-theme="dark"] .form-control,
+        [data-theme="dark"] .form-select {
+            background-color: #0e1626;
+            border-color: #1e293b;
+            color: #f8fafc;
+        }
+
+        [data-theme="dark"] .form-control:focus,
+        [data-theme="dark"] .form-select:focus {
+            background-color: #131d33;
+            color: #ffffff;
+            border-color: #06b6d4;
+            box-shadow: 0 0 0 0.25rem rgba(6, 182, 212, 0.25);
+        }
+
+        [data-theme="dark"] .form-select option {
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+
+        [data-theme="light"] .form-control,
+        [data-theme="light"] .form-select {
+            background-color: #ffffff;
+            border-color: #cbd5e1;
+            color: #0f172a;
+        }
+
+        [data-theme="light"] .form-select option {
+            background-color: #ffffff;
+            color: #0f172a;
+        }
+
         .btn-primary-custom {
             background: var(--accent-secondary);
             color: #fff;
@@ -187,16 +228,19 @@ def render_page(content_html, **kwargs):
 
         .symptom-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
             gap: 12px;
         }
 
-        /* Symptom Tile (Matte -> Glossy) */
+        /* Pure Tile Design (No Checkmarks, Matte to Glossy) */
         .symptom-tile {
             position: relative;
             display: flex;
             align-items: center;
-            padding: 12px 14px;
+            justify-content: center;
+            text-align: center;
+            padding: 14px 16px;
+            min-height: 54px;
             border-radius: 12px;
             cursor: pointer;
             background: var(--tile-bg-matte);
@@ -204,6 +248,17 @@ def render_page(content_html, **kwargs):
             overflow: hidden;
             user-select: none;
             transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            outline: none;
+        }
+
+        .symptom-tile:hover {
+            border-color: rgba(6, 182, 212, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .symptom-tile:focus-visible {
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.4);
+            border-color: var(--accent-primary);
         }
 
         .symptom-tile input[type="checkbox"] {
@@ -227,36 +282,17 @@ def render_page(content_html, **kwargs):
             transition: opacity 0.25s ease;
         }
 
-        .symptom-tile-indicator {
-            width: 22px;
-            height: 22px;
-            border-radius: 6px;
-            border: 1.5px solid var(--card-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            flex-shrink: 0;
-            background: rgba(0, 0, 0, 0.08);
-            transition: all 0.2s ease;
-        }
-
-        .symptom-tile-check {
-            font-size: 13px;
-            opacity: 0;
-            transform: scale(0.5);
-            transition: all 0.2s ease;
-            color: #fff;
-        }
-
         .symptom-tile-name {
-            font-size: 0.88rem;
+            position: relative;
+            z-index: 2;
+            font-size: 0.90rem;
             font-weight: 500;
             color: var(--text-primary);
             line-height: 1.3;
+            transition: color 0.2s ease, font-weight 0.2s ease;
         }
 
-        /* Selected State (Glossy + Elevated) */
+        /* Selected State (Glossy + Elevated + Prominent Border, NO Checkmarks) */
         .symptom-tile.selected {
             background: var(--tile-selected-bg) !important;
             border-color: var(--tile-selected-border) !important;
@@ -268,14 +304,30 @@ def render_page(content_html, **kwargs):
             opacity: 1;
         }
 
-        .symptom-tile.selected .symptom-tile-indicator {
-            background: var(--accent-primary);
-            border-color: var(--accent-primary);
+        .symptom-tile.selected .symptom-tile-name {
+            font-weight: 700;
+            color: var(--accent-primary);
         }
 
-        .symptom-tile.selected .symptom-tile-check {
-            opacity: 1;
-            transform: scale(1);
+        /* Custom Range Slider */
+        .form-range {
+            cursor: pointer;
+        }
+        .form-range::-webkit-slider-thumb {
+            background: var(--accent-primary);
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.6);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .slider-val-badge {
+            display: inline-block;
+            min-width: 48px;
+            text-align: center;
+            font-weight: 700;
+            border-radius: 6px;
+            padding: 2px 8px;
         }
 
         .counter-animating {
@@ -385,7 +437,7 @@ def render_page(content_html, **kwargs):
             });
         }
 
-        // Symptom Tiles Interaction
+        // Accessible Symptom Tiles Interaction (No Checkmarks)
         function initTiles() {
             var tiles = document.querySelectorAll('.symptom-tile');
             var urlParams = new URLSearchParams(window.location.search);
@@ -401,19 +453,51 @@ def render_page(content_html, **kwargs):
 
                 if (cb.checked) {
                     tile.classList.add('selected');
+                    tile.setAttribute('aria-checked', 'true');
+                } else {
+                    tile.classList.remove('selected');
+                    tile.setAttribute('aria-checked', 'false');
                 }
 
-                tile.addEventListener('click', function(e) {
+                function toggleTile(e) {
                     if (e.target !== cb) {
                         e.preventDefault();
                         cb.checked = !cb.checked;
                     }
                     if (cb.checked) {
                         tile.classList.add('selected');
+                        tile.setAttribute('aria-checked', 'true');
                     } else {
                         tile.classList.remove('selected');
+                        tile.setAttribute('aria-checked', 'false');
+                    }
+                }
+
+                tile.addEventListener('click', toggleTile);
+                tile.addEventListener('keydown', function(e) {
+                    if (e.key === ' ' || e.key === 'Enter') {
+                        e.preventDefault();
+                        toggleTile(e);
                     }
                 });
+            });
+        }
+
+        // Interactive Live Sliders with Badges (Touch & Mouse)
+        function initSliders() {
+            var sliders = document.querySelectorAll('.form-range');
+            sliders.forEach(function(slider) {
+                var targetId = 'val_' + (slider.getAttribute('data-target') || slider.name || slider.id);
+                var badge = document.getElementById(targetId);
+                function update() {
+                    if (badge) {
+                        badge.textContent = slider.value;
+                    }
+                }
+                slider.addEventListener('input', update);
+                slider.addEventListener('change', update);
+                slider.addEventListener('touchmove', update);
+                update();
             });
         }
 
@@ -440,6 +524,7 @@ def render_page(content_html, **kwargs):
         document.addEventListener('DOMContentLoaded', function() {
             initTheme();
             initTiles();
+            initSliders();
             var counters = document.querySelectorAll('.animate-counter');
             counters.forEach(function(c) {
                 var tgt = parseFloat(c.getAttribute('data-target'));
@@ -574,9 +659,6 @@ def prediction():
             <label class="symptom-tile {selected_cls}" tabindex="0" role="checkbox" aria-checked="{aria_checked}">
                 <input type="checkbox" name="symptoms" value="{key}" class="symptom-checkbox" {checked}>
                 <div class="symptom-tile-gloss"></div>
-                <div class="symptom-tile-indicator">
-                    <i class="bi bi-check-lg symptom-tile-check"></i>
-                </div>
                 <div class="symptom-tile-content">
                     <span class="symptom-tile-name">{name}</span>
                 </div>
@@ -681,7 +763,7 @@ def assessment():
                 'DiabetesPedigreeFunction': float(request.form.get('DiabetesPedigreeFunction', 0.47)),
                 'Age': float(request.form.get('Age', 42))
             }
-        else:
+        elif disease_type == 'heart':
             input_data = {
                 'age': float(request.form.get('age', 52)),
                 'sex': int(request.form.get('sex', 1)),
@@ -697,6 +779,39 @@ def assessment():
                 'ca': int(request.form.get('ca', 0)),
                 'thal': int(request.form.get('thal', 2))
             }
+        elif disease_type == 'hypertension':
+            input_data = {
+                'systolic': float(request.form.get('systolic', 135)),
+                'diastolic': float(request.form.get('diastolic', 88)),
+                'Age': float(request.form.get('Age', 48)),
+                'BMI': float(request.form.get('BMI', 27.2)),
+                'sodium': float(request.form.get('sodium', 2800)),
+                'smoking': int(request.form.get('smoking', 0)),
+                'stress': int(request.form.get('stress', 1))
+            }
+        elif disease_type == 'respiratory':
+            input_data = {
+                'Age': float(request.form.get('Age', 50)),
+                'pack_years': float(request.form.get('pack_years', 8)),
+                'dyspnea': int(request.form.get('dyspnea', 1)),
+                'cough_weeks': float(request.form.get('cough_weeks', 3)),
+                'env_exposure': int(request.form.get('env_exposure', 1))
+            }
+        else: # lifestyle
+            input_data = {
+                'age_group': int(request.form.get('age_group', 2)),
+                'smoking': int(request.form.get('smoking', 0)),
+                'physical_activity': int(request.form.get('physical_activity', 1)),
+                'family_history': int(request.form.get('family_history', 0)),
+                'bp_category': int(request.form.get('bp_category', 1)),
+                'bmi_category': int(request.form.get('bmi_category', 2)),
+                'blood_sugar': int(request.form.get('blood_sugar', 1)),
+                'cholesterol': int(request.form.get('cholesterol', 1)),
+                'diet_quality': int(request.form.get('diet_quality', 1)),
+                'sleep_stress': int(request.form.get('sleep_stress', 1)),
+                'chronic_conditions': int(request.form.get('chronic_conditions', 0))
+            }
+            
         result = predict_disease(disease_type, input_data)
         result['input_data'] = input_data
         result['disease_type'] = disease_type
@@ -754,7 +869,7 @@ def assessment():
 
     content = f"""
     <div class="row justify-content-center py-4">
-        <div class="col-lg-9">
+        <div class="col-lg-10">
             <div class="card-custom p-4 p-md-5">
                 <div class="d-flex align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
                     <div class="bg-info bg-opacity-10 p-3 rounded-circle text-info me-3">
@@ -772,32 +887,35 @@ def assessment():
                             <i class="bi bi-activity text-info me-2"></i>Select Assessment Target Condition
                         </label>
                         <select class="form-select" id="disease_type" name="disease_type" onchange="toggleFields(this.value)">
-                            <option value="diabetes" {'selected' if disease_type == 'diabetes' else ''}>Diabetes Risk Assessment (Pima Clinical Model)</option>
-                            <option value="heart" {'selected' if disease_type == 'heart' else ''}>Heart Disease Risk Assessment (Cleveland Cardiac Model)</option>
+                            <option value="diabetes" {'selected' if disease_type == 'diabetes' else ''}>1. Diabetes Risk Assessment (Pima Clinical Model)</option>
+                            <option value="heart" {'selected' if disease_type == 'heart' else ''}>2. Heart Disease Risk Assessment (Cleveland Cardiac Model)</option>
+                            <option value="hypertension" {'selected' if disease_type == 'hypertension' else ''}>3. Hypertension Risk Assessment (Hemodynamic Model)</option>
+                            <option value="respiratory" {'selected' if disease_type == 'respiratory' else ''}>4. Chronic Respiratory Risk Assessment (Spirometry & Exposure)</option>
+                            <option value="lifestyle" {'selected' if disease_type == 'lifestyle' else ''}>5. Comprehensive 11-Factor Health & Lifestyle Assessment</option>
                         </select>
                     </div>
 
-                    <!-- Diabetes Fields -->
-                    <div id="diabetes_fields" style="display: {'block' if disease_type == 'diabetes' else 'none'};">
-                        <h5 class="fw-bold text-info mb-3"><i class="bi bi-droplet-fill me-2 text-danger"></i>Diabetes Biomarkers</h5>
+                    <!-- 1. Diabetes Fields -->
+                    <div id="diabetes_fields" class="condition-section" style="display: {'block' if disease_type == 'diabetes' else 'none'};">
+                        <h5 class="fw-bold text-info mb-3"><i class="bi bi-droplet-fill me-2 text-danger"></i>Diabetes Biomarkers (Pima Clinical Model)</h5>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
                                 <label class="form-label text-light small">Glucose Level (mg/dL)</label>
-                                <input type="number" step="0.1" name="Glucose" class="form-control" value="120" required>
+                                <input type="number" step="0.1" name="Glucose" class="form-control" value="120">
                                 <small class="text-muted">Normal fasting: 70-140 mg/dL</small>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label text-light small">Body Mass Index (BMI)</label>
-                                <input type="number" step="0.1" name="BMI" class="form-control" value="28.4" required>
+                                <input type="number" step="0.1" name="BMI" class="form-control" value="28.4">
                                 <small class="text-muted">Normal: 18.5-24.9</small>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label text-light small">Blood Pressure (mm Hg)</label>
-                                <input type="number" step="0.1" name="BloodPressure" class="form-control" value="75" required>
+                                <input type="number" step="0.1" name="BloodPressure" class="form-control" value="75">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label text-light small">Age (Years)</label>
-                                <input type="number" name="Age" class="form-control" value="42" required>
+                                <input type="number" name="Age" class="form-control" value="42">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label text-light small">Pregnancies</label>
@@ -818,9 +936,9 @@ def assessment():
                         </div>
                     </div>
 
-                    <!-- Heart Fields -->
-                    <div id="heart_fields" style="display: {'block' if disease_type == 'heart' else 'none'};">
-                        <h5 class="fw-bold text-info mb-3"><i class="bi bi-heart-pulse-fill me-2 text-danger"></i>Cardiovascular Biomarkers</h5>
+                    <!-- 2. Heart Fields -->
+                    <div id="heart_fields" class="condition-section" style="display: {'block' if disease_type == 'heart' else 'none'};">
+                        <h5 class="fw-bold text-info mb-3"><i class="bi bi-heart-pulse-fill me-2 text-danger"></i>Cardiovascular Biomarkers (Cleveland Cardiac Model)</h5>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
                                 <label class="form-label text-light small">Age (Years)</label>
@@ -857,6 +975,181 @@ def assessment():
                         </div>
                     </div>
 
+                    <!-- 3. Hypertension Fields -->
+                    <div id="hypertension_fields" class="condition-section" style="display: {'block' if disease_type == 'hypertension' else 'none'};">
+                        <h5 class="fw-bold text-info mb-3"><i class="bi bi-speedometer2 me-2 text-warning"></i>Hypertension & Hemodynamic Biomarkers</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">Systolic Blood Pressure (mm Hg)</label>
+                                <input type="number" step="1" name="systolic" class="form-control" value="135">
+                                <small class="text-muted">Target: &lt;120 mm Hg</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">Diastolic Blood Pressure (mm Hg)</label>
+                                <input type="number" step="1" name="diastolic" class="form-control" value="88">
+                                <small class="text-muted">Target: &lt;80 mm Hg</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">Body Mass Index (BMI)</label>
+                                <input type="number" step="0.1" name="BMI" class="form-control" value="27.2">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">Daily Dietary Sodium (mg/day)</label>
+                                <input type="number" step="50" name="sodium" class="form-control" value="2800">
+                                <small class="text-muted">AHA recommendation: &lt;2,300 mg</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">Smoking Status</label>
+                                <select name="smoking" class="form-select">
+                                    <option value="0">Non-Smoker</option>
+                                    <option value="1">Occasional / Former</option>
+                                    <option value="2">Regular Smoker</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">Perceived Stress Level</label>
+                                <select name="stress" class="form-select">
+                                    <option value="0">Low Stress</option>
+                                    <option value="1" selected>Moderate Stress</option>
+                                    <option value="2">High / Chronic Stress</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Respiratory Fields -->
+                    <div id="respiratory_fields" class="condition-section" style="display: {'block' if disease_type == 'respiratory' else 'none'};">
+                        <h5 class="fw-bold text-info mb-3"><i class="bi bi-wind me-2 text-primary"></i>Respiratory & Pulmonary Risk Profile</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">Smoking Pack-Years</label>
+                                <input type="number" step="0.5" name="pack_years" class="form-control" value="8">
+                                <small class="text-muted">Packs per day &times; years smoked</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">Dyspnea / Breathlessness Scale</label>
+                                <select name="dyspnea" class="form-select">
+                                    <option value="0">Grade 0: None except strenuous exercise</option>
+                                    <option value="1" selected>Grade 1: Short of breath when hurrying</option>
+                                    <option value="2">Grade 2: Walks slower than peers due to breathlessness</option>
+                                    <option value="3">Grade 3: Stops for breath after 100 meters</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">Chronic Cough Duration (Weeks)</label>
+                                <input type="number" step="1" name="cough_weeks" class="form-control" value="3">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">Environmental / Dust Exposure</label>
+                                <select name="env_exposure" class="form-select">
+                                    <option value="0">Low / Clean indoor</option>
+                                    <option value="1" selected>Moderate (Urban traffic / occasional dust)</option>
+                                    <option value="2">High (Occupational chemical, fumes, heavy biomass)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Lifestyle Multi-Risk Fields (11 Factors) -->
+                    <div id="lifestyle_fields" class="condition-section" style="display: {'block' if disease_type == 'lifestyle' else 'none'};">
+                        <h5 class="fw-bold text-info mb-3"><i class="bi bi-person-lines-fill me-2 text-success"></i>11-Factor Health &amp; Lifestyle Multi-Risk Assessment</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">1. Age Group</label>
+                                <select name="age_group" class="form-select">
+                                    <option value="0">Under 30 years</option>
+                                    <option value="1">30 - 45 years</option>
+                                    <option value="2" selected>46 - 60 years</option>
+                                    <option value="3">Over 60 years</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">2. Smoking &amp; Tobacco</label>
+                                <select name="smoking" class="form-select">
+                                    <option value="0">Never smoked</option>
+                                    <option value="1">Former smoker</option>
+                                    <option value="2">Current smoker (&lt; 1 pack/day)</option>
+                                    <option value="3">Heavy smoker (&gt; 1 pack/day)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">3. Physical Activity Level</label>
+                                <select name="physical_activity" class="form-select">
+                                    <option value="3">Active (&gt; 150 mins/week)</option>
+                                    <option value="2">Moderate (60 - 150 mins/week)</option>
+                                    <option value="1" selected>Light (&lt; 60 mins/week)</option>
+                                    <option value="0">Sedentary (No regular exercise)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">4. Family History of Chronic Disease</label>
+                                <select name="family_history" class="form-select">
+                                    <option value="0">No known family history</option>
+                                    <option value="1">One first-degree relative</option>
+                                    <option value="2">Multiple first-degree relatives</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">5. Blood Pressure Category</label>
+                                <select name="bp_category" class="form-select">
+                                    <option value="0">Optimal (&lt; 120/80 mm Hg)</option>
+                                    <option value="1" selected>Elevated (120-129 / &lt;80)</option>
+                                    <option value="2">Stage 1 Hypertension (130-139 / 80-89)</option>
+                                    <option value="3">Stage 2 Hypertension (&ge; 140/90)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">6. BMI / Weight Category</label>
+                                <select name="bmi_category" class="form-select">
+                                    <option value="0">Normal weight (18.5 - 24.9)</option>
+                                    <option value="1">Overweight (25.0 - 29.9)</option>
+                                    <option value="2" selected>Obesity Class I (30.0 - 34.9)</option>
+                                    <option value="3">Obesity Class II/III (&ge; 35.0)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">7. Blood Sugar Level</label>
+                                <select name="blood_sugar" class="form-select">
+                                    <option value="0">Normal (&lt; 100 mg/dL fasting)</option>
+                                    <option value="1" selected>Impaired / Prediabetic (100 - 125 mg/dL)</option>
+                                    <option value="2">Elevated / Diabetic range (&ge; 126 mg/dL)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">8. Cholesterol Profile</label>
+                                <select name="cholesterol" class="form-select">
+                                    <option value="0">Desirable (&lt; 200 mg/dL)</option>
+                                    <option value="1" selected>Borderline high (200 - 239 mg/dL)</option>
+                                    <option value="2">High (&ge; 240 mg/dL)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">9. Diet &amp; Nutritional Quality</label>
+                                <select name="diet_quality" class="form-select">
+                                    <option value="0">Healthy / Whole-food balanced</option>
+                                    <option value="1" selected>Average / Mixed diet</option>
+                                    <option value="2">High in processed foods &amp; sugar</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-light small">10. Stress &amp; Sleep Health</label>
+                                <select name="sleep_stress" class="form-select">
+                                    <option value="0">Restful sleep (7-9h) &amp; low stress</option>
+                                    <option value="1" selected>Occasional insomnia / moderate stress</option>
+                                    <option value="2">Chronic short sleep (&lt; 6h) &amp; high stress</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label text-light small">11. Existing Chronic Conditions</label>
+                                <select name="chronic_conditions" class="form-select">
+                                    <option value="0">None diagnosed</option>
+                                    <option value="1">One chronic condition managed</option>
+                                    <option value="2">Multiple chronic conditions</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="disclaimer-banner my-3 small">
                         <i class="bi bi-info-circle-fill me-1"></i> Data will be evaluated using our trained machine learning pipeline. Results are informational and educational only.
                     </div>
@@ -868,8 +1161,13 @@ def assessment():
 
                 <script>
                 function toggleFields(val) {{
-                    document.getElementById('diabetes_fields').style.display = (val === 'diabetes') ? 'block' : 'none';
-                    document.getElementById('heart_fields').style.display = (val === 'heart') ? 'block' : 'none';
+                    var ids = ['diabetes_fields', 'heart_fields', 'hypertension_fields', 'respiratory_fields', 'lifestyle_fields'];
+                    ids.forEach(function(id) {{
+                        var el = document.getElementById(id);
+                        if (el) {{
+                            el.style.display = (id === val + '_fields') ? 'block' : 'none';
+                        }}
+                    }});
                 }}
                 </script>
             </div>
@@ -885,11 +1183,12 @@ def assessment():
 def simulator():
     disease_type = request.form.get('disease_type', 'diabetes') if request.method == 'POST' else request.args.get('type', 'diabetes')
     
+    # 5 Models Support with Fixed Sliders & Exact Case Matching
     if disease_type == 'diabetes':
         glucose = float(request.form.get('Glucose', 145))
         bmi = float(request.form.get('BMI', 31.0))
         bp = float(request.form.get('BloodPressure', 82))
-        age = float(request.form.get('Age', 45))
+        age = float(request.form.get('Age') or request.form.get('age', 45))
         input_data = {
             'Pregnancies': 2,
             'Glucose': glucose,
@@ -900,11 +1199,11 @@ def simulator():
             'DiabetesPedigreeFunction': 0.52,
             'Age': age
         }
-    else:
+    elif disease_type == 'heart':
         chol = float(request.form.get('chol', 250))
         trestbps = float(request.form.get('trestbps', 140))
         thalach = float(request.form.get('thalach', 130))
-        age = float(request.form.get('age', 58))
+        age = float(request.form.get('age') or request.form.get('Age', 58))
         input_data = {
             'age': age,
             'sex': 1,
@@ -920,10 +1219,212 @@ def simulator():
             'ca': 0,
             'thal': 2
         }
+    elif disease_type == 'hypertension':
+        systolic = float(request.form.get('systolic', 145))
+        diastolic = float(request.form.get('diastolic', 92))
+        bmi = float(request.form.get('BMI', 29.5))
+        sodium = float(request.form.get('sodium', 3400))
+        age = float(request.form.get('Age') or request.form.get('age', 52))
+        input_data = {
+            'systolic': systolic,
+            'diastolic': diastolic,
+            'BMI': bmi,
+            'sodium': sodium,
+            'Age': age,
+            'smoking': 0,
+            'stress': 1
+        }
+    elif disease_type == 'respiratory':
+        pack_years = float(request.form.get('pack_years', 18))
+        dyspnea = int(request.form.get('dyspnea', 2))
+        cough_weeks = float(request.form.get('cough_weeks', 4))
+        age = float(request.form.get('Age') or request.form.get('age', 56))
+        input_data = {
+            'Age': age,
+            'pack_years': pack_years,
+            'dyspnea': dyspnea,
+            'cough_weeks': cough_weeks,
+            'env_exposure': 1
+        }
+    else: # lifestyle
+        activity = int(request.form.get('physical_activity', 1))
+        sleep_stress = int(request.form.get('sleep_stress', 2))
+        diet = int(request.form.get('diet_quality', 1))
+        age = float(request.form.get('Age') or request.form.get('age', 46))
+        input_data = {
+            'age_group': 2 if age < 55 else 3,
+            'smoking': 0,
+            'physical_activity': activity,
+            'family_history': 1,
+            'bp_category': 1,
+            'bmi_category': 2,
+            'blood_sugar': 1,
+            'cholesterol': 1,
+            'diet_quality': diet,
+            'sleep_stress': sleep_stress,
+            'chronic_conditions': 0
+        }
 
     sim_result = predict_disease(disease_type, input_data)
     risk_color = "success" if sim_result['risk_level'] == "LOW" else ("warning" if sim_result['risk_level'] == "MODERATE" else "danger")
     
+    # Sliders markup based on selected model
+    if disease_type == 'diabetes':
+        sliders_markup = f"""
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Fasting Glucose (mg/dL)</label>
+                <span id="val_Glucose" class="slider-val-badge bg-info text-dark">{int(glucose)}</span>
+            </div>
+            <input type="range" class="form-range" name="Glucose" id="slider_glucose" data-target="Glucose" min="70" max="250" value="{int(glucose)}">
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Body Mass Index (BMI)</label>
+                <span id="val_BMI" class="slider-val-badge bg-info text-dark">{bmi:.1f}</span>
+            </div>
+            <input type="range" class="form-range" name="BMI" id="slider_bmi" data-target="BMI" min="15" max="50" step="0.5" value="{bmi}">
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Blood Pressure (mm Hg)</label>
+                <span id="val_BloodPressure" class="slider-val-badge bg-info text-dark">{int(bp)}</span>
+            </div>
+            <input type="range" class="form-range" name="BloodPressure" id="slider_bp" data-target="BloodPressure" min="50" max="130" value="{int(bp)}">
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Age (Years)</label>
+                <span id="val_Age" class="slider-val-badge bg-info text-dark">{int(age)}</span>
+            </div>
+            <input type="range" class="form-range" name="Age" id="slider_age" data-target="Age" min="20" max="85" value="{int(age)}">
+        </div>
+        """
+    elif disease_type == 'heart':
+        sliders_markup = f"""
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Serum Cholesterol (mg/dL)</label>
+                <span id="val_chol" class="slider-val-badge bg-info text-dark">{int(chol)}</span>
+            </div>
+            <input type="range" class="form-range" name="chol" id="slider_chol" data-target="chol" min="120" max="400" value="{int(chol)}">
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Resting Blood Pressure (mm Hg)</label>
+                <span id="val_trestbps" class="slider-val-badge bg-info text-dark">{int(trestbps)}</span>
+            </div>
+            <input type="range" class="form-range" name="trestbps" id="slider_trestbps" data-target="trestbps" min="90" max="200" value="{int(trestbps)}">
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Max Heart Rate (bpm)</label>
+                <span id="val_thalach" class="slider-val-badge bg-info text-dark">{int(thalach)}</span>
+            </div>
+            <input type="range" class="form-range" name="thalach" id="slider_thalach" data-target="thalach" min="80" max="210" value="{int(thalach)}">
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Age (Years)</label>
+                <span id="val_Age" class="slider-val-badge bg-info text-dark">{int(age)}</span>
+            </div>
+            <input type="range" class="form-range" name="Age" id="slider_age" data-target="Age" min="20" max="85" value="{int(age)}">
+        </div>
+        """
+    elif disease_type == 'hypertension':
+        sliders_markup = f"""
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Systolic Blood Pressure (mm Hg)</label>
+                <span id="val_systolic" class="slider-val-badge bg-info text-dark">{int(systolic)}</span>
+            </div>
+            <input type="range" class="form-range" name="systolic" id="slider_systolic" data-target="systolic" min="90" max="200" value="{int(systolic)}">
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Diastolic Blood Pressure (mm Hg)</label>
+                <span id="val_diastolic" class="slider-val-badge bg-info text-dark">{int(diastolic)}</span>
+            </div>
+            <input type="range" class="form-range" name="diastolic" id="slider_diastolic" data-target="diastolic" min="60" max="120" value="{int(diastolic)}">
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Daily Sodium Intake (mg)</label>
+                <span id="val_sodium" class="slider-val-badge bg-info text-dark">{int(sodium)}</span>
+            </div>
+            <input type="range" class="form-range" name="sodium" id="slider_sodium" data-target="sodium" min="1000" max="5000" step="50" value="{int(sodium)}">
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Age (Years)</label>
+                <span id="val_Age" class="slider-val-badge bg-info text-dark">{int(age)}</span>
+            </div>
+            <input type="range" class="form-range" name="Age" id="slider_age" data-target="Age" min="20" max="85" value="{int(age)}">
+        </div>
+        """
+    elif disease_type == 'respiratory':
+        sliders_markup = f"""
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Smoking Pack-Years</label>
+                <span id="val_pack_years" class="slider-val-badge bg-info text-dark">{int(pack_years)}</span>
+            </div>
+            <input type="range" class="form-range" name="pack_years" id="slider_pack_years" data-target="pack_years" min="0" max="50" value="{int(pack_years)}">
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Dyspnea Breathlessness Grade (0-3)</label>
+                <span id="val_dyspnea" class="slider-val-badge bg-info text-dark">{int(dyspnea)}</span>
+            </div>
+            <input type="range" class="form-range" name="dyspnea" id="slider_dyspnea" data-target="dyspnea" min="0" max="3" value="{int(dyspnea)}">
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Chronic Cough Duration (Weeks)</label>
+                <span id="val_cough_weeks" class="slider-val-badge bg-info text-dark">{int(cough_weeks)}</span>
+            </div>
+            <input type="range" class="form-range" name="cough_weeks" id="slider_cough_weeks" data-target="cough_weeks" min="0" max="12" value="{int(cough_weeks)}">
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Age (Years)</label>
+                <span id="val_Age" class="slider-val-badge bg-info text-dark">{int(age)}</span>
+            </div>
+            <input type="range" class="form-range" name="Age" id="slider_age" data-target="Age" min="20" max="85" value="{int(age)}">
+        </div>
+        """
+    else: # lifestyle
+        sliders_markup = f"""
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Physical Activity Grade (0=Sedentary, 3=High)</label>
+                <span id="val_physical_activity" class="slider-val-badge bg-info text-dark">{int(activity)}</span>
+            </div>
+            <input type="range" class="form-range" name="physical_activity" id="slider_activity" data-target="physical_activity" min="0" max="3" value="{int(activity)}">
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Sleep &amp; Stress Scale (0=Optimal, 2=Poor)</label>
+                <span id="val_sleep_stress" class="slider-val-badge bg-info text-dark">{int(sleep_stress)}</span>
+            </div>
+            <input type="range" class="form-range" name="sleep_stress" id="slider_sleep_stress" data-target="sleep_stress" min="0" max="2" value="{int(sleep_stress)}">
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Diet Quality (0=Balanced, 2=Unhealthy)</label>
+                <span id="val_diet_quality" class="slider-val-badge bg-info text-dark">{int(diet)}</span>
+            </div>
+            <input type="range" class="form-range" name="diet_quality" id="slider_diet" data-target="diet_quality" min="0" max="2" value="{int(diet)}">
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label text-white small fw-bold mb-0">Age (Years)</label>
+                <span id="val_Age" class="slider-val-badge bg-info text-dark">{int(age)}</span>
+            </div>
+            <input type="range" class="form-range" name="Age" id="slider_age" data-target="Age" min="20" max="85" value="{int(age)}">
+        </div>
+        """
+
     content = f"""
     <div class="row justify-content-center py-4">
         <div class="col-lg-10">
@@ -940,30 +1441,18 @@ def simulator():
 
                 <form method="POST" action="/simulator">
                     <div class="mb-4">
-                        <label class="form-label text-white fw-bold">Select Target Model:</label>
+                        <label class="form-label text-white fw-bold">Select Target Condition Model:</label>
                         <select name="disease_type" class="form-select" onchange="this.form.submit()">
-                            <option value="diabetes" {'selected' if disease_type == 'diabetes' else ''}>Diabetes Risk Simulator</option>
-                            <option value="heart" {'selected' if disease_type == 'heart' else ''}>Heart Disease Risk Simulator</option>
+                            <option value="diabetes" {'selected' if disease_type == 'diabetes' else ''}>1. Diabetes Risk Simulator (Pima Clinical Model)</option>
+                            <option value="heart" {'selected' if disease_type == 'heart' else ''}>2. Heart Disease Risk Simulator (Cleveland Cardiac Model)</option>
+                            <option value="hypertension" {'selected' if disease_type == 'hypertension' else ''}>3. Hypertension Risk Simulator (Hemodynamic Model)</option>
+                            <option value="respiratory" {'selected' if disease_type == 'respiratory' else ''}>4. Chronic Respiratory Risk Simulator</option>
+                            <option value="lifestyle" {'selected' if disease_type == 'lifestyle' else ''}>5. Multi-Factor Lifestyle Risk Simulator</option>
                         </select>
                     </div>
 
                     <div class="row g-4 my-2">
-                        <div class="col-md-6">
-                            <label class="form-label text-white small fw-bold">{'Glucose Level (mg/dL)' if disease_type == 'diabetes' else 'Serum Cholesterol (mg/dL)'}: <span class="text-info fw-bold">{glucose if disease_type == 'diabetes' else chol}</span></label>
-                            <input type="range" class="form-range" name="{'Glucose' if disease_type == 'diabetes' else 'chol'}" min="{'70' if disease_type == 'diabetes' else '120'}" max="{'250' if disease_type == 'diabetes' else '400'}" value="{glucose if disease_type == 'diabetes' else chol}">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label text-white small fw-bold">{'Body Mass Index (BMI)' if disease_type == 'diabetes' else 'Resting Blood Pressure (mm Hg)'}: <span class="text-info fw-bold">{bmi if disease_type == 'diabetes' else trestbps}</span></label>
-                            <input type="range" class="form-range" name="{'BMI' if disease_type == 'diabetes' else 'trestbps'}" min="{'15' if disease_type == 'diabetes' else '90'}" max="{'50' if disease_type == 'diabetes' else '200'}" step="{'0.5' if disease_type == 'diabetes' else '1'}" value="{bmi if disease_type == 'diabetes' else trestbps}">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label text-white small fw-bold">{'Blood Pressure (mm Hg)' if disease_type == 'diabetes' else 'Max Heart Rate (bpm)'}: <span class="text-info fw-bold">{bp if disease_type == 'diabetes' else thalach}</span></label>
-                            <input type="range" class="form-range" name="{'BloodPressure' if disease_type == 'diabetes' else 'thalach'}" min="{'50' if disease_type == 'diabetes' else '80'}" max="{'130' if disease_type == 'diabetes' else '210'}" value="{bp if disease_type == 'diabetes' else thalach}">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label text-white small fw-bold">Age: <span class="text-info fw-bold">{age}</span></label>
-                            <input type="range" class="form-range" name="age" min="20" max="85" value="{age}">
-                        </div>
+                        {sliders_markup}
                     </div>
 
                     <button type="submit" class="btn btn-primary-custom w-100 py-3 mt-3">

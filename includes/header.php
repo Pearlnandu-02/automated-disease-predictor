@@ -80,7 +80,7 @@ $user = get_logged_in_user();
 
                     <!-- Theme Toggle Button -->
                     <li class="nav-item ms-xl-2 my-1 my-xl-0">
-                        <button class="btn btn-sm rounded-pill px-3 py-1 theme-toggle-btn d-inline-flex align-items-center gap-1" title="Toggle Dark/Light Mode">
+                        <button id="themeToggleBtn" class="btn btn-sm rounded-pill px-3 py-1 theme-toggle-btn d-inline-flex align-items-center gap-1" title="Toggle Dark/Light Mode">
                             <i class="bi bi-moon-stars-fill theme-icon-dark text-warning"></i>
                             <i class="bi bi-sun-fill theme-icon-light text-warning d-none"></i>
                             <span class="theme-text small fw-semibold">Dark</span>

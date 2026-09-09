@@ -70,7 +70,7 @@ require_once __DIR__ . '/includes/header.php';
 
         <!-- Explainable AI (XAI) Section -->
         <div class="card card-custom p-4 p-md-5 mb-4 shadow-sm">
-            <h4 class="fw-bold mb-3 text-dark d-flex align-items-center">
+            <h4 class="fw-bold mb-3 d-flex align-items-center">
                 <i class="bi bi-bar-chart-line-fill text-info me-2"></i> Explainable AI (XAI): Model Feature Influence
             </h4>
             <p class="text-muted small mb-4">
@@ -85,9 +85,9 @@ require_once __DIR__ . '/includes/header.php';
                     <h6 class="fw-bold mb-3">Input Parameter Breakdown:</h6>
                     <ul class="list-group list-group-flush small">
                         <?php foreach ($input_data as $key => $val): ?>
-                            <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
+                            <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent border-secondary border-opacity-25">
                                 <span class="fw-semibold text-secondary"><?= sanitize($key) ?></span>
-                                <span class="badge bg-light text-dark border fw-bold"><?= sanitize($val) ?></span>
+                                <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 fw-bold"><?= sanitize($val) ?></span>
                             </li>
                         <?php endforeach; ?>
                     </ul>
@@ -97,7 +97,7 @@ require_once __DIR__ . '/includes/header.php';
 
         <!-- Personalized Preventive Guidance -->
         <div class="card card-custom p-4 p-md-5 mb-4 shadow-sm">
-            <h4 class="fw-bold mb-3 text-dark d-flex align-items-center">
+            <h4 class="fw-bold mb-3 d-flex align-items-center">
                 <i class="bi bi-shield-check text-success me-2"></i> General Personalized Preventive Guidance
             </h4>
             <p class="text-muted small mb-4">
@@ -106,9 +106,9 @@ require_once __DIR__ . '/includes/header.php';
             <div class="row g-3">
                 <?php foreach ($recommendations as $index => $tip): ?>
                     <div class="col-md-6">
-                        <div class="p-3 rounded-3 bg-light border h-100 d-flex align-items-start">
+                        <div class="p-3 rounded-3 bg-secondary bg-opacity-10 border border-secondary border-opacity-25 h-100 d-flex align-items-start">
                             <i class="bi bi-check-circle-fill text-success fs-5 me-3 mt-1"></i>
-                            <span class="small fw-medium text-dark"><?= sanitize($tip) ?></span>
+                            <span class="small fw-medium"><?= sanitize($tip) ?></span>
                         </div>
                     </div>
                 <?php endforeach; ?>

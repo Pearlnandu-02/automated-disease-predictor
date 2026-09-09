@@ -32,10 +32,8 @@ def predict():
             elif not symptoms and isinstance(data_dict, dict) and 'symptoms' in data_dict:
                 symptoms = data_dict['symptoms']
             result = predict_symptoms(symptoms)
-        elif disease in ['diabetes', 'heart']:
-            result = predict_disease(disease, data_dict)
         else:
-            return jsonify({"error": "Invalid disease mode specified. Choose 'symptoms', 'diabetes', or 'heart'."}), 400
+            result = predict_disease(disease, data_dict)
             
         return jsonify(result)
     except Exception as e:

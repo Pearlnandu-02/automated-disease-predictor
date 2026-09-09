@@ -141,7 +141,7 @@ require_once __DIR__ . '/includes/header.php';
                 </span>
             </div>
             <p class="small text-muted mb-4">
-                Click any tile to toggle. Unselected tiles are matte; selected tiles illuminate with a glossy finish and checkmark:
+                Click any tile to toggle. Unselected tiles are matte; selected tiles illuminate with a glossy finish (no conventional checkboxes):
             </p>
 
             <form method="POST" action="prediction.php" class="prediction-form" id="predictionForm">
@@ -159,16 +159,11 @@ require_once __DIR__ . '/includes/header.php';
                                         name="symptoms[]" 
                                         value="<?= sanitize($s['symptom_key']) ?>" 
                                         id="sym_<?= sanitize($s['symptom_key']) ?>" 
-                                        class="symptom-checkbox"
+                                        class="symptom-checkbox visually-hidden"
                                         <?= $is_checked ? 'checked' : '' ?>
                                     >
                                     <div class="symptom-tile-gloss"></div>
-                                    <div class="symptom-tile-indicator">
-                                        <i class="bi bi-check-lg symptom-tile-check"></i>
-                                    </div>
-                                    <div class="symptom-tile-content">
-                                        <span class="symptom-tile-name"><?= sanitize($s['name']) ?></span>
-                                    </div>
+                                    <span class="symptom-tile-name"><?= sanitize($s['name']) ?></span>
                                 </label>
                             <?php endforeach; ?>
                         </div>
