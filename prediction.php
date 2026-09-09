@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/ml_bridge.php';
 
 $pdo = get_db_connection();
@@ -64,9 +64,23 @@ foreach ($symptoms as $sym) {
 
 $prediction_result = null;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['symptoms'])) {
-    $selected_keys = $_POST['symptoms'];
-    if (is_array($selected_keys) && count($selected_keys) > 0) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $raw_symptoms = $_POST['symptoms'] ?? [];
+    if (!is_array($raw_symptoms)) {
+        $raw_symptoms = [$raw_symptoms];
+    }
+    
+    // Sanitize symptom keys (alphanumeric and underscores only)
+    $selected_keys = [];
+    foreach ($raw_symptoms as $sk) {
+        $clean = preg_replace('/[^a-zA-Z0-9_]/', '', trim($sk));
+        if (!empty($clean)) {
+            $selected_keys[] = $clean;
+        }
+    }
+    $selected_keys = array_values(array_unique($selected_keys));
+
+    if (!empty($selected_keys)) {
         $prediction_result = call_symptom_prediction($selected_keys);
         
         // Save to DB history if user logged in
@@ -78,17 +92,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['symptoms'])) {
                 $stmt->execute([
                     $user['id'],
                     $sym_str,
-                    $prediction_result['prediction'],
-                    $prediction_result['probability']
+                    $prediction_result['prediction'] ?? 'Unknown',
+                    $prediction_result['probability'] ?? 0.0
                 ]);
             } catch (Exception $e) {
-                // Ignore DB error for presentation
+                // Silently bypass history logging error
             }
         }
     } else {
-        set_flash_message("Please select at least 1 symptom to run the AI prediction.", "warning");
+        set_flash_message('warning', 'Please select at least 1 symptom from the list below to run the AI prediction analysis.');
     }
 }
+
+require_once __DIR__ . '/includes/header.php';
 ?>
 
 <div class="row py-3">
@@ -147,12 +163,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['symptoms'])) {
         <?php if ($prediction_result): ?>
             <div class="card-custom p-4 text-center border-info mb-4">
                 <span class="badge bg-secondary mb-2">AI MODEL OUTPUT</span>
-                <h5 class="text-muted text-uppercase fw-bold small">Most Likely Condition</h5>
+                <h5 class="text-muted text-uppercase fw-bold small">Possible Condition Based on AI Model</h5>
                 <h2 class="display-6 fw-bold text-white my-2"><?= sanitize($prediction_result['prediction']) ?></h2>
                 
                 <div class="my-3">
                     <span class="display-3 fw-extrabold text-info"><?= $prediction_result['probability'] ?>%</span>
-                    <p class="small text-muted mb-0">Model Confidence Probability</p>
+                    <p class="small text-muted mb-0">AI Model Statistical Confidence</p>
                 </div>
 
                 <div class="p-3 bg-dark bg-opacity-60 rounded border border-secondary border-opacity-25 my-3 text-start small">

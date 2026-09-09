@@ -1,295 +1,431 @@
 # AI Healthcare – Intelligent Disease Prediction & Health Assistance System
 
-An educational, modern, full-stack web application demonstrating how **Artificial Intelligence** and **Machine Learning** can analyze symptoms and health parameters to predict potential medical conditions across **25 diseases**, accompanied by structured disease guidance and large dataset architecture principles.
+An educational, modern, full-stack web application demonstrating how **Artificial Intelligence** and **Machine Learning** can assist users by analyzing symptoms and health parameters to predict potential medical conditions across **25 diseases**, accompanied by comprehensive clinical information, interactive risk simulations, and large dataset architecture principles.
 
 ---
 
 > [!IMPORTANT]
-> **EDUCATIONAL COLLEGE PROJECT DISCLAIMER:**
-> This system provides educational/informational AI predictions only and is **not a medical diagnosis**. Symptoms can have many causes. Users must always consult a qualified healthcare professional for proper diagnosis and treatment.
+> **EDUCATIONAL COLLEGE PROJECT MEDICAL DISCLAIMER:**
+> This system provides educational/informational AI predictions only and is **not a medical diagnosis**. Symptoms can have many causes. Users must always consult a qualified healthcare professional for proper clinical diagnosis and treatment. The system does not prescribe medications or provide dangerous clinical instructions.
 
 ---
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
 2. [Key Features & Modules](#key-features--modules)
-3. [Diseases Database (25 Diseases)](#diseases-database-25-diseases)
-4. [Technology Stack](#technology-stack)
-5. [System Architecture](#system-architecture)
-6. [Large Dataset Handling & Scaling](#large-dataset-handling--scaling)
-7. [Machine Learning & Model Training](#machine-learning--model-training)
-8. [Database Schema](#database-schema)
-9. [Project Folder Structure](#project-folder-structure)
-10. [Local Installation & XAMPP Setup](#local-installation--xampp-setup)
+3. [Disease Information Database (25 Verified Diseases)](#disease-information-database-25-verified-diseases)
+4. [AI / Machine Learning Architecture & Verified Metrics](#ai--machine-learning-architecture--verified-metrics)
+5. [Large Healthcare Dataset Handling](#large-healthcare-dataset-handling)
+6. [Technology Stack](#technology-stack)
+7. [System Architecture](#system-architecture)
+8. [Database Schema & Verification](#database-schema--verification)
+9. [Project Directory Structure](#project-directory-structure)
+10. [Local Installation & Setup Guide (XAMPP)](#local-installation--setup-guide-xampp)
 11. [REST API Documentation](#rest-api-documentation)
-12. [Future Scope & Limitations](#future-scope--limitations)
+12. [Cloud & Serverless Deployment Architecture (Vercel)](#cloud--serverless-deployment-architecture-vercel)
+13. [Security & Data Integrity](#security--data-integrity)
+14. [Limitations & Future Scope](#limitations--future-scope)
 
 ---
 
 ## Project Overview
 
 ### Problem Statement
-In modern healthcare, early awareness of potential medical conditions can encourage timely clinical consultation. However, high-volume healthcare datasets cannot be directly processed within client browsers without risking browser instability.
+In healthcare informatics, early awareness of potential health risks empowers patients to seek timely medical attention. However, complex diagnostic healthcare models and multi-megabyte clinical datasets cannot be loaded directly into client browsers without causing memory exhaustion, lag, and browser crashes. Furthermore, academic projects frequently lack transparent model evaluation metrics and strict separation between diagnostic claims and educational decision-support tools.
 
 ### Objectives
-1. Build a responsive, user-friendly healthcare portal presenting structured information for 25 diseases.
-2. Develop a multi-symptom AI prediction engine using Scikit-Learn classification pipelines.
-3. Demonstrate a scalable, decoupled architecture separating database storage, web application server, and ML prediction microservices.
-4. Provide transparent metrics (Accuracy, Precision, Recall, F1-Score, Confusion Matrix) and medical safety disclaimers.
+1. **Curate a 25-Disease Medical Knowledge Base:** Provide detailed clinical overviews, causes, risk factors, prevention strategies, and red-flag triage guidance.
+2. **Develop Multi-Symptom AI Classifiers:** Implement a machine learning pipeline mapping combinations of 30 distinct clinical symptoms across body systems to potential conditions.
+3. **Provide Parametric Clinical Risk Assessments:** Offer biomarker risk calculators (e.g., Glucose, Blood Pressure, BMI, Cholesterol) for Diabetes and Heart Disease with Explainable AI (XAI) feature importance rankings and What-If risk simulations.
+4. **Demonstrate Decoupled Full-Stack Architecture:** Efficiently separate offline model training, serialized `joblib` pipelines, a lightweight Flask REST microservice, and a secure PHP 8 / MySQL web interface.
+5. **Ensure Honest & Reproducible Metrics:** Strictly document actual evaluation figures without fabricating accuracy.
 
 ---
 
 ## Key Features & Modules
 
-1. **Home Landing Page (`/` / `index.php`):** Modern startup UI with hero banner, statistics cards, disease categories, feature cards, and safety disclaimers.
-2. **About AI Healthcare (`/about` / `about.php`):** Platform mission, educational scope, and AI safety principles.
-3. **AI Disease Prediction (`/prediction` / `prediction.php`):** Multi-symptom selection form evaluating inputs against trained Random Forest / Logistic Regression classification models.
-4. **Diseases Library (`/diseases` / `diseases.php`):** Filterable catalog of 25 diseases with search and category filtering.
-5. **Disease Details (`/disease_detail.php`):** In-depth view covering short description, causes, risk factors, prevention, management, and when to seek care.
-6. **Symptoms Guide (`/symptoms` / `symptoms_guide.php`):** Categorized index of 30 clinical symptoms grouped by body systems.
-7. **Health Awareness & Prevention (`/prevention` / `prevention.php`):** Preventive health tips, screening timelines, and emergency triage red flags.
-8. **Dataset & AI Architecture (`/dataset-info` / `dataset_info.php`):** Detailed documentation on offline dataset preprocessing, batch training, database indexing, and model evaluation metrics.
-9. **About Project (`/project-info` / `project_info.php`):** Academic project overview, tech stack details, and system workflow.
-10. **Contact & Support (`/contact` / `contact.php`):** Feedback submission form and project inquiries.
-11. **User Authentication (`/login`, `/register`, `/logout`):** Secure password hashing (`password_hash`) and session authentication.
-12. **User Dashboard (`/dashboard` / `dashboard.php`):** Member dashboard showing historical predictions, quick links, and account information.
-13. **What-If Risk Simulator (`/simulator` / `simulator.php`):** Interactive biological parameter adjustment tool for prospective risk calculation.
+- **Home Landing Page (`index.php`):** Interactive hero banner, high-impact clinical metrics, disease category explorer, workflow summary, and safety disclaimers.
+- **About AI Healthcare (`about.php`):** Educational mission, ethical considerations, and clinical assistance principles.
+- **AI Disease Prediction (`prediction.php`):** Multi-symptom selection form grouped by body system (Endocrine, Cardiovascular, Respiratory, Neurological, Gastrointestinal, Hepatic, Renal, Hematological, Systemic) with real-time confidence scores and runner-up differentials.
+- **Diseases Library (`diseases.php`):** Searchable, filterable catalog of all 25 diseases with dynamic category filtering.
+- **Disease Detail View (`disease_detail.php?id=X`):** Structured medical dossiers detailing pathology, etiology, risk factors, prevention protocols, management plans, and emergency indicators.
+- **Symptoms Guide (`symptoms_guide.php`):** Indexed reference of 30 validated symptoms mapped to physiological body systems.
+- **Health Awareness & Prevention (`prevention.php`):** Evidence-based lifestyle guidelines, vital screening timelines, and critical emergency red flags.
+- **Dataset & AI Architecture (`dataset_info.php`):** Architectural overview of offline preprocessing, train/test isolation, batch matrix vectorization, and inference microservices.
+- **About Project (`project_info.php`):** Academic seminar documentation, system modularity, and technology specifications.
+- **Contact & Academic Support (`contact.php`):** Input-validated inquiry form with persistent MySQL database logging.
+- **Authentication System (`login.php`, `register.php`, `logout.php`):** Secure user registration with email validation, duplicate prevention, and bcrypt password hashing.
+- **User Dashboard (`dashboard.php`):** Account overview displaying total predictions, previous symptom check logs, and quick action shortcuts.
+- **Clinical Risk Assessment (`assessment.php`):** Quantitative clinical parameter evaluations for Diabetes and Heart Disease.
+- **Risk Assessment Results (`result.php`):** Visual risk dial gauge (Low/Moderate/High), probability percentage, XAI feature importance breakdown, and lifestyle recommendations.
+- **Printable Medical Summary (`report.php`):** Print-ready, clean PDF report generator for clinical assessments.
+- **What-If Risk Simulator (`simulator.php`):** Interactive parameter adjustment simulator recalculating statistical risk in real time.
 
 ---
 
-## Diseases Database (25 Diseases)
+## Disease Information Database (25 Verified Diseases)
 
-1. **Diabetes** (Endocrine)
-2. **Hypertension** (Cardiovascular)
-3. **Heart Disease** (Cardiovascular)
-4. **Asthma** (Respiratory)
-5. **Pneumonia** (Respiratory)
-6. **Tuberculosis** (Respiratory / Infectious)
-7. **COVID-19** (Respiratory / Infectious)
-8. **Influenza** (Respiratory / Infectious)
-9. **Dengue** (Infectious / Tropical)
-10. **Malaria** (Infectious / Tropical)
-11. **Typhoid** (Infectious / Gastrointestinal)
-12. **Migraine** (Neurological)
-13. **Epilepsy** (Neurological)
-14. **Parkinson's Disease** (Neurological)
-15. **Alzheimer's Disease** (Neurological)
-16. **COPD** (Respiratory)
-17. **Bronchitis** (Respiratory)
-18. **Gastritis** (Gastrointestinal)
-19. **Hepatitis** (Gastrointestinal / Hepatic)
-20. **Fatty Liver Disease** (Gastrointestinal / Hepatic)
-21. **Chronic Kidney Disease** (Renal)
-22. **Urinary Tract Infection (UTI)** (Renal / Urological)
-23. **Anemia** (Hematological)
-24. **Hypothyroidism** (Endocrine)
-25. **Hyperthyroidism** (Endocrine)
+All 25 conditions are stored in MySQL (`diseases` table) with structured metadata:
+
+| # | Disease Name | Category | Primary Body System |
+|---|---|---|---|
+| 1 | **Diabetes** | Endocrine | Endocrine / Metabolic |
+| 2 | **Hypertension** | Cardiovascular | Cardiovascular |
+| 3 | **Heart Disease** | Cardiovascular | Cardiovascular |
+| 4 | **Asthma** | Respiratory | Respiratory |
+| 5 | **Pneumonia** | Respiratory | Respiratory |
+| 6 | **Tuberculosis** | Respiratory / Infectious | Pulmonary / Systemic |
+| 7 | **COVID-19** | Respiratory / Infectious | Respiratory / Systemic |
+| 8 | **Influenza** | Respiratory / Infectious | Respiratory / Systemic |
+| 9 | **Dengue** | Infectious / Tropical | Hematological / Systemic |
+| 10 | **Malaria** | Infectious / Tropical | Hematological / Systemic |
+| 11 | **Typhoid** | Infectious / Gastrointestinal | Gastrointestinal / Systemic |
+| 12 | **Migraine** | Neurological | Central Nervous System |
+| 13 | **Epilepsy** | Neurological | Central Nervous System |
+| 14 | **Parkinson's Disease** | Neurological | Central Nervous System |
+| 15 | **Alzheimer's Disease** | Neurological | Central Nervous System |
+| 16 | **COPD** | Respiratory | Pulmonary |
+| 17 | **Bronchitis** | Respiratory | Pulmonary |
+| 18 | **Gastritis** | Gastrointestinal | Upper GI |
+| 19 | **Hepatitis** | Gastrointestinal / Hepatic | Hepatic |
+| 20 | **Fatty Liver Disease** | Gastrointestinal / Hepatic | Hepatic / Metabolic |
+| 21 | **Chronic Kidney Disease** | Renal | Renal |
+| 22 | **Urinary Tract Infection (UTI)** | Renal / Urological | Urological |
+| 23 | **Anemia** | Hematological | Hematological |
+| 24 | **Hypothyroidism** | Endocrine | Endocrine |
+| 25 | **Hyperthyroidism** | Endocrine | Endocrine |
+
+### Symptoms & Mapping Verification
+- **Verified Symptoms:** 30 clinical symptoms cataloged in `symptoms` with exact matching machine learning feature keys.
+- **Verified Relationships:** 96 relational mappings in `disease_symptoms` linking diseases to characteristic clinical manifestations.
+
+---
+
+## AI / Machine Learning Architecture & Verified Metrics
+
+The system strictly distinguishes between:
+1. **Comprehensive Disease Database (25 Conditions):** Informational clinical library.
+2. **AI Machine Learning Models:** Academic statistical decision models trained on validated clinical parameter datasets.
+
+### Model Performance Metrics (Verified via `ml/evaluation_results.json`)
+
+#### 1. Multi-Symptom Condition Classifier (25 Classes)
+- **Dataset:** 30-dimensional binary symptom matrix across all 25 disease classes.
+- **Train/Test Split:** 80% Training / 20% Holdout Testing (Stratified).
+- **Selected Model:** **Logistic Regression**
+- **Verified Accuracy:** **84.10%**
+  - *Random Forest Accuracy:* 83.60%
+  - *Multinomial Naive Bayes Accuracy:* 82.60%
+  - *Decision Tree Accuracy:* 68.70%
+
+#### 2. Diabetes Risk Classifier (Binary Clinical Biomarkers)
+- **Dataset:** Pima Indians-format clinical diagnostic dataset (Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age).
+- **Selected Model:** **Logistic Regression** (StandardScaler pipeline)
+- **Verified Accuracy:** **97.40%**
+- **Precision:** 97.16%
+- **Recall:** 100.00%
+- **F1-Score:** 98.56%
+
+#### 3. Heart Disease Risk Classifier (Binary Clinical Biomarkers)
+- **Dataset:** Cleveland-format cardiovascular clinical parameters (age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal).
+- **Selected Model:** **Logistic Regression** (StandardScaler pipeline)
+- **Verified Accuracy:** **98.36%**
+- **Precision:** 97.44%
+- **Recall:** 100.00%
+- **F1-Score:** 98.70%
+
+> [!NOTE]
+> All models are saved as lightweight binary pipelines in `ml/models/` (`diabetes_model.joblib`, `heart_model.joblib`, `symptom_disease_model.joblib`), each under 15 KB.
+
+---
+
+## Large Healthcare Dataset Handling
+
+To demonstrate efficient handling of large-scale healthcare data without overloading client web browsers:
+1. **Zero Client-Side Dataset Loading:** Raw datasets (CSV/SQL) remain strictly on server storage and are never transmitted to the browser DOM.
+2. **Offline Preprocessing Pipeline:** Cleaning, missing value imputation, outlier clamping, and standardization are executed offline prior to inference.
+3. **Binary Pipeline Serialization:** High-dimensional decision spaces are compiled into compact `joblib` artifacts loaded in microseconds.
+4. **Lightweight REST Microservice:** The browser interacts solely with lightweight JSON request/response payloads (< 2 KB).
+5. **Database Indexing & Prepared Statements:** MySQL indexes (`PRIMARY KEY`, `UNIQUE`, foreign key constraints) ensure $O(1)$ to $O(\log n)$ query latency.
 
 ---
 
 ## Technology Stack
 
-- **Frontend:** HTML5, CSS3, Vanilla CSS Dark Glassmorphism Design System, Bootstrap 5, JavaScript (ES6+), Chart.js
-- **Web Backend:** PHP 8.0+ (PDO with prepared statements), Flask WSGI (Vercel serverless integration)
-- **Database:** MySQL / MariaDB (`ai_healthcare` database)
-- **Machine Learning:** Python 3.12, Scikit-Learn, Pandas, NumPy, Joblib
-- **Local Server:** XAMPP (Apache + MySQL)
+- **Frontend:** HTML5, CSS3, Vanilla CSS Custom Glassmorphism Theme, Bootstrap 5.3, Bootstrap Icons, JavaScript (ES6+).
+- **Backend Application:** PHP 8.0+ (PDO with prepared statements), Object-Oriented Database Singleton.
+- **Machine Learning & REST API:** Python 3.8+, Scikit-Learn, Pandas, NumPy, Joblib, Flask 2.2+.
+- **Database Management:** MySQL / MariaDB (UTF-8 / `utf8mb4`).
+- **Development Environment:** XAMPP for Windows / Linux / macOS.
+- **Cloud Serverless Runtime:** Vercel Python Serverless Functions (`@vercel/python`).
 
 ---
 
 ## System Architecture
 
 ```
-User Browser (HTML5 / Bootstrap 5 / JS)
-       │
-       ▼
-Web Server Layer (PHP 8 PDO / Flask WSGI)
-       │
-       ├──────────────────────────┐
-       ▼                          ▼
-MySQL Database             Python ML Microservice
-(`ai_healthcare` schema)   (`ml/prediction/predict.py`)
-                           (Loads `joblib` pipelines)
+┌─────────────────────────────────────────────────────────┐
+│              Client Browser (HTML5 / Bootstrap 5 / JS)  │
+└────────────────────────────┬────────────────────────────┘
+                             │ HTTP POST (Form / JSON)
+                             ▼
+┌─────────────────────────────────────────────────────────┐
+│            PHP 8 Web Application Server (XAMPP)         │
+│  - Session Authentication & Access Control              │
+│  - Input Validation & XSS Sanitization                  │
+│  - Dynamic ML Bridge (`includes/ml_bridge.php`)         │
+└──────────────┬───────────────────────────┬──────────────┘
+               │ Prepared PDO Queries      │ JSON / cURL (Port 5000)
+               ▼                           ▼
+┌──────────────────────────────┐ ┌───────────────────────────────┐
+│        MySQL Database        │ │    Flask Python ML Service    │
+│       (`ai_healthcare`)      │ │    (`ml/prediction/api.py`)   │
+│ - users                      │ │ - Multi-Symptom Predictor     │
+│ - diseases (25 records)      │ │ - Diabetes Biomarker Model    │
+│ - symptoms (30 records)      │ │ - Heart Disease Model         │
+│ - disease_symptoms (96 rows) │ │ - Explainable AI (XAI)        │
+│ - prediction_history         │ │ - Medical Safety Disclaimers  │
+│ - health_assessments         │ └───────────────────────────────┘
+│ - contact_messages           │
+└──────────────────────────────┘
 ```
 
 ---
 
-## Large Dataset Handling & Scaling
+## Database Schema & Verification
 
-To demonstrate handling large datasets without crashing client browsers:
-- **Offline Data Preprocessing:** Preprocessing, scaling, and feature extraction are completed prior to model training.
-- **Separate Dataset Storage:** Datasets (`ml/datasets/`) remain on server storage and are never sent to the client.
-- **Lightweight Inference:** Only trained `joblib` binary model pipelines are loaded during runtime inference.
-- **Indexed Database Queries:** MySQL tables utilize primary keys, foreign keys, and indexes for high-speed queries.
-- **Server-Side Pagination:** Query pagination (`LIMIT`, `OFFSET`) is utilized for large database listings.
+Database Name: **`ai_healthcare`** (Default collation: `utf8mb4_unicode_ci`)
 
----
+The single definitive database setup script is located at:
+📁 **`database/schema.sql`**
 
-## Machine Learning & Model Training
+### Tables Overview:
+1. **`users`**: User registration records with bcrypt `password` hashes, unique emails, and registration timestamps.
+2. **`diseases`**: 25 comprehensive medical records (`id`, `name`, `category`, `short_description`, `causes`, `risk_factors`, `prevention`, `management`, `when_to_seek_care`).
+3. **`symptoms`**: 30 cataloged symptoms (`id`, `name`, `symptom_key`, `body_system`, `severity`).
+4. **`disease_symptoms`**: 96 relational foreign key mappings linking diseases to symptoms (`disease_id`, `symptom_id`) with composite primary key.
+5. **`prediction_history`**: User symptom prediction logs with foreign key cascade to `users(id)`.
+6. **`health_assessments`**: Quantitative biomarker assessment logs storing JSON input data, risk levels (LOW/MODERATE/HIGH), statistical probabilities, and JSON feature importance.
+7. **`health_articles`**: Curated health education articles.
+8. **`contact_messages`**: Inquiries and feedback submitted via the contact form.
 
-To train models and generate evaluation metrics:
-```bash
-python ml/training/train_models.py
-```
-
-### Models Evaluated:
-- **Multi-Symptom Disease Predictor:** Logistic Regression / Random Forest (Accuracy: **84.10%**)
-- **Diabetes Classifier:** Logistic Regression (Accuracy: **97.40%**)
-- **Heart Disease Classifier:** Logistic Regression (Accuracy: **98.36%**)
-
-Evaluations are exported to `ml/evaluation_results.json`.
+### Clean Re-Import Verification:
+The database script includes `DROP DATABASE IF EXISTS ai_healthcare;` and can be re-run safely from scratch at any time.
 
 ---
 
-## Database Schema
-
-Database Name: `ai_healthcare`
-
-Tables:
-- `users` (id, name, email, password, created_at)
-- `diseases` (id, name, category, short_description, causes, risk_factors, prevention, management, when_to_seek_care)
-- `symptoms` (id, name, symptom_key, body_system, severity)
-- `disease_symptoms` (disease_id, symptom_id)
-- `prediction_history` (id, user_id, symptoms_selected, predicted_disease, confidence, created_at)
-- `health_articles` (id, title, category, summary, content, created_at)
-
----
-
-## Project Folder Structure
+## Project Directory Structure
 
 ```
 automated-disease-predictor/
 ├── api/
-│   └── index.py               # Vercel Flask entrypoint & WSGI handler
+│   └── index.py               # Standalone Flask serverless app for Vercel deployment
 ├── assets/
 │   ├── css/
-│   │   └── style.css          # Custom dark glassmorphism styles
+│   │   └── style.css          # Custom dark glassmorphism styling
 │   └── js/
-│       └── app.js             # Client-side scripts
+│       └── app.js             # Client interactivity scripts
 ├── config/
-│   └── database.php           # Database PDO connection class
+│   └── database.php           # PDO Database connection helper & configuration
 ├── database/
-│   └── schema.sql             # MySQL schema & seed data for 25 diseases
+│   └── schema.sql             # Single complete SQL schema & seed script
 ├── includes/
-│   ├── auth.php               # Authentication helpers
-│   ├── footer.php             # Shared HTML footer
+│   ├── auth.php               # User login/session protection helpers
+│   ├── footer.php             # Unified page footer with disclaimer
 │   ├── functions.php          # Sanitization & flash message utilities
-│   ├── header.php             # Shared HTML header & navbar
-│   └── ml_bridge.php          # PHP to Python ML service bridge
+│   ├── header.php             # Unified navbar & header
+│   └── ml_bridge.php          # Dynamic PHP ↔ Python execution & REST bridge
 ├── ml/
-│   ├── datasets/              # Preprocessed CSV datasets
-│   ├── models/                # Trained joblib model artifacts
+│   ├── datasets/              # CSV clinical datasets
+│   ├── models/                # Serialized joblib pipelines (diabetes, heart, symptoms)
 │   ├── prediction/
-│   │   ├── api.py             # Flask ML API server
-│   │   └── predict.py         # Model inference script
+│   │   ├── api.py             # Flask ML REST inference API server
+│   │   └── predict.py         # Standalone model prediction & XAI script
 │   ├── training/
-│   │   └── train_models.py    # Training & evaluation script
-│   └── evaluation_results.json# Model metrics (Accuracy, F1, CM)
+│   │   └── train_models.py    # Training & evaluation pipeline
+│   └── evaluation_results.json# Verified evaluation metrics (Accuracy, F1, CM)
 ├── about.php                  # About AI Healthcare page
-├── assessment.php             # Clinical parameter assessment page
-├── contact.php                # Contact & Support page
-├── dashboard.php              # User Dashboard page
-├── dataset_info.php           # Dataset & AI Architecture page
-├── disease_detail.php         # Individual Disease Details page
-├── diseases.php               # 25 Diseases Library page
-├── index.php                  # Home landing page
-├── login.php                  # Login page
-├── logout.php                 # Logout script
-├── prediction.php             # AI Symptom Prediction page
-├── prevention.php             # Health Prevention page
-├── profile.php                # User Profile page
-├── project_info.php           # About Project page
-├── register.php               # Registration page
-├── report.php                 # Printable Report page
-├── simulator.php              # What-If Health Simulator page
-├── symptoms_guide.php         # Symptoms Guide page
-├── README.md                  # Complete Project Documentation
-└── vercel.json                # Vercel Serverless deployment config
+├── assessment.php             # Clinical biomarker assessment form
+├── contact.php                # Contact & support submission page
+├── dashboard.php              # Authenticated user dashboard
+├── dataset_info.php           # Dataset handling architecture page
+├── disease_detail.php         # Individual disease dossiers (id/name lookup)
+├── diseases.php               # 25-Disease library catalog
+├── history.php                # User assessment history log
+├── index.php                  # Primary landing page
+├── login.php                  # User authentication login
+├── logout.php                 # Secure session destruction & logout
+├── prediction.php             # Multi-symptom AI disease predictor
+├── prevention.php             # Health awareness & preventive guidance
+├── profile.php                # User account overview
+├── project_info.php           # Academic seminar project overview
+├── register.php               # User account registration
+├── report.php                 # Printable clinical assessment PDF summary
+├── simulator.php              # What-If risk simulator
+├── symptoms_guide.php         # 30-symptom body system guide
+├── requirements.txt           # Python dependencies for ML pipeline & API
+├── vercel.json                # Vercel serverless deployment configuration
+├── .gitignore                 # Excludes caches, temporary files, logs, and .env
+└── README.md                  # Comprehensive verified documentation
 ```
 
 ---
 
-## Local Installation & XAMPP Setup
+## Local Installation & Setup Guide (XAMPP)
 
-### Prerequisites
-- XAMPP (PHP 8.0+, MySQL)
-- Anaconda Python 3.12 or Python 3.8+
+### Prerequisites:
+- **XAMPP** (Apache 2.4+ and MySQL / MariaDB 10.4+)
+- **Python 3.8+** (Anaconda or Standard Python with `pip`)
 
-### Step 1: Clone Repository
+### Step 1: Clone or Place Repository
+Place the repository in your XAMPP web directory:
 ```bash
-git clone https://github.com/Pearlnandu-02/automated-disease-predictor.git
-cd automated-disease-predictor
+git clone https://github.com/Pearlnandu-02/automated-disease-predictor.git C:\xampp\htdocs\automated-disease-predictor
+cd C:\xampp\htdocs\automated-disease-predictor
 ```
 
-### Step 2: Import MySQL Database in XAMPP
-1. Start Apache and MySQL modules in XAMPP Control Panel.
-2. Open phpMyAdmin or MySQL CLI.
-3. Import `database/schema.sql`:
+### Step 2: Database Setup in MySQL / phpMyAdmin
+1. Start **Apache** and **MySQL** in the XAMPP Control Panel.
+2. Open Windows Command Prompt or Terminal:
 ```bash
-C:\xampp\mysql\bin\mysql.exe -u root < database/schema.sql
+C:\xampp\mysql\bin\mysql.exe -u root < database\schema.sql
 ```
+*(Alternatively, open phpMyAdmin at `http://localhost/phpmyadmin`, create database `ai_healthcare`, and import `database/schema.sql`)*.
 
-### Step 3: Install Python Dependencies
+Default seeded demo user:
+- **Email:** `student@college.edu`
+- **Password:** `password123`
+
+### Step 3: Install Python Packages
+Open Command Prompt and install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-### Step 4: Train Machine Learning Models
+### Step 4: Launch the Python ML API Server
+In a terminal, start the prediction microservice:
 ```bash
-python ml/training/train_models.py
+python ml/prediction/api.py
 ```
+*The API will start listening on `http://127.0.0.1:5000`.*
 
-### Step 5: Run Platform
-- **PHP Web Application:** Place project in `C:\xampp\htdocs\automated-disease-predictor` and navigate to `http://localhost/automated-disease-predictor` or start local PHP server:
-  ```bash
-  C:\xampp\php\php.exe -S 127.0.0.1:8000
-  ```
-- **Python ML Flask API (Optional for direct REST calls):**
-  ```bash
-  python ml/prediction/api.py
-  ```
+### Step 5: Run the Web Application
+Open your browser and navigate to:
+```
+http://localhost/automated-disease-predictor
+```
+*(Or if using the PHP built-in server: `php -S 127.0.0.1:8000` and visit `http://127.0.0.1:8000`)*.
 
 ---
 
 ## REST API Documentation
 
-### POST `/api/predict`
-Request Payload:
+The Flask microservice runs on port `5000` and provides the following endpoints:
+
+### 1. Health Check
+- **Endpoint:** `GET /health`
+- **Response:**
+```json
+{
+  "diseases_supported": 25,
+  "service": "AI Healthcare Disease Prediction & Health Assistance API",
+  "status": "healthy"
+}
+```
+
+### 2. Multi-Symptom Prediction
+- **Endpoint:** `POST /predict`
+- **Headers:** `Content-Type: application/json`
+- **Request Body:**
 ```json
 {
   "disease": "symptoms",
   "symptoms": ["high_blood_sugar", "frequent_urination", "fatigue"]
 }
 ```
-
-Response:
+- **Response:**
 ```json
 {
   "prediction": "Diabetes",
-  "probability": 87.8,
+  "probability": 87.3,
   "runner_ups": [
-    { "disease": "Chronic Kidney Disease", "probability": 9.6 }
+    { "disease": "Chronic Kidney Disease", "probability": 5.9 },
+    { "disease": "Asthma", "probability": 1.9 }
   ],
-  "influencing_symptoms": ["High Blood Sugar", "Frequent Urination", "Fatigue"],
+  "influencing_symptoms": ["High Blood Sugar", "Frequent Urination"],
+  "symptoms_analyzed": 3,
   "model_used": "Logistic Regression",
-  "disclaimer": "This system provides educational/informational AI predictions only and is not a medical diagnosis."
+  "disclaimer": "This system provides educational/informational AI predictions only and is not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment."
+}
+```
+
+### 3. Quantitative Risk Assessment (Diabetes / Heart Disease)
+- **Endpoint:** `POST /predict`
+- **Request Body:**
+```json
+{
+  "disease": "diabetes",
+  "data": {
+    "Glucose": 155,
+    "BMI": 32.5,
+    "Age": 48,
+    "BloodPressure": 85
+  }
+}
+```
+- **Response:**
+```json
+{
+  "disease": "Diabetes Risk",
+  "risk_level": "HIGH",
+  "probability": 99.8,
+  "feature_importance": {
+    "Glucose": 0.4156,
+    "Age": 0.2035,
+    "BMI": 0.1620
+  },
+  "recommendations": [
+    "Fasting/random glucose is elevated. Prioritize low-glycemic meals and track daily carbohydrate intake.",
+    "BMI indicates obesity class range. Structured daily physical exercise is recommended."
+  ],
+  "disclaimer": "This system provides educational/informational AI predictions only and is not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment."
 }
 ```
 
 ---
 
-## Future Scope & Limitations
+## Cloud & Serverless Deployment Architecture (Vercel)
 
-### Limitations
-- The system evaluates statistical symptom probabilities and cannot replace diagnostic lab testing.
-- Datasets are synthesized for educational demonstration.
-
-### Future Scope
-- Integration of Electronic Health Record (EHR) standards (FHIR API).
-- Mobile application deployment using React Native.
-- Multilingual disease information support.
+The repository provides dual-mode deployment:
+1. **Local Full-Stack Mode (Primary):** Complete PHP 8 + MySQL + Python architecture run locally via XAMPP.
+2. **Cloud Serverless Mode (Vercel):** Configured via `vercel.json` and `api/index.py`. Because standard Vercel serverless containers execute Python rather than Apache/PHP/MySQL, `api/index.py` is an independent Flask serverless web application and API service providing cloud inference, REST endpoints, and UI views without requiring a local database.
 
 ---
 
-## License & Citation
-Developed for Academic Final-Year College Project Presentation.
+## Security & Data Integrity
+
+1. **Password Protection:** Uses PHP's `password_hash($password, PASSWORD_DEFAULT)` and `password_verify()` with bcrypt hashing. Plain-text passwords are never stored.
+2. **SQL Injection Prevention:** 100% of database interactions use PDO prepared statements with parameterized inputs.
+3. **Cross-Site Scripting (XSS) Prevention:** Output variables are sanitized with `htmlspecialchars($data, ENT_QUOTES, 'UTF-8')`.
+4. **User Data Isolation:** Historical predictions and assessment reports enforce strict session-based tenant isolation (`WHERE user_id = ?`). Users cannot view other users' medical logs.
+5. **No Committed Secrets:** Sensitive passwords, logs, temporary files, and API secrets are ignored via `.gitignore`.
+6. **Graceful Error Handling:** Database exceptions log internally to server logs without exposing raw credentials or SQL syntax to users.
+
+---
+
+## Limitations & Future Scope
+
+### Limitations
+- **Academic Demonstration:** Trained on benchmark clinical datasets; not evaluated for certified medical device usage.
+- **Statistical Approximation:** Predictions reflect probabilistic correlations rather than clinical laboratory tests.
+
+### Future Scope
+- Integration with HL7/FHIR healthcare interoperability standards.
+- Telemedicine doctor consultation appointment booking module.
+- Wearable device biometric data integration (Apple HealthKit / Google Fit).
+- Multilingual disease database localization.
+
+---
+
+## License & Attribution
+Developed as an Academic Engineering College Project in Artificial Intelligence & Healthcare Informatics. All predictions are strictly educational.

@@ -1,37 +1,68 @@
 <?php
 // includes/ml_bridge.php
 
+function get_python_binary() {
+    if (getenv('PYTHON_BIN')) {
+        return getenv('PYTHON_BIN');
+    }
+    // Check standard commands
+    $candidates = ['python', 'python3', 'py'];
+    foreach ($candidates as $cmd) {
+        $check = shell_exec(PHP_OS_FAMILY === 'Windows' ? "where $cmd 2>nul" : "which $cmd 2>/dev/null");
+        if (!empty(trim($check))) {
+            $lines = explode("\n", trim($check));
+            $found = trim($lines[0]);
+            if (file_exists($found)) {
+                return $found;
+            }
+        }
+    }
+    // Check typical Windows paths if where/which failed
+    $windows_paths = [
+        'C:\\xampp\\python\\python.exe',
+        'C:\\Users\\Pearl\\anaconda3\\python.exe',
+        'C:\\Python311\\python.exe',
+        'C:\\Python310\\python.exe',
+        'C:\\Python39\\python.exe'
+    ];
+    foreach ($windows_paths as $p) {
+        if (file_exists($p)) {
+            return $p;
+        }
+    }
+    return 'python';
+}
+
 function call_ml_prediction($disease, $input_data_array) {
+    $api_url = getenv('ML_API_URL') ?: 'http://127.0.0.1:5000/predict';
     $payload = json_encode([
         'disease' => $disease,
         'data' => $input_data_array
     ]);
 
     // Strategy 1: Attempt Flask REST API call
-    $ch = curl_init('http://127.0.0.1:5000/predict');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    if (function_exists('curl_init')) {
+        $ch = curl_init($api_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 4);
 
-    $response = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
+        $response = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
 
-    if ($http_code === 200 && $response) {
-        $result = json_decode($response, true);
-        if ($result && !isset($result['error'])) {
-            return $result;
+        if ($http_code === 200 && $response) {
+            $result = json_decode($response, true);
+            if ($result && !isset($result['error'])) {
+                return $result;
+            }
         }
     }
 
     // Strategy 2: Fallback to direct Python subprocess execution
-    $python_bin = 'C:\\Users\\Pearl\\anaconda3\\python.exe';
-    if (!file_exists($python_bin)) {
-        $python_bin = 'python';
-    }
-
+    $python_bin = get_python_binary();
     $json_escaped = escapeshellarg(json_encode($input_data_array));
     $disease_escaped = escapeshellarg($disease);
     $script_path = escapeshellarg(__DIR__ . '/../ml/prediction/predict.py');
@@ -41,47 +72,58 @@ function call_ml_prediction($disease, $input_data_array) {
 
     if ($output) {
         $result = json_decode($output, true);
-        if ($result) {
+        if ($result && !isset($result['error'])) {
             return $result;
         }
     }
 
     return [
-        'error' => 'Failed to reach ML prediction service. Please ensure Python is configured.'
+        'error' => 'Unable to reach ML prediction service. Please verify Python service is running.'
     ];
 }
 
 function call_symptom_prediction($symptoms_array) {
+    if (empty($symptoms_array)) {
+        return [
+            'prediction' => 'No Symptoms Provided',
+            'probability' => 0.0,
+            'runner_ups' => [],
+            'influencing_symptoms' => [],
+            'symptoms_analyzed' => 0,
+            'model_used' => 'None',
+            'disclaimer' => 'This system provides educational/informational AI predictions only and is not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment.'
+        ];
+    }
+
+    $api_url = getenv('ML_API_URL') ?: 'http://127.0.0.1:5000/predict';
     $payload = json_encode([
         'disease' => 'symptoms',
         'symptoms' => $symptoms_array
     ]);
 
     // Strategy 1: Attempt Flask REST API call
-    $ch = curl_init('http://127.0.0.1:5000/predict');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    if (function_exists('curl_init')) {
+        $ch = curl_init($api_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 4);
 
-    $response = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
+        $response = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
 
-    if ($http_code === 200 && $response) {
-        $result = json_decode($response, true);
-        if ($result && !isset($result['error'])) {
-            return $result;
+        if ($http_code === 200 && $response) {
+            $result = json_decode($response, true);
+            if ($result && !isset($result['error'])) {
+                return $result;
+            }
         }
     }
 
     // Strategy 2: Subprocess fallback
-    $python_bin = 'C:\\Users\\Pearl\\anaconda3\\python.exe';
-    if (!file_exists($python_bin)) {
-        $python_bin = 'python';
-    }
-
+    $python_bin = get_python_binary();
     $json_escaped = escapeshellarg(json_encode($symptoms_array));
     $script_path = escapeshellarg(__DIR__ . '/../ml/prediction/predict.py');
 
@@ -90,7 +132,7 @@ function call_symptom_prediction($symptoms_array) {
 
     if ($output) {
         $result = json_decode($output, true);
-        if ($result) {
+        if ($result && !isset($result['error'])) {
             return $result;
         }
     }

@@ -16,3 +16,6 @@ Thumbs.db
 # Sensitive / Scratch files
 scratch/
 *.log
+.env
+*.tmp
+*.bak

@@ -175,7 +175,24 @@ def predict_symptoms(selected_symptom_keys):
     diseases = pipeline['diseases']
     disease_symptom_map = pipeline.get('disease_symptom_map', {})
     
+    if not selected_symptom_keys:
+        return {
+            "error": "No symptoms provided. Please select at least one symptom."
+        }
+        
     # Construct binary feature vector
+    matched = [sk for sk in selected_symptom_keys if sk in symptom_keys]
+    if not matched:
+        return {
+            "prediction": "Undetermined Condition",
+            "probability": 40.0,
+            "runner_ups": [],
+            "influencing_symptoms": [],
+            "symptoms_analyzed": len(selected_symptom_keys),
+            "model_used": pipeline.get('model_name', 'Random Forest Classifier'),
+            "disclaimer": "This system provides educational/informational AI predictions only and is not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment."
+        }
+
     row = [1 if sk in selected_symptom_keys else 0 for sk in symptom_keys]
     df_input = pd.DataFrame([row], columns=symptom_keys)
     

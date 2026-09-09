@@ -447,6 +447,7 @@ def dashboard():
     """
     return render_page(content)
 
+@app.route('/predict', methods=['POST', 'GET'])
 @app.route('/api/predict', methods=['POST', 'GET'])
 def api_predict():
     if request.method == 'GET':
