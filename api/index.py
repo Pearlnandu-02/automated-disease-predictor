@@ -268,9 +268,11 @@ def render_page(content_html, **kwargs):
     """
     return render_template_string(base_template, user=user, **kwargs)
 
-# ROUTES
+# ROUTES WITH VERCEL API ALIASES
 
 @app.route('/')
+@app.route('/api')
+@app.route('/api/')
 def home():
     content = """
     <div class="hero-banner p-4 p-md-5 my-3 shadow-lg">
@@ -340,13 +342,9 @@ def home():
     """
     return render_page(content)
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form.get('email', 'student@college.edu')
-        session['user'] = {"name": email.split('@')[0].capitalize(), "email": email}
-        return redirect('/dashboard')
-            
+@app.route('/login')
+@app.route('/api/login')
+def login_get():
     content = """
     <div class="row justify-content-center py-5">
         <div class="col-md-5">
@@ -356,7 +354,7 @@ def login():
                     <h3 class="fw-bold text-white">Member Login</h3>
                     <p class="text-muted small">Access Healthcare AI Platform</p>
                 </div>
-                <form method="POST">
+                <form method="POST" action="/login">
                     <div class="mb-3">
                         <label class="form-label fw-bold text-white">Email Address</label>
                         <input type="email" name="email" class="form-control" value="student@college.edu" required>
@@ -373,14 +371,16 @@ def login():
     """
     return render_page(content)
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        name = request.form.get('name', 'User')
-        email = request.form.get('email', 'user@example.com')
-        session['user'] = {"name": name, "email": email}
-        return redirect('/dashboard')
-        
+@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
+def login_post():
+    email = request.form.get('email', 'student@college.edu')
+    session['user'] = {"name": email.split('@')[0].capitalize(), "email": email}
+    return redirect('/dashboard')
+
+@app.route('/register')
+@app.route('/api/register')
+def register_get():
     content = """
     <div class="row justify-content-center py-5">
         <div class="col-md-5">
@@ -389,7 +389,7 @@ def register():
                     <i class="bi bi-person-plus-fill fs-1 text-info"></i>
                     <h3 class="fw-bold text-white">Create Account</h3>
                 </div>
-                <form method="POST">
+                <form method="POST" action="/register">
                     <div class="mb-3">
                         <label class="form-label fw-bold text-white">Full Name</label>
                         <input type="text" name="name" class="form-control" placeholder="John Doe" required>
@@ -410,12 +410,22 @@ def register():
     """
     return render_page(content)
 
+@app.route('/register', methods=['POST'])
+@app.route('/api/register', methods=['POST'])
+def register_post():
+    name = request.form.get('name', 'User')
+    email = request.form.get('email', 'user@example.com')
+    session['user'] = {"name": name, "email": email}
+    return redirect('/dashboard')
+
 @app.route('/logout')
+@app.route('/api/logout')
 def logout():
     session.pop('user', None)
     return redirect('/')
 
 @app.route('/dashboard')
+@app.route('/api/dashboard')
 def dashboard():
     user = session.get('user', {"name": "Guest Academic User", "email": "guest@college.edu"})
     history = session.get('history', [])
@@ -472,6 +482,7 @@ def dashboard():
     return render_page(content)
 
 @app.route('/assessment', methods=['GET', 'POST'])
+@app.route('/api/assessment', methods=['GET', 'POST'])
 def assessment():
     if request.method == 'POST':
         disease = request.form.get('disease_type', 'diabetes')
@@ -531,7 +542,7 @@ def assessment():
                     </div>
                 </div>
 
-                <form method="POST" id="assessForm">
+                <form method="POST" action="/assessment" id="assessForm">
                     <div class="mb-4 bg-dark p-3 rounded-3 border border-secondary border-opacity-25">
                         <label class="form-label fw-bold text-white fs-5 mb-2"><i class="bi bi-virus me-2 text-info"></i>Select Target Condition</label>
                         <select name="disease_type" id="disease_type" class="form-select form-select-lg" onchange="toggleForm()">
@@ -623,6 +634,7 @@ def assessment():
     return render_page(content)
 
 @app.route('/result')
+@app.route('/api/result')
 def result():
     idx = request.args.get('idx', None)
     history = session.get('history', [])
@@ -712,6 +724,7 @@ def result():
     return render_page(content)
 
 @app.route('/simulator', methods=['GET', 'POST'])
+@app.route('/api/simulator', methods=['GET', 'POST'])
 def simulator():
     sim_result = None
     if request.method == 'POST':
@@ -766,7 +779,7 @@ def simulator():
                     </div>
                 </div>
 
-                <form method="POST">
+                <form method="POST" action="/simulator">
                     <input type="hidden" name="disease_type" value="diabetes">
                     <div class="mb-4">
                         <label class="form-label fw-bold d-flex justify-content-between text-white">
@@ -792,6 +805,7 @@ def simulator():
     return render_page(content)
 
 @app.route('/report')
+@app.route('/api/report')
 def report():
     last_res = session.get('last_result', {})
     user = session.get('user', {"name": "Academic Student", "email": "student@college.edu"})
