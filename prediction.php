@@ -63,6 +63,15 @@ foreach ($symptoms as $sym) {
 }
 
 $prediction_result = null;
+$selected_keys = [];
+
+// Check for pre-selection via URL parameter (e.g. from Symptoms Guide)
+if (isset($_GET['symptom']) && !empty($_GET['symptom'])) {
+    $clean_get = preg_replace('/[^a-zA-Z0-9_]/', '', trim($_GET['symptom']));
+    if (!empty($clean_get)) {
+        $selected_keys[] = $clean_get;
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $raw_symptoms = $_POST['symptoms'] ?? [];
@@ -100,9 +109,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     } else {
-        set_flash_message('warning', 'Please select at least 1 symptom from the list below to run the AI prediction analysis.');
+        set_flash_message('warning', 'Please select at least 1 symptom tile below to run the AI model prediction.');
     }
 }
+
+$selected_lookup = array_flip($selected_keys);
 
 require_once __DIR__ . '/includes/header.php';
 ?>
@@ -112,46 +123,88 @@ require_once __DIR__ . '/includes/header.php';
         <span class="badge bg-info text-dark px-3 py-2 rounded-pill fw-bold mb-2">AI SYMPTOM CHECKER</span>
         <h1 class="display-5 fw-extrabold text-white">Intelligent Multi-Symptom Disease Prediction</h1>
         <p class="lead text-muted mx-auto" style="max-width: 750px;">
-            Select your experienced health symptoms below to evaluate potential condition matches using our trained Machine Learning classification pipeline.
+            Click the symptom tiles below to select your present indicators. Our clinical classification model evaluates co-occurrence patterns to estimate potential conditions.
         </p>
     </div>
 </div>
 
 <div class="row g-4">
-    <!-- Form Column -->
+    <!-- Form Column with Matte/Glossy Symptom Tiles -->
     <div class="col-lg-7">
         <div class="card-custom p-4 p-md-5">
-            <h4 class="fw-bold text-white mb-3 d-flex align-items-center">
-                <i class="bi bi-ui-checks text-info me-2"></i> Select Present Symptoms
-            </h4>
-            <p class="small text-muted mb-4">Check all symptoms you are currently experiencing:</p>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold text-white mb-0 d-flex align-items-center">
+                    <i class="bi bi-grid-3x3-gap-fill text-info me-2"></i> Select Present Symptoms
+                </h4>
+                <span class="badge bg-secondary bg-opacity-50 text-muted small" id="selected-count-badge">
+                    Click tiles to select
+                </span>
+            </div>
+            <p class="small text-muted mb-4">
+                Click any tile to toggle. Unselected tiles are matte; selected tiles illuminate with a glossy finish and checkmark:
+            </p>
 
-            <form method="POST" action="prediction.php">
+            <form method="POST" action="prediction.php" class="prediction-form" id="predictionForm">
                 <?php foreach ($grouped_symptoms as $system => $sym_list): ?>
                     <div class="mb-4">
-                        <h6 class="text-info text-uppercase fw-bold small tracking-wider mb-3 pb-1 border-bottom border-secondary border-opacity-25">
-                            <i class="bi bi-activity me-1"></i> <?= sanitize($system) ?> System
+                        <h6 class="text-info text-uppercase fw-bold small tracking-wider mb-3 pb-1 border-bottom border-secondary border-opacity-25 d-flex align-items-center">
+                            <i class="bi bi-activity me-2"></i> <?= sanitize($system) ?> System
                         </h6>
-                        <div class="row g-2">
+                        <div class="symptom-grid">
                             <?php foreach ($sym_list as $s): ?>
-                                <div class="col-md-6">
-                                    <div class="form-check p-2 rounded bg-dark bg-opacity-40 border border-secondary border-opacity-25">
-                                        <input class="form-check-input ms-1" type="checkbox" name="symptoms[]" value="<?= sanitize($s['symptom_key']) ?>" id="sym_<?= sanitize($s['symptom_key']) ?>">
-                                        <label class="form-check-label text-white small ms-2 cursor-pointer" for="sym_<?= sanitize($s['symptom_key']) ?>">
-                                            <?= sanitize($s['name']) ?>
-                                        </label>
+                                <?php $is_checked = isset($selected_lookup[$s['symptom_key']]); ?>
+                                <label class="symptom-tile <?= $is_checked ? 'selected' : '' ?>" tabindex="0" role="checkbox" aria-checked="<?= $is_checked ? 'true' : 'false' ?>" id="tile_<?= sanitize($s['symptom_key']) ?>">
+                                    <input 
+                                        type="checkbox" 
+                                        name="symptoms[]" 
+                                        value="<?= sanitize($s['symptom_key']) ?>" 
+                                        id="sym_<?= sanitize($s['symptom_key']) ?>" 
+                                        class="symptom-checkbox"
+                                        <?= $is_checked ? 'checked' : '' ?>
+                                    >
+                                    <div class="symptom-tile-gloss"></div>
+                                    <div class="symptom-tile-indicator">
+                                        <i class="bi bi-check-lg symptom-tile-check"></i>
                                     </div>
-                                </div>
+                                    <div class="symptom-tile-content">
+                                        <span class="symptom-tile-name"><?= sanitize($s['name']) ?></span>
+                                    </div>
+                                </label>
                             <?php endforeach; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
 
                 <div class="disclaimer-banner my-4">
-                    <i class="bi bi-info-circle-fill me-1"></i> By submitting, your selections will be processed through our ML model. AI predictions are strictly educational.
+                    <i class="bi bi-info-circle-fill me-1 text-info"></i> Predictions are generated using an automated Random Forest classifier trained on clinical co-occurrence patterns. Results are strictly educational.
                 </div>
 
-                <button type="submit" class="btn btn-primary-custom btn-lg w-100 py-3">
+                <!-- Animated Loading State (Multi-step) -->
+                <div id="ai-loading-state" class="ai-loading-container mb-4" style="display: none;">
+                    <div class="ai-spinner"></div>
+                    <h5 class="fw-bold text-white mb-2">Analyzing Symptom Profile...</h5>
+                    <p class="small text-muted mb-3">Evaluating clinical features through the diagnostic classifier</p>
+                    <div class="ai-loading-steps">
+                        <div class="ai-loading-step active" id="loading-step-1">
+                            <span class="ai-step-dot"></span>
+                            <span>Analyzing selected symptoms...</span>
+                        </div>
+                        <div class="ai-loading-step" id="loading-step-2">
+                            <span class="ai-step-dot"></span>
+                            <span>Processing symptom pattern...</span>
+                        </div>
+                        <div class="ai-loading-step" id="loading-step-3">
+                            <span class="ai-step-dot"></span>
+                            <span>Generating model prediction...</span>
+                        </div>
+                        <div class="ai-loading-step" id="loading-step-4">
+                            <span class="ai-step-dot"></span>
+                            <span>Preparing result...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary-custom btn-lg w-100 py-3" id="predictSubmitBtn">
                     <i class="bi bi-cpu-fill me-2"></i> Submit Symptoms & Predict Condition
                 </button>
             </form>
@@ -161,55 +214,80 @@ require_once __DIR__ . '/includes/header.php';
     <!-- Prediction Results Column -->
     <div class="col-lg-5">
         <?php if ($prediction_result): ?>
-            <div class="card-custom p-4 text-center border-info mb-4">
-                <span class="badge bg-secondary mb-2">AI MODEL OUTPUT</span>
-                <h5 class="text-muted text-uppercase fw-bold small">Possible Condition Based on AI Model</h5>
-                <h2 class="display-6 fw-bold text-white my-2"><?= sanitize($prediction_result['prediction']) ?></h2>
-                
-                <div class="my-3">
-                    <span class="display-3 fw-extrabold text-info"><?= $prediction_result['probability'] ?>%</span>
-                    <p class="small text-muted mb-0">AI Model Statistical Confidence</p>
+            <?php if (isset($prediction_result['error'])): ?>
+                <div class="card-custom p-4 text-center border-danger mb-4">
+                    <i class="bi bi-exclamation-triangle-fill text-warning display-4 mb-3"></i>
+                    <h4 class="text-white fw-bold">Service Notice</h4>
+                    <p class="text-muted small mb-0">
+                        <?= sanitize($prediction_result['error']) ?>
+                    </p>
+                </div>
+            <?php else: ?>
+                <div class="card-custom p-4 text-center border-info mb-4">
+                    <span class="badge bg-secondary mb-2 px-3 py-1">AI MODEL OUTPUT</span>
+                    <h5 class="text-muted text-uppercase fw-bold small">Possible condition based on AI model</h5>
+                    <h2 class="display-6 fw-bold text-white my-2"><?= sanitize($prediction_result['prediction']) ?></h2>
+                    
+                    <div class="my-3 py-2 border-top border-bottom border-secondary border-opacity-25">
+                        <span 
+                            class="display-3 fw-extrabold text-info counter-text animate-counter" 
+                            data-target="<?= htmlspecialchars(number_format((float)$prediction_result['probability'], 1, '.', '')) ?>"
+                        >
+                            00.0%
+                        </span>
+                        <p class="small text-muted mb-0 mt-1">Model confidence (statistical output)</p>
+                    </div>
+
+                    <?php if (!empty($prediction_result['influencing_symptoms'])): ?>
+                        <div class="p-3 bg-dark bg-opacity-60 rounded border border-secondary border-opacity-25 my-3 text-start small">
+                            <strong class="text-white d-block mb-1">
+                                <i class="bi bi-bounding-box-circles me-1 text-info"></i> Influencing Indicators:
+                            </strong>
+                            <div class="d-flex flex-wrap gap-1 mt-2">
+                                <?php foreach ($prediction_result['influencing_symptoms'] as $inf): ?>
+                                    <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 px-2 py-1">
+                                        <?= sanitize(ucwords(str_replace('_', ' ', $inf))) ?>
+                                    </span>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($prediction_result['runner_ups'])): ?>
+                        <div class="p-3 bg-dark bg-opacity-40 rounded border border-secondary border-opacity-25 my-3 text-start small">
+                            <strong class="text-white d-block mb-2">
+                                <i class="bi bi-bar-chart me-1 text-warning"></i> Alternative Possibilities Considered:
+                            </strong>
+                            <ul class="list-unstyled mb-0">
+                                <?php foreach ($prediction_result['runner_ups'] as $rup): ?>
+                                    <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10 text-muted">
+                                        <span><?= sanitize($rup['disease']) ?></span>
+                                        <span class="fw-bold text-white"><?= number_format((float)$rup['probability'], 1) ?>%</span>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    <?php endif; ?>
+
+                    <a href="disease_detail.php?name=<?= urlencode($prediction_result['prediction']) ?>" class="btn btn-outline-info rounded-pill px-4 w-100 my-2">
+                        <i class="bi bi-book me-1"></i> Learn More About <?= sanitize($prediction_result['prediction']) ?>
+                    </a>
                 </div>
 
-                <div class="p-3 bg-dark bg-opacity-60 rounded border border-secondary border-opacity-25 my-3 text-start small">
-                    <strong class="text-white d-block mb-1"><i class="bi bi-bounding-box-circles me-1 text-info"></i> Influencing Symptoms:</strong>
-                    <div class="d-flex flex-wrap gap-1 mt-1">
-                        <?php foreach ($prediction_result['influencing_symptoms'] as $inf): ?>
-                            <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25"><?= sanitize($inf) ?></span>
-                        <?php endforeach; ?>
-                    </div>
+                <div class="disclaimer-banner p-4 text-start">
+                    <h6 class="fw-bold mb-2 text-warning"><i class="bi bi-shield-exclamation me-1"></i> Important Medical Disclaimer</h6>
+                    <p class="small mb-0 text-muted">
+                        <?= sanitize($prediction_result['disclaimer'] ?? 'This system provides educational/informational AI predictions only and is not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment.') ?>
+                    </p>
                 </div>
-
-                <?php if (!empty($prediction_result['runner_ups'])): ?>
-                    <div class="p-3 bg-dark bg-opacity-40 rounded border border-secondary border-opacity-25 my-3 text-start small">
-                        <strong class="text-white d-block mb-2"><i class="bi bi-bar-chart me-1 text-warning"></i> Alternative Possibilities:</strong>
-                        <ul class="list-unstyled mb-0">
-                            <?php foreach ($prediction_result['runner_ups'] as $rup): ?>
-                                <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10 text-muted">
-                                    <span><?= sanitize($rup['disease']) ?></span>
-                                    <span class="fw-bold text-white"><?= $rup['probability'] ?>%</span>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </div>
-                <?php endif; ?>
-
-                <a href="disease_detail.php?name=<?= urlencode($prediction_result['prediction']) ?>" class="btn btn-outline-info rounded-pill px-4 w-100 my-2">
-                    <i class="bi bi-book me-1"></i> Learn More About <?= sanitize($prediction_result['prediction']) ?>
-                </a>
-            </div>
-
-            <div class="disclaimer-banner p-4 text-start">
-                <h6 class="fw-bold mb-2"><i class="bi bi-shield-exclamation text-warning me-1"></i> Important Medical Disclaimer</h6>
-                <p class="small mb-0"><?= sanitize($prediction_result['disclaimer']) ?></p>
-            </div>
+            <?php endif; ?>
 
         <?php else: ?>
             <div class="card-custom p-5 text-center h-100 d-flex flex-column justify-content-center align-items-center">
                 <i class="bi bi-activity text-info display-1 mb-3 opacity-50"></i>
-                <h4 class="text-white fw-bold">Awaiting Symptom Submission</h4>
+                <h4 class="text-white fw-bold">Awaiting Symptom Selection</h4>
                 <p class="text-muted small max-w-sm mb-0">
-                    Select your symptoms from the list on the left and click "Submit Symptoms" to launch the prediction analysis.
+                    Click on the symptom tiles on the left to select your active indicators, then click "Submit Symptoms" to evaluate with our AI diagnostic model.
                 </p>
             </div>
         <?php endif; ?>

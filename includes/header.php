@@ -18,15 +18,24 @@ $user = get_logged_in_user();
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Prevent Theme Flash (FOUC) -->
+    <script>
+    (function() {
+        var saved = localStorage.getItem('ai_healthcare_theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = saved ? saved : (prefersDark ? 'dark' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+    })();
+    </script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
     <!-- Navigation Header -->
-    <nav class="navbar navbar-expand-xl navbar-dark navbar-custom sticky-top py-3">
+    <nav class="navbar navbar-expand-xl navbar-custom sticky-top py-3">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center me-4" href="index.php">
+            <a class="navbar-brand d-flex align-items-center me-3" href="index.php">
                 <i class="bi bi-heart-pulse-fill text-info me-2 fs-4"></i>
                 <span class="fs-4 fw-bold">AI Healthcare<span class="text-info">.</span></span>
             </a>
@@ -43,6 +52,12 @@ $user = get_logged_in_user();
                     </li>
                     <li class="nav-item">
                         <a class="nav-link <?= $current_page == 'prediction.php' ? 'active text-info fw-bold' : '' ?>" href="prediction.php">AI Prediction</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= $current_page == 'assessment.php' ? 'active text-info fw-bold' : '' ?>" href="assessment.php">Clinical Risk</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?= $current_page == 'simulator.php' ? 'active text-info fw-bold' : '' ?>" href="simulator.php">Simulator</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link <?= $current_page == 'diseases.php' || $current_page == 'disease_detail.php' ? 'active text-info fw-bold' : '' ?>" href="diseases.php">Diseases Library</a>
@@ -63,11 +78,20 @@ $user = get_logged_in_user();
                         <a class="nav-link <?= $current_page == 'contact.php' ? 'active text-info fw-bold' : '' ?>" href="contact.php">Contact</a>
                     </li>
 
+                    <!-- Theme Toggle Button -->
+                    <li class="nav-item ms-xl-2 my-1 my-xl-0">
+                        <button class="btn btn-sm rounded-pill px-3 py-1 theme-toggle-btn d-inline-flex align-items-center gap-1" title="Toggle Dark/Light Mode">
+                            <i class="bi bi-moon-stars-fill theme-icon-dark text-warning"></i>
+                            <i class="bi bi-sun-fill theme-icon-light text-warning d-none"></i>
+                            <span class="theme-text small fw-semibold">Dark</span>
+                        </button>
+                    </li>
+
                     <?php if (is_logged_in()): ?>
-                        <li class="nav-item">
+                        <li class="nav-item ms-xl-1">
                             <a class="nav-link <?= $current_page == 'dashboard.php' ? 'active text-info fw-bold' : '' ?>" href="dashboard.php">Dashboard</a>
                         </li>
-                        <li class="nav-item ms-xl-2">
+                        <li class="nav-item ms-xl-1">
                             <a class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1 fw-semibold d-inline-flex align-items-center" href="logout.php">
                                 <i class="bi bi-box-arrow-right me-1"></i> Logout (<?= sanitize($user['name']) ?>)
                             </a>

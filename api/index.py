@@ -52,60 +52,113 @@ def render_page(content_html, **kwargs):
     user = session.get('user')
     base_template = """
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Healthcare - Intelligent Disease Prediction & Health Assistance System</title>
+    <!-- Early theme initializer to prevent FOUC -->
+    <script>
+        (function() {
+            var saved = localStorage.getItem('ai_healthcare_theme');
+            var systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            var theme = saved ? saved : (systemDark ? 'dark' : 'dark');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --card-dark: #1e293b;
-            --card-border: #334155;
-            --accent-cyan: #06b6d4;
-            --accent-teal: #0d9488;
-            --text-light: #f8fafc;
-            --text-muted: #94a3b8;
+            --bg-primary: #0a0f1d;
+            --bg-secondary: #0f172a;
+            --card-bg: #131d33;
+            --card-border: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-primary: #06b6d4;
+            --accent-secondary: #0d9488;
+            --tile-bg-matte: #0e1626;
+            --tile-border-matte: #1e293b;
+            --tile-selected-bg: linear-gradient(135deg, rgba(6, 182, 212, 0.18) 0%, rgba(13, 148, 136, 0.28) 100%);
+            --tile-selected-border: #06b6d4;
+            --tile-selected-shadow: 0 8px 24px -4px rgba(6, 182, 212, 0.35);
+            --gloss-reflection: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.03) 50%, rgba(255, 255, 255, 0) 100%);
+            --navbar-bg: rgba(10, 15, 29, 0.92);
+            --footer-bg: #070a14;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f1f5f9;
+            --bg-secondary: #e2e8f0;
+            --card-bg: #ffffff;
+            --card-border: #cbd5e1;
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            --accent-primary: #0284c7;
+            --accent-secondary: #0d9488;
+            --tile-bg-matte: #f8fafc;
+            --tile-border-matte: #cbd5e1;
+            --tile-selected-bg: linear-gradient(135deg, rgba(2, 132, 199, 0.12) 0%, rgba(13, 148, 136, 0.18) 100%);
+            --tile-selected-border: #0284c7;
+            --tile-selected-shadow: 0 8px 24px -4px rgba(2, 132, 199, 0.25);
+            --gloss-reflection: linear-gradient(180deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0) 100%);
+            --navbar-bg: rgba(255, 255, 255, 0.95);
+            --footer-bg: #e2e8f0;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-light);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            transition: background-color 0.25s ease, color 0.25s ease;
         }
 
         .navbar-custom {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            background: var(--navbar-bg);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        [data-theme="light"] .navbar-custom .nav-link {
+            color: #1e293b !important;
+        }
+
+        [data-theme="light"] .navbar-brand {
+            color: #0f172a !important;
         }
 
         .card-custom {
-            background: var(--card-dark);
+            background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transition: background 0.25s ease, border 0.25s ease;
         }
 
-        .hero-banner {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
+        [data-theme="light"] .text-white {
+            color: #0f172a !important;
+        }
+
+        [data-theme="light"] .text-light {
+            color: #1e293b !important;
+        }
+
+        [data-theme="light"] .text-muted {
+            color: #475569 !important;
         }
 
         .btn-primary-custom {
-            background: #0d9488;
+            background: var(--accent-secondary);
             color: #fff;
             font-weight: 600;
             border-radius: 10px;
@@ -120,40 +173,127 @@ def render_page(content_html, **kwargs):
         }
 
         .disclaimer-banner {
-            background: rgba(245, 158, 11, 0.1);
+            background: rgba(245, 158, 11, 0.12);
             border-left: 4px solid #f59e0b;
-            color: #fbbf24;
+            color: #d97706;
             padding: 14px 18px;
             border-radius: 10px;
             font-size: 0.875rem;
         }
 
-        .form-control, .form-select {
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            color: #f8fafc;
-            border-radius: 10px;
-            padding: 10px 14px;
+        [data-theme="dark"] .disclaimer-banner {
+            color: #fbbf24;
         }
 
-        .form-control:focus, .form-select:focus {
-            background-color: #0f172a;
-            border-color: var(--accent-teal);
-            color: #f8fafc;
-            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.25);
+        .symptom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        /* Symptom Tile (Matte -> Glossy) */
+        .symptom-tile {
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 12px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            background: var(--tile-bg-matte);
+            border: 1.5px solid var(--tile-border-matte);
+            overflow: hidden;
+            user-select: none;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .symptom-tile input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+        }
+
+        .symptom-tile-gloss {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 48%;
+            background: var(--gloss-reflection);
+            opacity: 0;
+            pointer-events: none;
+            border-radius: 10px 10px 0 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .symptom-tile-indicator {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            border: 1.5px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+            background: rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+        }
+
+        .symptom-tile-check {
+            font-size: 13px;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s ease;
+            color: #fff;
+        }
+
+        .symptom-tile-name {
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        /* Selected State (Glossy + Elevated) */
+        .symptom-tile.selected {
+            background: var(--tile-selected-bg) !important;
+            border-color: var(--tile-selected-border) !important;
+            box-shadow: var(--tile-selected-shadow);
+            transform: translateY(-2px);
+        }
+
+        .symptom-tile.selected .symptom-tile-gloss {
+            opacity: 1;
+        }
+
+        .symptom-tile.selected .symptom-tile-indicator {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .symptom-tile.selected .symptom-tile-check {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .counter-animating {
+            display: inline-block;
+            transition: transform 0.05s ease;
         }
 
         footer {
             margin-top: auto;
-            background: #090d16;
-            color: #64748b;
+            background: var(--footer-bg);
+            color: var(--text-muted);
             padding: 35px 0 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid var(--card-border);
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-xl navbar-dark navbar-custom sticky-top py-3">
+    <nav class="navbar navbar-expand-xl navbar-custom sticky-top py-3">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center me-4" href="/">
                 <i class="bi bi-heart-pulse-fill text-info me-2 fs-4"></i>
@@ -164,24 +304,32 @@ def render_page(content_html, **kwargs):
             </button>
             <div class="collapse navbar-collapse" id="navMain">
                 <ul class="navbar-nav ms-auto align-items-center gap-1 small fw-medium">
-                    <li class="nav-item"><a class="nav-link text-light" href="/">Home</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="/about">About</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="/prediction">AI Prediction</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="/assessment">Clinical Risk</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="/simulator">Simulator</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="/diseases">Diseases Library</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="/symptoms">Symptoms Guide</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="/prevention">Prevention</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="/dataset-info">Dataset & AI</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="/project-info">About Project</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="/contact">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/prediction">AI Prediction</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/assessment">Clinical Risk</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/simulator">Simulator</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/diseases">Diseases Library</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/symptoms">Symptoms Guide</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/prevention">Prevention</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/dataset-info">Dataset & AI</a></li>
+                    
+                    <!-- Theme Toggle Button -->
+                    <li class="nav-item mx-xl-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 theme-toggle-btn d-flex align-items-center gap-1" id="themeToggleBtn">
+                            <i class="bi bi-moon-stars-fill theme-icon-dark text-info"></i>
+                            <i class="bi bi-sun-fill theme-icon-light text-warning d-none"></i>
+                            <span class="theme-text small fw-semibold">Dark</span>
+                        </button>
+                    </li>
+
                     {% if user %}
-                        <li class="nav-item"><a class="nav-link text-light" href="/dashboard">Dashboard</a></li>
-                        <li class="nav-item ms-xl-2">
+                        <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                        <li class="nav-item ms-xl-1">
                             <a class="btn btn-outline-danger btn-sm rounded-pill px-3" href="/logout">Logout ({{ user.name }})</a>
                         </li>
                     {% else %}
-                        <li class="nav-item ms-xl-2"><a class="btn btn-outline-info btn-sm rounded-pill px-3" href="/login">Login</a></li>
+                        <li class="nav-item ms-xl-1"><a class="btn btn-outline-info btn-sm rounded-pill px-3" href="/login">Login</a></li>
                         <li class="nav-item ms-xl-1"><a class="btn btn-info text-white btn-sm rounded-pill px-3" href="/register">Register</a></li>
                     {% endif %}
                 </ul>
@@ -203,6 +351,104 @@ def render_page(content_html, **kwargs):
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Theme Engine
+        function initTheme() {
+            var btn = document.getElementById('themeToggleBtn');
+            if (!btn) return;
+            var darkIcon = btn.querySelector('.theme-icon-dark');
+            var lightIcon = btn.querySelector('.theme-icon-light');
+            var text = btn.querySelector('.theme-text');
+
+            function syncUI(theme) {
+                if (theme === 'light') {
+                    if (darkIcon) darkIcon.classList.add('d-none');
+                    if (lightIcon) lightIcon.classList.remove('d-none');
+                    if (text) text.textContent = 'Light';
+                } else {
+                    if (darkIcon) darkIcon.classList.remove('d-none');
+                    if (lightIcon) lightIcon.classList.add('d-none');
+                    if (text) text.textContent = 'Dark';
+                }
+            }
+
+            var current = document.documentElement.getAttribute('data-theme') || 'dark';
+            syncUI(current);
+
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                var active = document.documentElement.getAttribute('data-theme') || 'dark';
+                var next = active === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('ai_healthcare_theme', next);
+                syncUI(next);
+            });
+        }
+
+        // Symptom Tiles Interaction
+        function initTiles() {
+            var tiles = document.querySelectorAll('.symptom-tile');
+            var urlParams = new URLSearchParams(window.location.search);
+            var pre = urlParams.get('symptom');
+
+            tiles.forEach(function(tile) {
+                var cb = tile.querySelector('input[type="checkbox"]');
+                if (!cb) return;
+
+                if (pre && cb.value.toLowerCase() === pre.toLowerCase()) {
+                    cb.checked = true;
+                }
+
+                if (cb.checked) {
+                    tile.classList.add('selected');
+                }
+
+                tile.addEventListener('click', function(e) {
+                    if (e.target !== cb) {
+                        e.preventDefault();
+                        cb.checked = !cb.checked;
+                    }
+                    if (cb.checked) {
+                        tile.classList.add('selected');
+                    } else {
+                        tile.classList.remove('selected');
+                    }
+                });
+            });
+        }
+
+        // Upward Digital Counter Animation
+        function animateCounter(el, target, durationMs) {
+            if (!el || isNaN(target)) return;
+            var start = 0.0;
+            var startTime = performance.now();
+            function step(time) {
+                var elapsed = time - startTime;
+                var progress = Math.min(elapsed / durationMs, 1.0);
+                var ease = 1 - Math.pow(1 - progress, 3);
+                var cur = start + (target - start) * ease;
+                el.textContent = cur.toFixed(1) + '%';
+                if (progress < 1.0) {
+                    requestAnimationFrame(step);
+                } else {
+                    el.textContent = target.toFixed(1) + '%';
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            initTiles();
+            var counters = document.querySelectorAll('.animate-counter');
+            counters.forEach(function(c) {
+                var tgt = parseFloat(c.getAttribute('data-target'));
+                if (!isNaN(tgt)) {
+                    animateCounter(c, tgt, 1300);
+                }
+            });
+        });
+    </script>
 </body>
 </html>
     """
@@ -262,44 +508,155 @@ def about():
 @app.route('/api/prediction', methods=['GET', 'POST'])
 def prediction():
     result = None
+    selected_symptoms = []
+    
+    # Preselection via URL query string
+    pre_symptom = request.args.get('symptom', '').strip()
+    if pre_symptom:
+        selected_symptoms.append(pre_symptom)
+        
     if request.method == 'POST':
-        symptoms = request.form.getlist('symptoms')
-        if symptoms:
-            result = predict_symptoms(symptoms)
+        selected_symptoms = request.form.getlist('symptoms')
+        if selected_symptoms:
+            result = predict_symptoms(selected_symptoms)
+
+    symptoms_catalog = [
+        ("General & Systemic", [
+            ("fatigue", "Chronic Lethargy & Fatigue"),
+            ("fever", "Fever (>100.4°F)"),
+            ("chills", "Severe Chills & Rigors"),
+            ("weight_loss", "Unexplained Rapid Weight Loss"),
+            ("sweats", "Drenching Night Sweats"),
+            ("joint_pain", "Severe Joint / Bone Pain")
+        ]),
+        ("Respiratory System", [
+            ("shortness_of_breath", "Shortness of Breath (Dyspnea)"),
+            ("cough_with_sputum", "Persistent Productive Cough"),
+            ("wheezing", "Respiratory Wheezing"),
+            ("hemoptysis", "Hemoptysis (Coughing Blood)")
+        ]),
+        ("Cardiovascular System", [
+            ("chest_pain", "Chest Pain / Tightness"),
+            ("high_blood_pressure", "Hypertension Indicators"),
+            ("palpitations", "Rapid Heart Palpitations")
+        ]),
+        ("Neurological System", [
+            ("headache", "Severe Throbbing Headache"),
+            ("seizures", "Involuntary Seizures"),
+            ("resting_tremor", "Resting Hand / Limb Tremor"),
+            ("memory_loss", "Progressive Memory Decline")
+        ]),
+        ("Endocrine & Metabolic", [
+            ("high_blood_sugar", "High Blood Sugar & Thirst"),
+            ("cold_intolerance", "Cold Intolerance"),
+            ("heat_intolerance", "Heat Intolerance / Sweating")
+        ]),
+        ("Gastrointestinal & Hepatic", [
+            ("heartburn", "Heartburn / Acid Reflux"),
+            ("jaundice", "Jaundice (Yellowing Eyes/Skin)"),
+            ("right_upper_quadrant_pain", "Right Upper Quadrant Pain")
+        ]),
+        ("Renal & Urinary", [
+            ("frequent_urination", "Frequent Urination"),
+            ("dysuria", "Dysuria (Painful Urination)"),
+            ("flank_pain", "Flank / Low Back Pain")
+        ])
+    ]
+
+    tiles_html = ""
+    for category, syms in symptoms_catalog:
+        tiles_html += f'<div class="mb-4"><h6 class="text-info text-uppercase fw-bold small tracking-wider mb-3 pb-1 border-bottom border-secondary border-opacity-25"><i class="bi bi-activity me-1"></i> {category}</h6><div class="symptom-grid">'
+        for key, name in syms:
+            checked = "checked" if key in selected_symptoms else ""
+            selected_cls = "selected" if key in selected_symptoms else ""
+            aria_checked = "true" if key in selected_symptoms else "false"
+            tiles_html += f"""
+            <label class="symptom-tile {selected_cls}" tabindex="0" role="checkbox" aria-checked="{aria_checked}">
+                <input type="checkbox" name="symptoms" value="{key}" class="symptom-checkbox" {checked}>
+                <div class="symptom-tile-gloss"></div>
+                <div class="symptom-tile-indicator">
+                    <i class="bi bi-check-lg symptom-tile-check"></i>
+                </div>
+                <div class="symptom-tile-content">
+                    <span class="symptom-tile-name">{name}</span>
+                </div>
+            </label>
+            """
+        tiles_html += '</div></div>'
 
     res_card = ""
     if result:
+        prob = result.get('probability', 0.0)
+        influencing = "".join([f'<span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 px-2 py-1 me-1">{s}</span>' for s in result.get('influencing_symptoms', [])])
+        runner_ups_html = ""
+        if result.get('runner_ups'):
+            ru_items = "".join([f'<li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10 text-muted"><span>{r.get("disease")}</span><span class="fw-bold text-white">{r.get("probability")}%</span></li>' for r in result.get('runner_ups', [])])
+            runner_ups_html = f'<div class="p-3 bg-dark bg-opacity-40 rounded border border-secondary border-opacity-25 my-3 text-start small"><strong class="text-white d-block mb-2"><i class="bi bi-bar-chart me-1 text-warning"></i> Alternative Possibilities:</strong><ul class="list-unstyled mb-0">{ru_items}</ul></div>'
+
         res_card = f"""
         <div class="card-custom p-4 text-center border-info mt-4">
-            <span class="badge bg-secondary mb-2">AI PREDICTION OUTPUT</span>
-            <h2 class="display-5 fw-bold text-white my-2">{result.get('prediction')}</h2>
-            <h1 class="display-3 fw-extrabold text-info">{result.get('probability')}%</h1>
-            <p class="small text-muted">Model Confidence Score</p>
-            <div class="disclaimer-banner small text-start my-3">{result.get('disclaimer')}</div>
+            <span class="badge bg-secondary mb-2 px-3 py-1">AI MODEL OUTPUT</span>
+            <h5 class="text-muted text-uppercase fw-bold small">Possible condition based on AI model</h5>
+            <h2 class="display-6 fw-bold text-white my-2">{result.get('prediction')}</h2>
+            
+            <div class="my-3 py-2 border-top border-bottom border-secondary border-opacity-25">
+                <span class="display-3 fw-extrabold text-info counter-text animate-counter" data-target="{prob}">00.0%</span>
+                <p class="small text-muted mb-0 mt-1">Model confidence (AI model output)</p>
+            </div>
+
+            <div class="p-3 bg-dark bg-opacity-60 rounded border border-secondary border-opacity-25 my-3 text-start small">
+                <strong class="text-white d-block mb-1"><i class="bi bi-bounding-box-circles me-1 text-info"></i> Influencing Indicators:</strong>
+                <div class="d-flex flex-wrap gap-1 mt-1">{influencing}</div>
+            </div>
+
+            {runner_ups_html}
+
+            <div class="disclaimer-banner small text-start my-3">
+                <h6 class="fw-bold mb-1 text-warning"><i class="bi bi-shield-exclamation me-1"></i> Medical Disclaimer</h6>
+                {result.get('disclaimer')}
+            </div>
         </div>
         """
 
     content = f"""
-    <div class="row justify-content-center py-3">
-        <div class="col-lg-8">
+    <div class="row py-3">
+        <div class="col-lg-12 text-center mb-4">
+            <span class="badge bg-info text-dark px-3 py-2 rounded-pill fw-bold mb-2">AI SYMPTOM CHECKER</span>
+            <h1 class="display-5 fw-extrabold text-white">Intelligent Multi-Symptom Disease Prediction</h1>
+            <p class="lead text-muted mx-auto" style="max-width: 750px;">
+                Select your experienced indicators using our tactile symptom tiles. Unselected tiles are matte; selected tiles become glossy with real-time feedback.
+            </p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
             <div class="card-custom p-4 p-md-5">
-                <h3 class="fw-bold text-white mb-3">AI Symptom Checker</h3>
+                <h4 class="fw-bold text-white mb-3 d-flex align-items-center">
+                    <i class="bi bi-grid-3x3-gap-fill text-info me-2"></i> Select Present Symptoms
+                </h4>
+                <p class="small text-muted mb-4">Click tiles to toggle symptom presence:</p>
                 <form method="POST" action="/prediction">
-                    <div class="mb-3">
-                        <label class="form-label text-white fw-bold">Select Symptoms:</label>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" name="symptoms" value="high_blood_sugar" id="s1"><label class="form-check-label text-light" for="s1">High Blood Sugar / Thirst</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" name="symptoms" value="frequent_urination" id="s2"><label class="form-check-label text-light" for="s2">Frequent Urination</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" name="symptoms" value="high_blood_pressure" id="s3"><label class="form-check-label text-light" for="s3">High Blood Pressure</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" name="symptoms" value="chest_pain" id="s4"><label class="form-check-label text-light" for="s4">Chest Pain / Tightness</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" name="symptoms" value="shortness_of_breath" id="s5"><label class="form-check-label text-light" for="s5">Shortness of Breath</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" name="symptoms" value="cough_with_sputum" id="s6"><label class="form-check-label text-light" for="s6">Persistent Cough with Sputum</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" name="symptoms" value="fever" id="s7"><label class="form-check-label text-light" for="s7">Fever (>100.4°F)</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" name="symptoms" value="fatigue" id="s8"><label class="form-check-label text-light" for="s8">Chronic Lethargy & Fatigue</label></div>
+                    {tiles_html}
+                    <div class="disclaimer-banner my-4">
+                        <i class="bi bi-info-circle-fill me-1 text-info"></i> Predictions are generated using an automated Random Forest classifier. Results are strictly educational.
                     </div>
-                    <button type="submit" class="btn btn-primary-custom w-100 py-3">Submit Symptoms & Predict</button>
+                    <button type="submit" class="btn btn-primary-custom btn-lg w-100 py-3">
+                        <i class="bi bi-cpu-fill me-2"></i> Submit Symptoms & Predict Condition
+                    </button>
                 </form>
             </div>
-            {res_card}
+        </div>
+        <div class="col-lg-5">
+            {res_card if res_card else '''
+            <div class="card-custom p-5 text-center h-100 d-flex flex-column justify-content-center align-items-center">
+                <i class="bi bi-activity text-info display-1 mb-3 opacity-50"></i>
+                <h4 class="text-white fw-bold">Awaiting Symptom Selection</h4>
+                <p class="text-muted small max-w-sm mb-0">
+                    Click on the symptom tiles on the left to select your active indicators, then click "Submit Symptoms" to evaluate with our AI diagnostic model.
+                </p>
+            </div>
+            '''}
         </div>
     </div>
     """
@@ -721,12 +1078,68 @@ def disease_detail(did=1):
 @app.route('/symptoms_guide.php')
 @app.route('/api/symptoms')
 def symptoms_guide():
-    content = """
-    <div class="card-custom p-5 text-center my-4">
-        <h2 class="fw-bold text-white mb-3">Symptoms Guide & Body System Mapping</h2>
-        <p class="text-muted small">Explore indicators organized across Endocrine, Respiratory, Cardiovascular, and Neurological systems.</p>
-        <a href="/prediction" class="btn btn-primary-custom rounded-pill mt-3">Launch AI Symptom Checker</a>
+    symptoms_list = [
+        {"key": "fatigue", "name": "Chronic Lethargy & Fatigue", "cat": "General", "icon": "bi-battery-half", "desc": "Persistent extreme physical exhaustion not resolved by rest.", "cond": "Anemia, Chronic Kidney Disease, Diabetes, Hypothyroidism"},
+        {"key": "fever", "name": "Fever (>100.4°F / 38°C)", "cat": "General", "icon": "bi-thermometer-high", "desc": "Elevated core temperature signaling acute immune response or infection.", "cond": "Pneumonia, COVID-19, Malaria, Typhoid, UTI"},
+        {"key": "chills", "name": "Severe Chills & Rigors", "cat": "General", "icon": "bi-snow", "desc": "Involuntary muscular shivering accompanied by intense cold sensations.", "cond": "Pneumonia, Malaria, Sepsis, Pyelonephritis"},
+        {"key": "weight_loss", "name": "Unexplained Rapid Weight Loss", "cat": "General", "icon": "bi-graph-down-arrow", "desc": "Losing >5% body weight unintentionally without dietary changes.", "cond": "Type 1 Diabetes, Hyperthyroidism, Tuberculosis"},
+        {"key": "shortness_of_breath", "name": "Shortness of Breath (Dyspnea)", "cat": "Respiratory", "icon": "bi-wind", "desc": "Labored respiration, air hunger, or inability to complete a breath.", "cond": "Asthma, COPD, Pneumonia, Heart Failure"},
+        {"key": "cough_with_sputum", "name": "Persistent Productive Cough", "cat": "Respiratory", "icon": "bi-lungs", "desc": "Cough producing phlegm or mucus lasting longer than two weeks.", "cond": "Bacterial Pneumonia, Chronic Bronchitis, Asthma"},
+        {"key": "wheezing", "name": "Respiratory Wheezing", "cat": "Respiratory", "icon": "bi-soundwave", "desc": "Whistling expiratory sound caused by narrowed bronchial passages.", "cond": "Bronchial Asthma, COPD, Allergic Bronchospasm"},
+        {"key": "hemoptysis", "name": "Hemoptysis (Coughing Blood)", "cat": "Respiratory", "icon": "bi-exclamation-octagon", "desc": "Expectoration of blood or blood-tinged sputum from airways.", "cond": "Tuberculosis, Severe Pneumonia, Bronchiectasis"},
+        {"key": "chest_pain", "name": "Chest Pain / Tightness", "cat": "Cardiovascular", "icon": "bi-heart-pulse-fill", "desc": "Retrosternal pressure, squeezing, or discomfort in the chest.", "cond": "Coronary Artery Disease, Myocardial Infarction, Angina"},
+        {"key": "high_blood_pressure", "name": "Hypertension Indicators", "cat": "Cardiovascular", "icon": "bi-speedometer2", "desc": "Sustained arterial pressure >= 130/80 mmHg or acute elevations.", "cond": "Essential Hypertension, Chronic Kidney Disease"},
+        {"key": "palpitations", "name": "Rapid Heart Palpitations", "cat": "Cardiovascular", "icon": "bi-activity", "desc": "Awareness of pounding, fluttering, or rapid irregular heartbeats.", "cond": "Arrhythmias, Hyperthyroidism, Severe Anemia, Anxiety"},
+        {"key": "headache", "name": "Severe Throbbing Headache", "cat": "Neurological", "icon": "bi-headset-vr", "desc": "Intense cranial or temporal throbbing or pressure.", "cond": "Migraine, Severe Hypertension, Tension Cephalea"},
+        {"key": "resting_tremor", "name": "Resting Hand / Limb Tremor", "cat": "Neurological", "icon": "bi-hand-index-thumb", "desc": "Rhythmic oscillatory movement of limbs while relaxed and resting.", "cond": "Parkinson's Disease, Essential Tremor, Hyperthyroidism"},
+        {"key": "seizures", "name": "Involuntary Seizures", "cat": "Neurological", "icon": "bi-lightning-charge", "desc": "Uncontrolled cerebral electrical activity causing convulsions.", "cond": "Epilepsy, Severe Metabolic Disturbance, Stroke"},
+        {"key": "memory_loss", "name": "Progressive Memory Decline", "cat": "Neurological", "icon": "bi-journal-medical", "desc": "Progressive short-term memory impairment and spatial disorientation.", "cond": "Alzheimer's Disease, Vascular Dementia, Vitamin B12 Deficiency"},
+        {"key": "high_blood_sugar", "name": "High Blood Sugar & Polydipsia", "cat": "Endocrine", "icon": "bi-droplet", "desc": "Elevated blood glucose causing extreme thirst and frequent urination.", "cond": "Type 1 & Type 2 Diabetes, Metabolic Syndrome"},
+        {"key": "cold_intolerance", "name": "Cold Intolerance", "cat": "Endocrine", "icon": "bi-thermometer-snow", "desc": "Abnormal extreme sensitivity to cool ambient temperatures.", "cond": "Hypothyroidism (Hashimoto's), Severe Anemia"},
+        {"key": "heat_intolerance", "name": "Heat Intolerance / Sweating", "cat": "Endocrine", "icon": "bi-thermometer-sun", "desc": "Excessive sweating and distress in moderately warm environments.", "cond": "Hyperthyroidism (Graves' Disease), Autonomic Dysfunction"},
+        {"key": "frequent_urination", "name": "Frequent Urination (Polyuria)", "cat": "Renal", "icon": "bi-clock-history", "desc": "Increased voiding frequency throughout the day and night.", "cond": "Diabetes Mellitus, UTI, Chronic Kidney Disease"},
+        {"key": "dysuria", "name": "Dysuria (Painful Urination)", "cat": "Renal", "icon": "bi-shield-exclamation", "desc": "Burning or stinging discomfort in urethra while passing urine.", "cond": "Urinary Tract Infection (UTI), Nephrolithiasis"},
+        {"key": "flank_pain", "name": "Flank / Low Back Pain", "cat": "Renal", "icon": "bi-activity", "desc": "Colicky or dull pain in lateral abdominal wall or lower back.", "cond": "Kidney Stones (Nephrolithiasis), Pyelonephritis"},
+        {"key": "heartburn", "name": "Heartburn & Acid Reflux", "cat": "Digestive", "icon": "bi-fire", "desc": "Retrosternal burning sensation from stomach acid regurgitation.", "cond": "GERD, Gastritis, Peptic Ulcer Disease"},
+        {"key": "jaundice", "name": "Jaundice (Yellowing Eyes/Skin)", "cat": "Digestive", "icon": "bi-eye-fill", "desc": "Yellowish skin and scleral discoloration from elevated bilirubin.", "cond": "Hepatitis (A, B, C), Cirrhosis, Gallstone Obstruction"},
+        {"key": "right_upper_quadrant_pain", "name": "Right Upper Quadrant Pain", "cat": "Digestive", "icon": "bi-bandaid", "desc": "Ache or sharp spasms beneath the right lower ribcage.", "cond": "Cholecystitis, Gallstones, Acute Hepatitis"}
+    ]
+
+    cards_html = ""
+    for s in symptoms_list:
+        cards_html += f"""
+        <div class="col-md-6 col-lg-4">
+            <div class="card-custom p-4 h-100 d-flex flex-column justify-content-between border border-secondary border-opacity-25">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="p-2 bg-info bg-opacity-10 text-info rounded-circle"><i class="bi {s['icon']} fs-4"></i></div>
+                        <span class="badge bg-secondary bg-opacity-40 text-info border border-info border-opacity-25">{s['cat']}</span>
+                    </div>
+                    <h5 class="fw-bold text-white mb-2">{s['name']}</h5>
+                    <p class="small text-muted mb-3">{s['desc']}</p>
+                    <div class="p-2 bg-dark bg-opacity-40 rounded small mb-3">
+                        <strong class="text-white d-block mb-1">Commonly Associated:</strong>
+                        <span class="text-muted">{s['cond']}</span>
+                    </div>
+                </div>
+                <a href="/prediction?symptom={s['key']}" class="btn btn-outline-info btn-sm rounded-pill w-100 mt-2">
+                    <i class="bi bi-cpu me-1"></i> Use this symptom in AI checker
+                </a>
+            </div>
+        </div>
+        """
+
+    content = f"""
+    <div class="row py-3 text-center">
+        <div class="col-12 mb-4">
+            <span class="badge bg-info text-dark px-3 py-2 rounded-pill fw-bold mb-2">CLINICAL DIRECTORY</span>
+            <h1 class="display-5 fw-extrabold text-white">Interactive Symptoms Guide & Clinical Index</h1>
+            <p class="lead text-muted mx-auto" style="max-width: 780px;">
+                Explore our clinically organized index of symptoms aligned directly with our machine learning classification model.
+            </p>
+        </div>
     </div>
+    <div class="row g-4">{cards_html}</div>
     """
     return render_page(content)
 
@@ -734,10 +1147,74 @@ def symptoms_guide():
 @app.route('/prevention.php')
 @app.route('/api/prevention')
 def prevention():
-    content = """
-    <div class="card-custom p-5 my-4">
-        <h2 class="fw-bold text-white mb-3">Health Awareness & Disease Prevention</h2>
-        <p class="text-muted small mb-4">Evidence-based lifestyle strategies, physical activity standards, and screening timelines.</p>
+    lifestyle_cards = [
+        ("bi-egg-fried", "Nutritional Balance", "Diet & Fuel", "Prioritize whole grains, colorful vegetables, lean proteins, and unsaturated fats while reducing sodium to <2,300 mg/day."),
+        ("bi-lightning-charge-fill", "Physical Activity", "Movement", "Target at least 150 minutes of moderate aerobic exercise or 75 minutes of vigorous activity weekly with strength training."),
+        ("bi-moon-stars-fill", "Restorative Sleep", "Recovery", "Aim for 7 to 9 hours of uninterrupted nocturnal sleep in a cool, dark room. Maintain regular circadian rhythms."),
+        ("bi-droplet-fill", "Optimal Hydration", "Vital Fluids", "Drink 2 to 3 liters of fresh water daily to support kidney filtration, blood pressure homeostasis, and joint lubrication."),
+        ("bi-heart-half", "Stress Management", "Nervous System", "Practice diaphragmatic breathing, mindfulness, and regular outdoor recreation to reduce chronic sympathetic cortisol elevation."),
+        ("bi-shield-shaded", "Hygiene & Sanitation", "Infection Control", "Wash hands for at least 20 seconds with soap and water before meals and after transit to block microbial transmission."),
+        ("bi-capsule", "Vaccination Awareness", "Immunization", "Keep routine vaccines current, including annual influenza boosters, COVID-19 immunizations, and tetanus toxoid boosters."),
+        ("bi-clipboard2-pulse", "Regular Screenings", "Proactive Care", "Schedule annual health checkups to monitor fasting blood glucose, lipid panels, and resting blood pressure.")
+    ]
+
+    lifestyle_html = "".join([f"""
+    <div class="col-md-6 col-lg-3">
+        <div class="card-custom p-4 h-100 border border-secondary border-opacity-25">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <i class="bi {icon} text-info fs-3"></i>
+                <span class="badge bg-secondary bg-opacity-40 text-info">{badge}</span>
+            </div>
+            <h5 class="fw-bold text-white mb-2">{title}</h5>
+            <p class="small text-muted mb-0">{tip}</p>
+        </div>
+    </div>
+    """ for icon, title, badge, tip in lifestyle_cards])
+
+    content = f"""
+    <div class="row py-3 text-center">
+        <div class="col-12 mb-4">
+            <span class="badge bg-info text-dark px-3 py-2 rounded-pill fw-bold mb-2">PREVENTATIVE HEALTH</span>
+            <h1 class="display-5 fw-extrabold text-white">Health Awareness & Disease Prevention</h1>
+            <p class="lead text-muted mx-auto" style="max-width: 780px;">
+                Evidence-based preventative practices, lifestyle foundations, and organ-specific risk reduction strategies.
+            </p>
+        </div>
+    </div>
+
+    <h3 class="fw-bold text-white mb-4"><i class="bi bi-compass text-info me-2"></i> Foundations of Healthy Living</h3>
+    <div class="row g-4 mb-5">{lifestyle_html}</div>
+
+    <!-- Emergency Triage Guidance -->
+    <div class="card-custom p-4 p-md-5 my-4 border-danger" style="border-width: 2px;">
+        <h4 class="fw-bold text-danger mb-3 d-flex align-items-center">
+            <i class="bi bi-exclamation-octagon-fill me-2 fs-3"></i> Red-Flag Warning Signs: When to Seek Immediate Emergency Medical Care
+        </h4>
+        <div class="row g-3 text-muted small">
+            <div class="col-md-3">
+                <div class="p-3 bg-dark bg-opacity-50 rounded border border-danger border-opacity-25 h-100">
+                    <strong class="text-danger d-block mb-1">Cardiac Symptoms:</strong> Crushing chest pressure, pain radiating to left arm or jaw, sudden cold sweat.
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 bg-dark bg-opacity-50 rounded border border-danger border-opacity-25 h-100">
+                    <strong class="text-danger d-block mb-1">Respiratory Distress:</strong> Inability to speak full sentences, severe shortness of breath, cyanosis (blue lips/fingertips).
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 bg-dark bg-opacity-50 rounded border border-danger border-opacity-25 h-100">
+                    <strong class="text-danger d-block mb-1">Neurological Emergencies:</strong> Sudden facial drooping, arm weakness, slurred speech (FAST stroke signs) or seizure > 5 mins.
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 bg-dark bg-opacity-50 rounded border border-danger border-opacity-25 h-100">
+                    <strong class="text-danger d-block mb-1">Systemic Sepsis:</strong> High fever > 103°F with confusion, drenching rigors, and rapid heart rate.
+                </div>
+            </div>
+        </div>
+        <div class="p-3 bg-danger bg-opacity-10 border border-danger border-opacity-25 rounded mt-3 text-center">
+            <span class="text-danger fw-bold small"><i class="bi bi-telephone-fill me-1"></i> If you experience severe emergency signs, call 911 / 112 or visit the nearest emergency room immediately.</span>
+        </div>
     </div>
     """
     return render_page(content)
