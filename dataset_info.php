@@ -19,6 +19,65 @@ if (file_exists($eval_path)) {
 </div>
 
 <!-- Architecture Design Principles -->
+<div class="card-custom p-4 p-md-5 mb-4">
+    <h3 class="fw-bold mb-4 d-flex align-items-center">
+        <i class="bi bi-database-check text-info me-2"></i> Verified Training Dataset Characteristics
+    </h3>
+
+    <?php 
+    $meta = $eval_results['model_metadata'] ?? [];
+    $num_records = $meta['records_count'] ?? 7800;
+    $num_classes = $meta['supported_classes'] ?? 65;
+    $num_features = $meta['supported_features'] ?? 58;
+    $dataset_type = $meta['dataset_type'] ?? 'Synthetic educational dataset (controlled clinical presentation synthesis)';
+    ?>
+
+    <div class="row g-3 text-center mb-4">
+        <div class="col-md-3 col-6">
+            <div class="p-3 bg-card-subtle rounded border">
+                <h2 class="fw-extrabold text-info mb-0"><?= number_format($num_records) ?></h2>
+                <small class="text-muted">Total Patient Records</small>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="p-3 bg-card-subtle rounded border">
+                <h2 class="fw-extrabold text-success mb-0"><?= $num_classes ?></h2>
+                <small class="text-muted">Condition Classes</small>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="p-3 bg-card-subtle rounded border">
+                <h2 class="fw-extrabold text-warning mb-0"><?= $num_features ?></h2>
+                <small class="text-muted">Clinical Symptoms / Features</small>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="p-3 bg-card-subtle rounded border">
+                <h2 class="fw-extrabold text-primary-theme mb-0">80 / 20</h2>
+                <small class="text-muted">Train / Test Stratification</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="p-3 bg-card-subtle rounded border mb-4 small">
+        <div class="d-flex align-items-center mb-2">
+            <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 me-2">DATASET NATURE</span>
+            <strong class="text-primary-theme"><?= sanitize($dataset_type) ?></strong>
+        </div>
+        <p class="text-muted mb-0">
+            <strong>Methodology & Reproducibility:</strong> Generated deterministically using random seed 42 with 120 stratified records per class. Primary symptoms are modeled with 80% conditional probability, and realistic background noise symptoms are introduced at 4% to simulate clinical comorbidity without artificial overfitting.
+        </p>
+    </div>
+
+    <div class="alert alert-warning border border-warning border-opacity-25 rounded-3 mb-0 small">
+        <strong class="text-warning d-block mb-1"><i class="bi bi-exclamation-octagon-fill me-1"></i> Scientific & Clinical Limitations:</strong>
+        <p class="mb-0 text-muted">
+            This machine learning model provides probabilistic educational triage assistance and does not replace professional clinical diagnosis. Medical conditions such as deep vein thrombosis, endocrine neoplasms, or atypical infections require objective laboratory blood tests, histopathology, medical imaging (MRI/CT), and physical examinations that cannot be captured by symptom checklists alone.
+        </p>
+    </div>
+</div>
+
+<!-- Architecture Design Principles -->
 <div class="card-custom p-4 p-md-5 mb-5">
     <h3 class="fw-bold mb-4 d-flex align-items-center">
         <i class="bi bi-hdd-network-fill text-info me-2"></i> Scalable Large Healthcare Data Architecture

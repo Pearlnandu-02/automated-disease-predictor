@@ -362,26 +362,45 @@ def predict_symptoms(selected_symptom_keys):
     symptom_keys = pipeline['symptom_keys']
     diseases = pipeline['diseases']
     disease_symptom_map = pipeline.get('disease_symptom_map', {})
+    model_name = pipeline.get('model_name', 'Random Forest')
+    model_version = pipeline.get('model_version', 'Multi-Disease Prediction Model v2')
+    supported_classes = len(diseases)
     
     if not selected_symptom_keys:
         return {
-            "error": "No symptoms provided. Please select at least one symptom."
-        }
-        
-    # Construct binary feature vector
-    matched = [sk for sk in selected_symptom_keys if sk in symptom_keys]
-    if not matched:
-        return {
-            "prediction": "Undetermined Condition",
-            "probability": 40.0,
+            "status": "insufficient_information",
+            "prediction": "Insufficient Information",
+            "probability": 0.0,
             "runner_ups": [],
             "influencing_symptoms": [],
-            "symptoms_analyzed": len(selected_symptom_keys),
-            "model_used": pipeline.get('model_name', 'Random Forest Classifier'),
-            "disclaimer": "This system provides educational/informational AI predictions only and is not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment."
+            "symptoms_analyzed": 0,
+            "model_used": model_name,
+            "model_version": model_version,
+            "supported_classes": supported_classes,
+            "message": "No symptoms provided. Please select at least two specific symptoms to receive an educational assessment.",
+            "disclaimer": "These results are educational predictions based on the information provided and are not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment."
+        }
+        
+    # Match valid symptoms
+    matched = [sk for sk in selected_symptom_keys if sk in symptom_keys]
+    
+    # Insufficient Information Gate: If fewer than 2 valid symptoms are selected
+    if len(matched) < 2:
+        return {
+            "status": "insufficient_information",
+            "prediction": "Insufficient Information",
+            "probability": 0.0,
+            "runner_ups": [],
+            "influencing_symptoms": [sk.replace('_', ' ').title() for sk in matched],
+            "symptoms_analyzed": len(matched),
+            "model_used": model_name,
+            "model_version": model_version,
+            "supported_classes": supported_classes,
+            "message": "Insufficient symptoms provided for a meaningful prediction. A single symptom is too non-specific to evaluate against 65 condition categories. Please select 2 or more symptoms or consult a healthcare professional.",
+            "disclaimer": "These results are educational predictions based on the information provided and are not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment."
         }
 
-    row = [1 if sk in selected_symptom_keys else 0 for sk in symptom_keys]
+    row = [1 if sk in matched else 0 for sk in symptom_keys]
     df_input = pd.DataFrame([row], columns=symptom_keys)
     
     probabilities = model.predict_proba(df_input)[0]
@@ -391,25 +410,46 @@ def predict_symptoms(selected_symptom_keys):
     top_prediction = class_probs[0][0]
     top_prob = round(float(class_probs[0][1]) * 100, 1)
     
+    # Secondary Low-Confidence Gate: If even the top prediction has virtually no statistical support (<10%)
+    if top_prob < 10.0:
+        return {
+            "status": "insufficient_information",
+            "prediction": "Insufficient Information",
+            "probability": top_prob,
+            "runner_ups": [],
+            "influencing_symptoms": [sk.replace('_', ' ').title() for sk in matched],
+            "symptoms_analyzed": len(matched),
+            "model_used": model_name,
+            "model_version": model_version,
+            "supported_classes": supported_classes,
+            "message": "The selected combination of symptoms does not match a recognizable pattern across our 65 condition profiles. Please review your symptoms or consult a healthcare provider for personalized guidance.",
+            "disclaimer": "These results are educational predictions based on the information provided and are not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment."
+        }
+    
     runner_ups = []
     for cls_name, prob in class_probs[1:4]:
-        runner_ups.append({
-            "disease": cls_name,
-            "probability": round(float(prob) * 100, 1)
-        })
+        prob_pct = round(float(prob) * 100, 1)
+        if prob_pct > 2.0:
+            runner_ups.append({
+                "disease": cls_name,
+                "probability": prob_pct
+            })
         
-    influencing_symptoms = [sk.replace('_', ' ').title() for sk in selected_symptom_keys if sk in disease_symptom_map.get(top_prediction, [])]
+    influencing_symptoms = [sk.replace('_', ' ').title() for sk in matched if sk in disease_symptom_map.get(top_prediction, [])]
     if not influencing_symptoms:
-        influencing_symptoms = [sk.replace('_', ' ').title() for sk in selected_symptom_keys]
+        influencing_symptoms = [sk.replace('_', ' ').title() for sk in matched]
         
     return {
+        "status": "success",
         "prediction": top_prediction,
         "probability": top_prob,
         "runner_ups": runner_ups,
         "influencing_symptoms": influencing_symptoms,
-        "symptoms_analyzed": len(selected_symptom_keys),
-        "model_used": pipeline.get('model_name', 'Random Forest Classifier'),
-        "disclaimer": "This system provides educational/informational AI predictions only and is not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment."
+        "symptoms_analyzed": len(matched),
+        "model_used": model_name,
+        "model_version": model_version,
+        "supported_classes": supported_classes,
+        "disclaimer": "These results are educational predictions based on the information provided and are not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment."
     }
 
 

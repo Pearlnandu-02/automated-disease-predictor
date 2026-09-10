@@ -70,49 +70,77 @@ $lifestyle_pillars = [
     ]
 ];
 
-// Chronic Disease Prevention Focus Areas
+// Chronic Disease Prevention Focus Areas Across 10 Clinical Domains
 $chronic_prevention = [
     [
         'icon' => 'bi-heart-pulse',
         'title' => 'Heart Health & Circulation',
         'badge' => 'Cardiovascular',
-        'explanation' => 'Preventing atherosclerotic coronary artery disease, hypertensive vascular changes, and myocardial infarction.',
-        'tip' => 'Regular aerobic activity, avoiding all tobacco and vaping exposure, maintaining a BMI between 18.5–24.9, and keeping blood pressure under 120/80 mmHg support long-term cardiac longevity.'
+        'explanation' => 'Preventing atherosclerotic coronary artery disease, hypertensive vascular remodeling, heart failure, and arrhythmias.',
+        'tip' => 'Engage in 150 mins/week moderate aerobic activity, adopt the low-sodium DASH diet (<2,300 mg/day), eliminate tobacco/vaping, and maintain blood pressure < 120/80 mmHg.'
     ],
     [
         'icon' => 'bi-droplet-half',
         'title' => 'Diabetes Prevention & Metabolic Care',
         'badge' => 'Endocrine',
-        'explanation' => 'Protecting pancreatic beta-cell function and preventing insulin receptor resistance across peripheral tissues.',
-        'tip' => 'Replace refined starches and high-fructose syrups with fiber-rich complex carbohydrates. Modest weight loss of 5–7% can reduce pre-diabetes progression to Type 2 diabetes by up to 58%.'
+        'explanation' => 'Protecting pancreatic beta-cell insulin secretion and preventing peripheral insulin resistance, obesity, and metabolic syndrome.',
+        'tip' => 'Replace refined starches and sweetened drinks with high-fiber whole foods. A sustained 5–7% weight loss reduces progression from prediabetes to Type 2 diabetes by up to 58%.'
     ],
     [
         'icon' => 'bi-lungs',
-        'title' => 'Respiratory Longevity',
-        'badge' => 'Pulmonary',
-        'explanation' => 'Protecting delicate bronchial passages and pulmonary alveoli from chronic inflammatory destruction and airway remodeling.',
-        'tip' => 'Avoid tobacco smoke, secondhand smoke, and indoor biomass combustion fumes. Ensure adequate household airflow and use air filtration during high-particulate air quality alerts.'
+        'title' => 'Respiratory Health & Airway Care',
+        'badge' => 'Respiratory',
+        'explanation' => 'Protecting delicate bronchial passages and pulmonary alveoli from chronic inflammation, asthma flares, and chronic obstructive pulmonary disease.',
+        'tip' => 'Avoid tobacco smoke and indoor biomass combustion fumes. Maintain household ventilation, use HEPA air filtration during high pollen/particulate alerts, and practice respiratory hygiene.'
+    ],
+    [
+        'icon' => 'bi-fire',
+        'title' => 'Digestive & Gastrointestinal Health',
+        'badge' => 'Digestive',
+        'explanation' => 'Preserving gastric mucosal integrity, gut microbiota balance, and preventing GERD acid reflux, peptic ulcers, and functional bowel disorders.',
+        'tip' => 'Consume 25-35 grams of daily dietary fiber, stay well-hydrated, avoid late-night heavy meals, and limit unmonitored NSAID pain relievers that irritate stomach lining.'
     ],
     [
         'icon' => 'bi-water',
-        'title' => 'Kidney Health Preservation',
-        'badge' => 'Renal',
-        'explanation' => 'Preserving glomerular filtration rate and preventing irreversible nephron fibrosis caused by hypertension or diabetes.',
-        'tip' => 'Drink adequate clean water, strictly control blood pressure and blood glucose, and avoid frequent or unmonitored over-the-counter NSAID pain relievers (such as ibuprofen).'
+        'title' => 'Kidney & Urinary Tract Protection',
+        'badge' => 'Urinary',
+        'explanation' => 'Preserving glomerular filtration rate and preventing nephrolithiasis (kidney stones) and ascending urinary tract infections.',
+        'tip' => 'Drink 2 to 3 liters of water daily to maintain clear dilute urine, limit excess dietary sodium and animal purines, and manage blood pressure and blood glucose tightly.'
+    ],
+    [
+        'icon' => 'bi-shield-shaded',
+        'title' => 'Skin Health & Cutaneous Barrier Care',
+        'badge' => 'Dermatological',
+        'explanation' => 'Maintaining epidermal barrier integrity, preventing eczema flares, acne breakouts, and fungal colonization in cutaneous folds.',
+        'tip' => 'Apply broad-spectrum SPF 30+ sunscreen daily, moisturize with fragrance-free ceramides after bathing, wear breathable cotton fabrics, and avoid harsh mechanical facial scrubs.'
+    ],
+    [
+        'icon' => 'bi-diagram-3',
+        'title' => 'Musculoskeletal Strength & Joint Preservation',
+        'badge' => 'Musculoskeletal',
+        'explanation' => 'Preserving articular cartilage, bone mineral density, and preventing osteoarthritic wear, gout flares, and osteoporotic fractures.',
+        'tip' => 'Incorporate weight-bearing and resistance exercises twice weekly, maintain optimal dietary calcium and vitamin D levels, and limit high-purine foods and beer.'
     ],
     [
         'icon' => 'bi-shield-plus',
-        'title' => 'Liver Health & Metabolic Protection',
-        'badge' => 'Hepatic',
-        'explanation' => 'Safeguarding hepatocytes from steatosis (fatty liver disease), viral inflammation, and chemical or pharmaceutical hepatotoxicity.',
-        'tip' => 'Limit alcohol consumption, get vaccinated against Hepatitis A and B, use medications only as directed, and combat metabolic-associated fatty liver disease (MAFLD) through a balanced diet.'
+        'title' => 'Infection Prevention & Tropical Defense',
+        'badge' => 'Infectious',
+        'explanation' => 'Guarding against seasonal viral transmission (influenza, COVID-19) and mosquito-borne tropical infections (dengue, malaria).',
+        'tip' => 'Keep routine vaccinations up-to-date, wash hands with soap for 20 seconds, eliminate domestic standing water to prevent mosquito breeding, and use bednets in endemic zones.'
+    ],
+    [
+        'icon' => 'bi-droplet',
+        'title' => 'Blood & Nutritional Vitality',
+        'badge' => 'Hematological',
+        'explanation' => 'Ensuring adequate red blood cell synthesis, hemoglobin concentration, and preventing micronutrient deficiencies (iron, B12, vitamin D).',
+        'tip' => 'Eat a diverse diet with iron-rich foods paired with vitamin C for absorption, supplement vitamin B12 if adhering to plant-based diets, and get safe sensible sunlight exposure.'
     ],
     [
         'icon' => 'bi-puzzle',
-        'title' => 'Mental Well-being & Cognitive Health',
-        'badge' => 'Neurological',
-        'explanation' => 'Nurturing neurochemistry, cognitive reserve, emotional resilience, and lifelong brain synaptic connectivity.',
-        'tip' => 'Engage in continuous mental challenges (reading, learning new skills), foster supportive social connections, prioritize rest, and seek professional mental health counseling whenever needed.'
+        'title' => 'Neurological & Mental Health Longevity',
+        'badge' => 'Neurological & Mind',
+        'explanation' => 'Nurturing neuroplasticity, cognitive reserve, emotional resilience, and lifelong autonomic nervous system equilibrium.',
+        'tip' => 'Prioritize 7-9 hours of restorative sleep, engage in lifelong intellectual learning, foster supportive social networks, and practice daily mindfulness for stress mitigation.'
     ]
 ];
 ?>

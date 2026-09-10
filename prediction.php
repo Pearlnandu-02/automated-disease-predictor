@@ -217,10 +217,46 @@ require_once __DIR__ . '/includes/header.php';
                         <?= sanitize($prediction_result['error']) ?>
                     </p>
                 </div>
+            <?php elseif (($prediction_result['status'] ?? '') === 'insufficient_information' || ($prediction_result['prediction'] ?? '') === 'Insufficient Information'): ?>
+                <div class="card-custom p-4 p-md-5 text-center border-warning mb-4">
+                    <span class="badge bg-warning bg-opacity-20 text-warning border border-warning border-opacity-25 mb-3 px-3 py-1 fw-bold">
+                        <i class="bi bi-exclamation-circle-fill me-1"></i> INSUFFICIENT INFORMATION
+                    </span>
+                    <h3 class="fw-bold mb-2">Additional Symptoms Needed</h3>
+                    <p class="text-muted small mb-4">
+                        <?= sanitize($prediction_result['message'] ?? 'A single symptom or non-specific combination does not provide enough statistical evidence across our 65 condition categories. Please select 2 or more symptoms to evaluate.') ?>
+                    </p>
+
+                    <div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 text-start small mb-4">
+                        <strong class="text-info d-block mb-2"><i class="bi bi-lightbulb-fill me-1"></i> Suggested Actions:</strong>
+                        <ul class="mb-0 ps-3 text-muted">
+                            <li class="mb-1">Select additional active symptoms from the tiles on the left.</li>
+                            <li class="mb-1">Explore our <a href="symptoms_guide.php" class="text-info text-decoration-underline">Symptoms Guide</a> to view commonly associated signs.</li>
+                            <li>For any concerning symptoms, consult a qualified physician or healthcare professional.</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center text-muted small border-top border-secondary border-opacity-25 pt-3">
+                        <span><i class="bi bi-cpu me-1"></i> <?= sanitize($prediction_result['model_version'] ?? 'Multi-Disease Prediction Model v2') ?></span>
+                        <span class="badge bg-secondary bg-opacity-25 text-info">65 Supported Conditions</span>
+                    </div>
+                </div>
+
+                <div class="disclaimer-banner p-4 text-start">
+                    <h6 class="fw-bold mb-2 text-warning"><i class="bi bi-shield-exclamation me-1"></i> Important Medical Disclaimer</h6>
+                    <p class="small mb-0 text-muted">
+                        <?= sanitize($prediction_result['disclaimer'] ?? 'These results are educational predictions based on the information provided and are not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment.') ?>
+                    </p>
+                </div>
             <?php else: ?>
                 <div class="card-custom p-4 text-center border-info mb-4">
-                    <span class="badge bg-secondary mb-2 px-3 py-1">AI MODEL OUTPUT</span>
-                    <h5 class="text-muted text-uppercase fw-bold small">Possible condition based on AI model</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-secondary px-3 py-1">AI MODEL OUTPUT</span>
+                        <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 small">
+                            <?= sanitize($prediction_result['model_version'] ?? 'Multi-Disease Model v2') ?>
+                        </span>
+                    </div>
+                    <h5 class="text-muted text-uppercase fw-bold small mt-2">Most Likely Condition (AI Classification)</h5>
                     <h2 class="display-6 fw-bold my-2"><?= sanitize($prediction_result['prediction']) ?></h2>
                     
                     <div class="my-3 py-2 border-top border-bottom border-secondary border-opacity-25">
@@ -230,13 +266,13 @@ require_once __DIR__ . '/includes/header.php';
                         >
                             00.0%
                         </span>
-                        <p class="small text-muted mb-0 mt-1">Model confidence (statistical output)</p>
+                        <p class="small text-muted mb-0 mt-1">Calculated model likelihood score across 65 conditions</p>
                     </div>
 
                     <?php if (!empty($prediction_result['influencing_symptoms'])): ?>
                         <div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 my-3 text-start small">
                             <strong class="text-primary-theme d-block mb-1">
-                                <i class="bi bi-bounding-box-circles me-1 text-info"></i> Influencing Indicators:
+                                <i class="bi bi-bounding-box-circles me-1 text-info"></i> Influencing Symptoms Detected:
                             </strong>
                             <div class="d-flex flex-wrap gap-1 mt-2">
                                 <?php foreach ($prediction_result['influencing_symptoms'] as $inf): ?>
@@ -251,7 +287,7 @@ require_once __DIR__ . '/includes/header.php';
                     <?php if (!empty($prediction_result['runner_ups'])): ?>
                         <div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 my-3 text-start small">
                             <strong class="text-primary-theme d-block mb-2">
-                                <i class="bi bi-bar-chart me-1 text-warning"></i> Alternative Possibilities Considered:
+                                <i class="bi bi-bar-chart me-1 text-warning"></i> Other Possible Matches Considered:
                             </strong>
                             <ul class="list-unstyled mb-0">
                                 <?php foreach ($prediction_result['runner_ups'] as $rup): ?>
@@ -272,7 +308,7 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="disclaimer-banner p-4 text-start">
                     <h6 class="fw-bold mb-2 text-warning"><i class="bi bi-shield-exclamation me-1"></i> Important Medical Disclaimer</h6>
                     <p class="small mb-0 text-muted">
-                        <?= sanitize($prediction_result['disclaimer'] ?? 'This system provides educational/informational AI predictions only and is not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment.') ?>
+                        <?= sanitize($prediction_result['disclaimer'] ?? 'These results are educational predictions based on the information provided and are not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment.') ?>
                     </p>
                 </div>
             <?php endif; ?>

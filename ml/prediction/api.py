@@ -18,7 +18,8 @@ def health():
     return jsonify({
         "status": "healthy",
         "service": "AI Healthcare Disease Prediction & Health Assistance API",
-        "diseases_supported": 25,
+        "diseases_supported": 65,
+        "model_version": "Multi-Disease Prediction Model v2",
         "features": ["symptoms_prediction", "clinical_risk", "health_simulator", "infection_injury_scanner"]
     })
 

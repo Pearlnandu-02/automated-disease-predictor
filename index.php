@@ -1,5 +1,36 @@
 <?php
 // index.php - AI Healthcare Landing Page
+require_once __DIR__ . '/includes/functions.php';
+
+$pdo = get_db_connection();
+$disease_count = 65;
+$symptom_count = 58;
+$mapping_count = 250;
+$accuracy_str = "75.2%";
+$records_str = "7,800";
+
+if ($pdo) {
+    try {
+        $d_res = (int)$pdo->query("SELECT COUNT(*) FROM diseases")->fetchColumn();
+        if ($d_res > 0) $disease_count = $d_res;
+        $s_res = (int)$pdo->query("SELECT COUNT(*) FROM symptoms")->fetchColumn();
+        if ($s_res > 0) $symptom_count = $s_res;
+        $m_res = (int)$pdo->query("SELECT COUNT(*) FROM disease_symptoms")->fetchColumn();
+        if ($m_res > 0) $mapping_count = $m_res;
+    } catch (Exception $e) {}
+}
+
+$eval_path = __DIR__ . '/ml/evaluation_results.json';
+if (file_exists($eval_path)) {
+    $eval_data = json_decode(file_get_contents($eval_path), true);
+    if (!empty($eval_data['symptom_disease']['models']['Random Forest']['accuracy'])) {
+        $accuracy_str = number_format($eval_data['symptom_disease']['models']['Random Forest']['accuracy'] * 100, 1) . '%';
+    }
+    if (!empty($eval_data['model_metadata']['records_count'])) {
+        $records_str = number_format($eval_data['model_metadata']['records_count']);
+    }
+}
+
 require_once __DIR__ . '/includes/header.php';
 ?>
 
@@ -12,7 +43,7 @@ require_once __DIR__ . '/includes/header.php';
             </span>
             <h1 class="display-4 fw-extrabold hero-heading mb-3">Smarter Healthcare Powered by Artificial Intelligence</h1>
             <p class="lead hero-lead mb-4">
-                Explore intelligent multi-symptom disease predictions, clinical chronic disease risk assessments, what-if health parameter simulations, and computer vision infection & injury scanning.
+                Explore intelligent multi-symptom disease predictions across <?= $disease_count ?> conditions, clinical chronic disease risk assessments, what-if health parameter simulations, and computer vision infection & injury scanning.
             </p>
             <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
                 <a href="prediction.php" class="btn btn-primary-custom btn-lg">
@@ -22,26 +53,26 @@ require_once __DIR__ . '/includes/header.php';
                     <i class="bi bi-camera me-2"></i> Injury Image Scanner
                 </a>
                 <a href="diseases.php" class="btn btn-hero-secondary btn-lg rounded-pill px-4">
-                    <i class="bi bi-journal-medical me-2"></i> Explore 25 Diseases
+                    <i class="bi bi-journal-medical me-2"></i> Explore <?= $disease_count ?> Conditions
                 </a>
             </div>
         </div>
         <div class="col-lg-5 text-center mt-4 mt-lg-0 z-1">
             <div class="card-custom p-4 text-center border-info">
                 <i class="bi bi-heart-pulse-fill display-1 text-info mb-3"></i>
-                <h4 class="fw-bold mb-2">25 Diseases Covered</h4>
-                <p class="small text-muted mb-3">Structured disease descriptions, common symptoms, causes, risk factors, and medical care advice.</p>
+                <h4 class="fw-bold mb-2"><?= $disease_count ?> Conditions Covered</h4>
+                <p class="small text-muted mb-3">Structured clinical descriptions, common symptoms, causes, risk factors, and medical guidance.</p>
                 <div class="d-flex justify-content-around text-center pt-3 border-top border-secondary border-opacity-25">
                     <div>
-                        <h3 class="fw-bold text-info mb-0">30</h3>
+                        <h3 class="fw-bold text-info mb-0"><?= $symptom_count ?></h3>
                         <small class="text-muted">Symptoms</small>
                     </div>
                     <div>
-                        <h3 class="fw-bold text-success mb-0">84.1%</h3>
+                        <h3 class="fw-bold text-success mb-0"><?= $accuracy_str ?></h3>
                         <small class="text-muted">ML Accuracy</small>
                     </div>
                     <div>
-                        <h3 class="fw-bold text-warning mb-0">5,000+</h3>
+                        <h3 class="fw-bold text-warning mb-0"><?= $records_str ?></h3>
                         <small class="text-muted">Records</small>
                     </div>
                 </div>
@@ -65,26 +96,26 @@ require_once __DIR__ . '/includes/header.php';
 <div class="row g-4 my-2">
     <div class="col-md-3 col-6">
         <div class="card-custom text-center p-3">
-            <h2 class="fw-extrabold text-info mb-1">25</h2>
-            <p class="small text-muted mb-0">Diseases Modeled</p>
+            <h2 class="fw-extrabold text-info mb-1"><?= $disease_count ?></h2>
+            <p class="small text-muted mb-0">Conditions Modeled</p>
         </div>
     </div>
     <div class="col-md-3 col-6">
         <div class="card-custom text-center p-3">
-            <h2 class="fw-extrabold text-success mb-1">30</h2>
+            <h2 class="fw-extrabold text-success mb-1"><?= $symptom_count ?></h2>
             <p class="small text-muted mb-0">Clinical Symptoms</p>
         </div>
     </div>
     <div class="col-md-3 col-6">
         <div class="card-custom text-center p-3">
-            <h2 class="fw-extrabold text-warning mb-1">4</h2>
-            <p class="small text-muted mb-0">ML Architectures</p>
+            <h2 class="fw-extrabold text-warning mb-1"><?= $mapping_count ?></h2>
+            <p class="small text-muted mb-0">Mapped Relationships</p>
         </div>
     </div>
     <div class="col-md-3 col-6">
         <div class="card-custom text-center p-3">
-            <h2 class="fw-extrabold text-danger mb-1">100%</h2>
-            <p class="small text-muted mb-0">Decoupled API</p>
+            <h2 class="fw-extrabold text-danger mb-1">4</h2>
+            <p class="small text-muted mb-0">ML Architectures</p>
         </div>
     </div>
 </div>
