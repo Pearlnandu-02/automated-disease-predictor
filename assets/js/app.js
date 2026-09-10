@@ -5,10 +5,10 @@
 
 // Global Theme Initializer (prevents FOUC)
 (function() {
-    const savedTheme = localStorage.getItem('ai_healthcare_theme');
-    const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initialTheme = savedTheme ? savedTheme : (systemPrefersDark ? 'dark' : 'dark'); // default dark
+    const savedTheme = localStorage.getItem('ai_healthcare_theme') || localStorage.getItem('theme');
+    const initialTheme = (savedTheme === 'light' || savedTheme === 'dark') ? savedTheme : 'dark';
     document.documentElement.setAttribute('data-theme', initialTheme);
+    document.documentElement.setAttribute('data-bs-theme', initialTheme);
 })();
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -25,40 +25,49 @@ document.addEventListener('DOMContentLoaded', function () {
 // 1. Dark / Light Theme Toggle Engine
 // ==========================================================================
 function initThemeToggle() {
-    const toggleBtns = document.querySelectorAll('.theme-toggle-btn');
-    if (!toggleBtns.length) return;
-
-    function updateToggleUI(currentTheme) {
-        toggleBtns.forEach(btn => {
-            const darkIcon = btn.querySelector('.theme-icon-dark');
-            const lightIcon = btn.querySelector('.theme-icon-light');
-            const label = btn.querySelector('.theme-text');
-
-            if (currentTheme === 'light') {
-                if (darkIcon) darkIcon.classList.add('d-none');
-                if (lightIcon) lightIcon.classList.remove('d-none');
-                if (label) label.textContent = 'Light';
-            } else {
-                if (darkIcon) darkIcon.classList.remove('d-none');
-                if (lightIcon) lightIcon.classList.add('d-none');
-                if (label) label.textContent = 'Dark';
-            }
-        });
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    if (typeof window.applyTheme === 'function') {
+        window.applyTheme(currentTheme);
     }
 
-    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-    updateToggleUI(currentTheme);
+    const toggleBtns = document.querySelectorAll('.theme-toggle-btn, #themeToggleBtn');
+    if (!toggleBtns.length) return;
 
     toggleBtns.forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            e.preventDefault();
-            const activeTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-            const newTheme = activeTheme === 'dark' ? 'light' : 'dark';
-            
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('ai_healthcare_theme', newTheme);
-            updateToggleUI(newTheme);
-        });
+        // Prevent duplicate handlers by using a single direct onclick assignment
+        btn.removeAttribute('onclick');
+        btn.onclick = function (e) {
+            if (e) e.preventDefault();
+            if (typeof window.toggleSiteTheme === 'function') {
+                window.toggleSiteTheme();
+            } else {
+                const active = document.documentElement.getAttribute('data-theme') || 'dark';
+                const next = (active === 'dark') ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                document.documentElement.setAttribute('data-bs-theme', next);
+                try {
+                    localStorage.setItem('ai_healthcare_theme', next);
+                    localStorage.setItem('theme', next);
+                } catch(err) {}
+
+                const darkIcon = btn.querySelector('.theme-icon-dark');
+                const lightIcon = btn.querySelector('.theme-icon-light');
+                const label = btn.querySelector('.theme-text');
+                if (next === 'light') {
+                    if (darkIcon) darkIcon.classList.add('d-none');
+                    if (lightIcon) lightIcon.classList.remove('d-none');
+                    if (label) label.textContent = 'Light';
+                    btn.setAttribute('title', 'Switch to Dark Mode');
+                    btn.setAttribute('aria-label', 'Switch to Dark Mode');
+                } else {
+                    if (darkIcon) darkIcon.classList.remove('d-none');
+                    if (lightIcon) lightIcon.classList.add('d-none');
+                    if (label) label.textContent = 'Dark';
+                    btn.setAttribute('title', 'Switch to Light Mode');
+                    btn.setAttribute('aria-label', 'Switch to Light Mode');
+                }
+            }
+        };
     });
 }
 

@@ -20,41 +20,56 @@ $user = get_logged_in_user();
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Prevent Theme Flash (FOUC) & Bulletproof Theme Engine -->
     <script>
-    (function() {
-        var urlParams = new URLSearchParams(window.location.search);
-        var urlTheme = urlParams.get('theme');
-        var saved = urlTheme || localStorage.getItem('ai_healthcare_theme');
-        var theme = (saved === 'light' || saved === 'dark') ? saved : 'dark';
-        if (urlTheme === 'light' || urlTheme === 'dark') {
-            try { localStorage.setItem('ai_healthcare_theme', urlTheme); } catch(e) {}
-        }
-        document.documentElement.setAttribute('data-theme', theme);
-        document.documentElement.setAttribute('data-bs-theme', theme);
-    })();
+    function applyTheme(theme) {
+        var valid = (theme === 'light') ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', valid);
+        document.documentElement.setAttribute('data-bs-theme', valid);
+        try {
+            localStorage.setItem('ai_healthcare_theme', valid);
+            localStorage.setItem('theme', valid);
+        } catch (e) {}
 
-    function toggleSiteTheme() {
-        var current = document.documentElement.getAttribute('data-theme') || 'dark';
-        var next = (current === 'dark') ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        document.documentElement.setAttribute('data-bs-theme', next);
-        localStorage.setItem('ai_healthcare_theme', next);
-
-        var btns = document.querySelectorAll('.theme-toggle-btn');
+        var btns = document.querySelectorAll('.theme-toggle-btn, #themeToggleBtn');
         btns.forEach(function(btn) {
             var darkIcon = btn.querySelector('.theme-icon-dark');
             var lightIcon = btn.querySelector('.theme-icon-light');
             var label = btn.querySelector('.theme-text');
-            if (next === 'light') {
+            if (valid === 'light') {
                 if (darkIcon) darkIcon.classList.add('d-none');
                 if (lightIcon) lightIcon.classList.remove('d-none');
                 if (label) label.textContent = 'Light';
+                btn.setAttribute('title', 'Switch to Dark Mode');
+                btn.setAttribute('aria-label', 'Switch to Dark Mode');
             } else {
                 if (darkIcon) darkIcon.classList.remove('d-none');
                 if (lightIcon) lightIcon.classList.add('d-none');
                 if (label) label.textContent = 'Dark';
+                btn.setAttribute('title', 'Switch to Light Mode');
+                btn.setAttribute('aria-label', 'Switch to Light Mode');
             }
         });
     }
+
+    function toggleSiteTheme() {
+        var current = document.documentElement.getAttribute('data-theme') || 'dark';
+        var next = (current === 'dark') ? 'light' : 'dark';
+        applyTheme(next);
+    }
+
+    (function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var urlTheme = urlParams.get('theme');
+        var saved = urlTheme || localStorage.getItem('ai_healthcare_theme') || localStorage.getItem('theme');
+        var theme = (saved === 'light' || saved === 'dark') ? saved : 'dark';
+        if (urlTheme === 'light' || urlTheme === 'dark') {
+            try {
+                localStorage.setItem('ai_healthcare_theme', urlTheme);
+                localStorage.setItem('theme', urlTheme);
+            } catch(e) {}
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-bs-theme', theme);
+    })();
     </script>
 
     <!-- Custom CSS -->
@@ -112,7 +127,7 @@ $user = get_logged_in_user();
 
                     <!-- Theme Toggle Button -->
                     <li class="nav-item ms-xl-2 my-1 my-xl-0">
-                        <button id="themeToggleBtn" onclick="toggleSiteTheme()" class="btn btn-sm rounded-pill px-3 py-1 theme-toggle-btn d-inline-flex align-items-center gap-1" title="Toggle Dark/Light Mode" aria-label="Toggle dark/light theme">
+                        <button id="themeToggleBtn" type="button" class="btn btn-sm rounded-pill px-3 py-1 theme-toggle-btn d-inline-flex align-items-center gap-1" title="Toggle Dark/Light Mode" aria-label="Toggle dark/light theme">
                             <i class="bi bi-moon-stars-fill theme-icon-dark text-warning"></i>
                             <i class="bi bi-sun-fill theme-icon-light text-warning d-none"></i>
                             <span class="theme-text small fw-semibold">Dark</span>
@@ -120,14 +135,8 @@ $user = get_logged_in_user();
                         <script>
                         (function() {
                             var t = document.documentElement.getAttribute('data-theme') || 'dark';
-                            var btn = document.getElementById('themeToggleBtn');
-                            if (btn && t === 'light') {
-                                var dIcon = btn.querySelector('.theme-icon-dark');
-                                var lIcon = btn.querySelector('.theme-icon-light');
-                                var txt = btn.querySelector('.theme-text');
-                                if (dIcon) dIcon.classList.add('d-none');
-                                if (lIcon) lIcon.classList.remove('d-none');
-                                if (txt) txt.textContent = 'Light';
+                            if (typeof applyTheme === 'function') {
+                                applyTheme(t);
                             }
                         })();
                         </script>

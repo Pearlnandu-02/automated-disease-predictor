@@ -62,41 +62,56 @@ def render_page(content_html, **kwargs):
     <title>AI Healthcare - Intelligent Disease Prediction & Health Assistance System</title>
     <!-- Early theme initializer to prevent FOUC & Bulletproof Theme Engine -->
     <script>
-        (function() {
-            var urlParams = new URLSearchParams(window.location.search);
-            var urlTheme = urlParams.get('theme');
-            var saved = urlTheme || localStorage.getItem('ai_healthcare_theme');
-            var theme = (saved === 'light' || saved === 'dark') ? saved : 'dark';
-            if (urlTheme === 'light' || urlTheme === 'dark') {
-                try { localStorage.setItem('ai_healthcare_theme', urlTheme); } catch(e) {}
-            }
-            document.documentElement.setAttribute('data-theme', theme);
-            document.documentElement.setAttribute('data-bs-theme', theme);
-        })();
+        function applyTheme(theme) {
+            var valid = (theme === 'light') ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', valid);
+            document.documentElement.setAttribute('data-bs-theme', valid);
+            try {
+                localStorage.setItem('ai_healthcare_theme', valid);
+                localStorage.setItem('theme', valid);
+            } catch(e) {}
 
-        function toggleSiteTheme() {
-            var current = document.documentElement.getAttribute('data-theme') || 'dark';
-            var next = (current === 'dark') ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            document.documentElement.setAttribute('data-bs-theme', next);
-            localStorage.setItem('ai_healthcare_theme', next);
-
-            var btns = document.querySelectorAll('.theme-toggle-btn');
+            var btns = document.querySelectorAll('.theme-toggle-btn, #themeToggleBtn');
             btns.forEach(function(btn) {
                 var darkIcon = btn.querySelector('.theme-icon-dark');
                 var lightIcon = btn.querySelector('.theme-icon-light');
                 var text = btn.querySelector('.theme-text');
-                if (next === 'light') {
+                if (valid === 'light') {
                     if (darkIcon) darkIcon.classList.add('d-none');
                     if (lightIcon) lightIcon.classList.remove('d-none');
                     if (text) text.textContent = 'Light';
+                    btn.setAttribute('title', 'Switch to Dark Mode');
+                    btn.setAttribute('aria-label', 'Switch to Dark Mode');
                 } else {
                     if (darkIcon) darkIcon.classList.remove('d-none');
                     if (lightIcon) lightIcon.classList.add('d-none');
                     if (text) text.textContent = 'Dark';
+                    btn.setAttribute('title', 'Switch to Light Mode');
+                    btn.setAttribute('aria-label', 'Switch to Light Mode');
                 }
             });
         }
+
+        function toggleSiteTheme() {
+            var current = document.documentElement.getAttribute('data-theme') || 'dark';
+            var next = (current === 'dark') ? 'light' : 'dark';
+            applyTheme(next);
+        }
+
+        (function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var urlTheme = urlParams.get('theme');
+            var saved = urlTheme || localStorage.getItem('ai_healthcare_theme') || localStorage.getItem('theme');
+            var theme = (saved === 'light' || saved === 'dark') ? saved : 'dark';
+            if (urlTheme === 'light' || urlTheme === 'dark') {
+                try {
+                    localStorage.setItem('ai_healthcare_theme', urlTheme);
+                    localStorage.setItem('theme', urlTheme);
+                } catch(e) {}
+            }
+            document.documentElement.setAttribute('data-theme', theme);
+            document.documentElement.setAttribute('data-bs-theme', theme);
+        })();
     </script>
 
     <!-- Bootstrap 5 CSS -->
@@ -654,7 +669,7 @@ def render_page(content_html, **kwargs):
                     
                     <!-- Theme Toggle Button -->
                     <li class="nav-item mx-xl-2">
-                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 theme-toggle-btn d-flex align-items-center gap-1" id="themeToggleBtn" onclick="toggleSiteTheme()">
+                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 theme-toggle-btn d-flex align-items-center gap-1" id="themeToggleBtn" title="Toggle Dark/Light Mode" aria-label="Toggle dark/light theme">
                             <i class="bi bi-moon-stars-fill theme-icon-dark text-info"></i>
                             <i class="bi bi-sun-fill theme-icon-light text-warning d-none"></i>
                             <span class="theme-text small fw-semibold">Dark</span>
@@ -692,35 +707,18 @@ def render_page(content_html, **kwargs):
     <script>
         // Theme Engine
         function initTheme() {
-            var btn = document.getElementById('themeToggleBtn');
-            if (!btn) return;
-            var darkIcon = btn.querySelector('.theme-icon-dark');
-            var lightIcon = btn.querySelector('.theme-icon-light');
-            var text = btn.querySelector('.theme-text');
-
-            function syncUI(theme) {
-                if (theme === 'light') {
-                    if (darkIcon) darkIcon.classList.add('d-none');
-                    if (lightIcon) lightIcon.classList.remove('d-none');
-                    if (text) text.textContent = 'Light';
-                } else {
-                    if (darkIcon) darkIcon.classList.remove('d-none');
-                    if (lightIcon) lightIcon.classList.add('d-none');
-                    if (text) text.textContent = 'Dark';
-                }
+            var current = document.documentElement.getAttribute('data-theme') || 'dark';
+            if (typeof applyTheme === 'function') {
+                applyTheme(current);
             }
 
-            var current = document.documentElement.getAttribute('data-theme') || 'dark';
-            syncUI(current);
-
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                var active = document.documentElement.getAttribute('data-theme') || 'dark';
-                var next = active === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', next);
-                localStorage.setItem('ai_healthcare_theme', next);
-                syncUI(next);
-            });
+            var btn = document.getElementById('themeToggleBtn');
+            if (!btn) return;
+            btn.removeAttribute('onclick');
+            btn.onclick = function(e) {
+                if (e) e.preventDefault();
+                toggleSiteTheme();
+            };
         }
 
         // Accessible Symptom Tiles Interaction (No Checkmarks)
