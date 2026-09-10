@@ -56,15 +56,15 @@ function initThemeToggle() {
                 if (next === 'light') {
                     if (darkIcon) darkIcon.classList.add('d-none');
                     if (lightIcon) lightIcon.classList.remove('d-none');
-                    if (label) label.textContent = 'Light';
-                    btn.setAttribute('title', 'Switch to Dark Mode');
-                    btn.setAttribute('aria-label', 'Switch to Dark Mode');
+                    if (label) label.textContent = 'Theme';
+                    btn.setAttribute('title', 'Switch to dark mode');
+                    btn.setAttribute('aria-label', 'Switch to dark mode');
                 } else {
                     if (darkIcon) darkIcon.classList.remove('d-none');
                     if (lightIcon) lightIcon.classList.add('d-none');
-                    if (label) label.textContent = 'Dark';
-                    btn.setAttribute('title', 'Switch to Light Mode');
-                    btn.setAttribute('aria-label', 'Switch to Light Mode');
+                    if (label) label.textContent = 'Theme';
+                    btn.setAttribute('title', 'Switch to light mode');
+                    btn.setAttribute('aria-label', 'Switch to light mode');
                 }
             }
         };

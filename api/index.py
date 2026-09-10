@@ -133,15 +133,15 @@ def render_page(content_html, **kwargs):
                 if (valid === 'light') {
                     if (darkIcon) darkIcon.classList.add('d-none');
                     if (lightIcon) lightIcon.classList.remove('d-none');
-                    if (text) text.textContent = 'Light';
-                    btn.setAttribute('title', 'Switch to Dark Mode');
-                    btn.setAttribute('aria-label', 'Switch to Dark Mode');
+                    if (text) text.textContent = 'Theme';
+                    btn.setAttribute('title', 'Switch to dark mode');
+                    btn.setAttribute('aria-label', 'Switch to dark mode');
                 } else {
                     if (darkIcon) darkIcon.classList.remove('d-none');
                     if (lightIcon) lightIcon.classList.add('d-none');
-                    if (text) text.textContent = 'Dark';
-                    btn.setAttribute('title', 'Switch to Light Mode');
-                    btn.setAttribute('aria-label', 'Switch to Light Mode');
+                    if (text) text.textContent = 'Theme';
+                    btn.setAttribute('title', 'Switch to light mode');
+                    btn.setAttribute('aria-label', 'Switch to light mode');
                 }
             });
         }
@@ -445,6 +445,194 @@ def render_page(content_html, **kwargs):
             transform: rotate(180deg);
         }
 
+        /* ================= Navbar Action Controls ================= */
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        /* Compact Icon-Based Theme Toggle */
+        .theme-toggle-btn {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            padding: 0;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-card);
+            color: var(--text-main);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+
+        .theme-toggle-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(10, 166, 197, 0.15);
+        }
+
+        .theme-toggle-btn:focus-visible {
+            outline: 2px solid var(--accent-primary);
+            outline-offset: 2px;
+        }
+
+        .theme-toggle-btn i {
+            font-size: 1.15rem;
+            line-height: 1;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .theme-toggle-btn:hover i {
+            transform: rotate(20deg) scale(1.1);
+        }
+
+        /* Hide text label on desktop */
+        .navbar-actions .theme-toggle-btn .theme-text {
+            display: none;
+        }
+
+        /* Login Action Button (Secondary Outline) */
+        .btn-nav-login {
+            height: 42px;
+            padding: 0 1.25rem;
+            border-radius: 50rem;
+            font-size: 0.88rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+            border: 1.5px solid var(--accent-primary);
+            color: var(--accent-primary) !important;
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            white-space: nowrap;
+        }
+
+        .btn-nav-login:hover {
+            background-color: rgba(10, 166, 197, 0.1);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(10, 166, 197, 0.12);
+        }
+
+        .btn-nav-login:focus-visible {
+            outline: 2px solid var(--accent-primary);
+            outline-offset: 2px;
+        }
+
+        /* Register Action Button (Primary CTA) */
+        .btn-nav-register {
+            height: 42px;
+            padding: 0 1.35rem;
+            border-radius: 50rem;
+            font-size: 0.88rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0aa6c5 0%, #0284c7 100%);
+            border: 1.5px solid transparent;
+            color: #ffffff !important;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(10, 166, 197, 0.28);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            white-space: nowrap;
+        }
+
+        .btn-nav-register:hover {
+            background: linear-gradient(135deg, #088b9a 0%, #0369a1 100%);
+            color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(10, 166, 197, 0.4);
+        }
+
+        .btn-nav-register:focus-visible {
+            outline: 2px solid var(--accent-primary);
+            outline-offset: 2px;
+        }
+
+        /* Authenticated State Buttons */
+        .btn-nav-dashboard {
+            height: 42px;
+            padding: 0 1.15rem;
+            border-radius: 50rem;
+            font-size: 0.88rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary) !important;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-nav-dashboard:hover,
+        .btn-nav-dashboard.active {
+            color: var(--accent-primary) !important;
+            background-color: var(--bg-card-subtle);
+        }
+
+        .btn-nav-logout {
+            height: 42px;
+            padding: 0 1.15rem;
+            border-radius: 50rem;
+            font-size: 0.88rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid rgba(239, 68, 68, 0.7);
+            color: #ef4444 !important;
+            background-color: transparent;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-nav-logout:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-color: #dc2626;
+            color: #dc2626 !important;
+            transform: translateY(-1px);
+        }
+
+        /* Dark Mode Overrides for Action Controls */
+        [data-theme="dark"] .theme-toggle-btn,
+        [data-bs-theme="dark"] .theme-toggle-btn {
+            background: #152436;
+            border-color: #273e54;
+            color: #f8fafc;
+        }
+
+        [data-theme="dark"] .theme-toggle-btn:hover,
+        [data-bs-theme="dark"] .theme-toggle-btn:hover {
+            background: #1e334a;
+            border-color: var(--accent-primary);
+        }
+
+        [data-theme="dark"] .btn-nav-login,
+        [data-bs-theme="dark"] .btn-nav-login {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary) !important;
+        }
+
+        [data-theme="dark"] .btn-nav-login:hover,
+        [data-bs-theme="dark"] .btn-nav-login:hover {
+            background-color: rgba(10, 166, 197, 0.18);
+        }
+
         @media (max-width: 1199.98px) {
             .navbar-collapse {
                 background-color: var(--bg-card);
@@ -465,6 +653,39 @@ def render_page(content_html, **kwargs):
                 margin-top: 6px;
                 margin-bottom: 6px;
                 background-color: var(--bg-card-subtle) !important;
+            }
+
+            /* Mobile Navbar Actions */
+            .navbar-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+                padding-top: 14px;
+                margin-top: 12px;
+                border-top: 1px solid var(--border-color);
+            }
+
+            .navbar-actions .theme-toggle-btn {
+                width: 100%;
+                height: 44px;
+                border-radius: 12px;
+                justify-content: center;
+                gap: 8px;
+            }
+
+            .navbar-actions .theme-toggle-btn .theme-text {
+                display: inline;
+                font-size: 0.9rem;
+                font-weight: 600;
+            }
+
+            .btn-nav-login,
+            .btn-nav-register,
+            .btn-nav-dashboard,
+            .btn-nav-logout {
+                width: 100%;
+                height: 44px;
+                border-radius: 12px;
             }
         }
 
@@ -924,8 +1145,8 @@ def render_page(content_html, **kwargs):
 
             <!-- Navbar Collapse -->
             <div class="collapse navbar-collapse" id="navMain">
-                <!-- Center Links -->
-                <ul class="navbar-nav mx-auto mb-2 mb-xl-0 align-items-xl-center gap-xl-1 py-2 py-xl-0 small fw-semibold">
+                <!-- Navigation Links -->
+                <ul class="navbar-nav me-xl-auto mb-2 mb-xl-0 align-items-xl-center gap-xl-1 py-2 py-xl-0 small fw-semibold">
                     <li class="nav-item">
                         <a class="nav-link {{ 'active text-info fw-bold' if is_home else '' }}" href="/">Home</a>
                     </li>
@@ -1028,23 +1249,23 @@ def render_page(content_html, **kwargs):
                     </li>
                 </ul>
 
-                <!-- Right Actions -->
-                <div class="d-flex align-items-center gap-2 pt-2 pt-xl-0 border-top border-xl-0 border-secondary border-opacity-25 mt-2 mt-xl-0">
-                    <!-- Theme Toggle Button -->
-                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 theme-toggle-btn d-inline-flex align-items-center gap-1" id="themeToggleBtn" onclick="toggleSiteTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle dark/light theme">
-                        <i class="bi bi-moon-stars-fill theme-icon-dark text-info"></i>
+                <!-- Right Actions Area -->
+                <div class="navbar-actions">
+                    <!-- Compact Icon-Based Theme Toggle Button -->
+                    <button type="button" class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleSiteTheme()" title="Switch to dark mode" aria-label="Switch to dark mode">
+                        <i class="bi bi-moon-stars-fill theme-icon-dark text-warning"></i>
                         <i class="bi bi-sun-fill theme-icon-light text-warning d-none"></i>
-                        <span class="theme-text small fw-semibold">Dark</span>
+                        <span class="theme-text">Theme</span>
                     </button>
 
                     {% if user %}
-                        <a class="nav-link px-2 {{ 'active text-info fw-bold' if path == '/dashboard' else '' }}" href="/dashboard">Dashboard</a>
-                        <a class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1 fw-semibold d-inline-flex align-items-center" href="/logout">
+                        <a class="btn-nav-dashboard {{ 'active text-info fw-bold' if path == '/dashboard' else '' }}" href="/dashboard">Dashboard</a>
+                        <a class="btn-nav-logout" href="/logout">
                             <i class="bi bi-box-arrow-right me-1"></i> Logout ({{ user.name }})
                         </a>
                     {% else %}
-                        <a class="btn btn-outline-info btn-sm rounded-pill px-3 py-1 fw-semibold" href="/login">Login</a>
-                        <a class="btn btn-info text-white btn-sm rounded-pill px-3 py-1 fw-semibold" href="/register">Register</a>
+                        <a class="btn-nav-login" href="/login">Login</a>
+                        <a class="btn-nav-register" href="/register">Register</a>
                     {% endif %}
                 </div>
             </div>

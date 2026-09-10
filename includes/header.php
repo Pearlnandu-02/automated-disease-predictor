@@ -37,15 +37,15 @@ $user = get_logged_in_user();
             if (valid === 'light') {
                 if (darkIcon) darkIcon.classList.add('d-none');
                 if (lightIcon) lightIcon.classList.remove('d-none');
-                if (label) label.textContent = 'Light';
-                btn.setAttribute('title', 'Switch to Dark Mode');
-                btn.setAttribute('aria-label', 'Switch to Dark Mode');
+                if (label) label.textContent = 'Theme';
+                btn.setAttribute('title', 'Switch to dark mode');
+                btn.setAttribute('aria-label', 'Switch to dark mode');
             } else {
                 if (darkIcon) darkIcon.classList.remove('d-none');
                 if (lightIcon) lightIcon.classList.add('d-none');
-                if (label) label.textContent = 'Dark';
-                btn.setAttribute('title', 'Switch to Light Mode');
-                btn.setAttribute('aria-label', 'Switch to Light Mode');
+                if (label) label.textContent = 'Theme';
+                btn.setAttribute('title', 'Switch to light mode');
+                btn.setAttribute('aria-label', 'Switch to light mode');
             }
         });
     }
@@ -97,8 +97,8 @@ $user = get_logged_in_user();
 
             <!-- Navbar Collapse -->
             <div class="collapse navbar-collapse" id="navbarMain">
-                <!-- Center Links -->
-                <ul class="navbar-nav mx-auto mb-2 mb-xl-0 align-items-xl-center gap-xl-1 py-2 py-xl-0 small fw-semibold">
+                <!-- Navigation Links -->
+                <ul class="navbar-nav me-xl-auto mb-2 mb-xl-0 align-items-xl-center gap-xl-1 py-2 py-xl-0 small fw-semibold">
                     <li class="nav-item">
                         <a class="nav-link <?= $current_page == 'index.php' ? 'active text-info fw-bold' : '' ?>" href="index.php">Home</a>
                     </li>
@@ -201,13 +201,13 @@ $user = get_logged_in_user();
                     </li>
                 </ul>
 
-                <!-- Right Actions -->
-                <div class="d-flex align-items-center gap-2 pt-2 pt-xl-0 border-top border-xl-0 border-secondary border-opacity-25 mt-2 mt-xl-0">
-                    <!-- Theme Toggle Button -->
-                    <button id="themeToggleBtn" type="button" class="btn btn-sm rounded-pill px-3 py-1 theme-toggle-btn d-inline-flex align-items-center gap-1" onclick="toggleSiteTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle dark/light theme">
+                <!-- Right Actions Area -->
+                <div class="navbar-actions">
+                    <!-- Compact Icon-Based Theme Toggle Button -->
+                    <button id="themeToggleBtn" type="button" class="theme-toggle-btn" onclick="toggleSiteTheme()" title="Switch to dark mode" aria-label="Switch to dark mode">
                         <i class="bi bi-moon-stars-fill theme-icon-dark text-warning"></i>
                         <i class="bi bi-sun-fill theme-icon-light text-warning d-none"></i>
-                        <span class="theme-text small fw-semibold">Dark</span>
+                        <span class="theme-text">Theme</span>
                     </button>
                     <script>
                     (function() {
@@ -219,13 +219,13 @@ $user = get_logged_in_user();
                     </script>
 
                     <?php if (is_logged_in()): ?>
-                        <a class="nav-link px-2 <?= $current_page == 'dashboard.php' ? 'active text-info fw-bold' : '' ?>" href="dashboard.php">Dashboard</a>
-                        <a class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1 fw-semibold d-inline-flex align-items-center" href="logout.php">
+                        <a class="btn-nav-dashboard <?= $current_page == 'dashboard.php' ? 'active text-info fw-bold' : '' ?>" href="dashboard.php">Dashboard</a>
+                        <a class="btn-nav-logout" href="logout.php">
                             <i class="bi bi-box-arrow-right me-1"></i> Logout (<?= sanitize($user['name']) ?>)
                         </a>
                     <?php else: ?>
-                        <a class="btn btn-outline-info rounded-pill px-3 py-1 btn-sm fw-semibold" href="login.php">Login</a>
-                        <a class="btn btn-info rounded-pill px-3 py-1 btn-sm text-white fw-semibold" href="register.php">Register</a>
+                        <a class="btn-nav-login" href="login.php">Login</a>
+                        <a class="btn-nav-register" href="register.php">Register</a>
                     <?php endif; ?>
                 </div>
             </div>
