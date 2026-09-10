@@ -20,7 +20,7 @@ import json
 import math
 import numpy as np
 from PIL import Image, ImageOps, ImageFilter
-from scipy import ndimage
+
 
 # Educational assessment categories
 CAT_INFECTION = "Possible Infection Indicators"
