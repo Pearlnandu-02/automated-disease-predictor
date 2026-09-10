@@ -3,6 +3,8 @@ import urllib.parse
 import json
 import re
 import time
+import base64
+
 
 VERCEL_BASE = "https://automated-disease-predictor-mvhc.vercel.app"
 
@@ -114,9 +116,41 @@ def run_live_tests():
         assert 'probability' in res
         print(f"-> Vercel REST API PASSED (Prediction: {res['prediction']}, Probability: {res['probability']}%)")
 
+    # 7. Test AI Infection & Injury Scanner on Vercel
+    print("\n7. Testing GET /scanner (Image Scanner UI on Vercel)...")
+    req_scan_ui = urllib.request.Request(VERCEL_BASE + "/scanner", headers=headers)
+    with urllib.request.urlopen(req_scan_ui, timeout=15) as resp:
+        html_scan = resp.read().decode('utf-8')
+        assert resp.status == 200
+        assert "AI Infection &amp; Injury Scanner" in html_scan or "AI Infection & Injury Scanner" in html_scan
+        assert "dropZone" in html_scan
+        assert "previewImage" in html_scan
+        assert "When to Seek Immediate Medical Attention" in html_scan
+        print("-> Live Scanner UI Page PASSED (HTTP 200, Upload dropzone, camera button, warning signs present)")
+
+    print("\n8. Testing POST /api/scan-image (Computer Vision API on Vercel)...")
+    # Synthetic test image base64 (32x32 reddish square JPEG)
+    import io
+    from PIL import Image
+    test_img = Image.new('RGB', (64, 64), color=(210, 45, 45))
+    buf = io.BytesIO()
+    test_img.save(buf, format='JPEG')
+    img_b64 = "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode('utf-8')
+
+    scan_payload = json.dumps({"image_base64": img_b64}).encode('utf-8')
+    req_scan_api = urllib.request.Request(VERCEL_BASE + "/api/scan-image", data=scan_payload, headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req_scan_api, timeout=20) as resp:
+        scan_res = json.loads(resp.read().decode('utf-8'))
+        assert scan_res.get('success') is True
+        assert 'category' in scan_res
+        assert 'confidence_score' in scan_res
+        assert 'metrics' in scan_res
+        print(f"-> Live Vision API PASSED (Category: {scan_res['category']}, Score: {scan_res['confidence_score']}%, EI: {scan_res['metrics'].get('erythema_index')})")
+
     print("\n==================================================")
     print("ALL LIVE VERCEL TESTS PASSED WITH 100% SUCCESS!")
     print("==================================================")
 
 if __name__ == '__main__':
     run_live_tests()
+

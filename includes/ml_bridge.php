@@ -225,3 +225,74 @@ function simulate_symptom_prediction($symptoms_array) {
         'disclaimer' => 'This system provides educational/informational AI predictions only and is not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment.'
     ];
 }
+
+function call_image_scanner($image_path) {
+    if (!file_exists($image_path)) {
+        return [
+            'success' => false,
+            'category' => 'Unable to Assess',
+            'error' => 'Image file not found on server.'
+        ];
+    }
+
+    $api_url = getenv('SCANNER_API_URL') ?: 'http://127.0.0.1:5000/scan-image';
+
+    // Strategy 1: Attempt Flask REST API call
+    if (function_exists('curl_init')) {
+        $ch = curl_init($api_url);
+        $cfile = new CURLFile($image_path, mime_content_type($image_path) ?: 'image/jpeg', basename($image_path));
+        $data = ['image' => $cfile];
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 6);
+
+        $response = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($http_code === 200 && $response) {
+            $result = json_decode($response, true);
+            if ($result && !empty($result['category'])) {
+                return $result;
+            }
+        }
+    }
+
+    // Strategy 2: Fallback to direct Python subprocess execution
+    $python_bin = get_python_binary();
+    $script_path = escapeshellarg(__DIR__ . '/../ml/vision/scanner.py');
+    $img_escaped = escapeshellarg($image_path);
+
+    $command = "\"{$python_bin}\" {$script_path} {$img_escaped}";
+    $output = shell_exec($command);
+
+    if ($output) {
+        $result = json_decode($output, true);
+        if ($result && !empty($result['category'])) {
+            return $result;
+        }
+    }
+
+    // Fallback if neither API nor Python execution could run
+    return [
+        'success' => false,
+        'category' => 'Unable to Assess',
+        'confidence_score' => 0.0,
+        'assessment_summary' => 'Unable to complete computer vision analysis.',
+        'findings' => ['Computer vision scanning pipeline is currently offline or unreachable.'],
+        'recommendations' => [
+            'Please verify server Python dependencies (PIL, numpy, scipy).',
+            'For any actual skin concern, please consult a qualified healthcare professional directly.'
+        ],
+        'warning_signs' => [
+            'Severe bleeding or deep puncture wounds',
+            'Rapidly spreading redness or red streaks',
+            'Foul-smelling pus or worsening discharge',
+            'High fever or worsening systemic symptoms'
+        ],
+        'is_preliminary' => true
+    ];
+}
+

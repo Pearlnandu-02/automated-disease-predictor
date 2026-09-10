@@ -127,10 +127,10 @@ require_once __DIR__ . '/includes/header.php';
                 <i class="bi bi-arrow-left me-1"></i> New Assessment
             </a>
             <div class="d-flex gap-2">
-                <a href="simulator.php?from=<?= $assessment_id ?>" class="btn btn-info text-white rounded-pill px-4 shadow-sm">
+                <a href="simulator.php?from=<?= $assessment_id ?>" class="btn btn-info rounded-pill px-4 shadow-sm">
                     <i class="bi bi-sliders me-1"></i> Launch What-If Simulator
                 </a>
-                <a href="report.php?id=<?= $assessment_id ?>" target="_blank" class="btn btn-dark rounded-pill px-4 shadow-sm">
+                <a href="report.php?id=<?= $assessment_id ?>" target="_blank" class="btn btn-outline-info rounded-pill px-4 shadow-sm">
                     <i class="bi bi-printer me-1"></i> Print PDF Report
                 </a>
             </div>

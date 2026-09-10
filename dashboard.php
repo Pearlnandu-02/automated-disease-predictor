@@ -60,10 +60,10 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 
     <!-- Quick Access Cards -->
-    <div class="col-md-4">
-        <div class="card-custom p-4 h-100">
+    <div class="col-lg-3 col-md-6">
+        <div class="card card-custom p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-white mb-0">AI Disease Prediction</h5>
+                <h5 class="fw-bold mb-0">AI Symptom Check</h5>
                 <i class="bi bi-cpu text-info fs-3"></i>
             </div>
             <p class="text-muted small mb-3">Select symptoms and execute machine learning classification model inference.</p>
@@ -71,10 +71,21 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card-custom p-4 h-100">
+    <div class="col-lg-3 col-md-6">
+        <div class="card card-custom p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-white mb-0">Disease Database</h5>
+                <h5 class="fw-bold mb-0">Injury Scanner</h5>
+                <i class="bi bi-camera text-info fs-3"></i>
+            </div>
+            <p class="text-muted small mb-3">Upload a skin photo for educational preliminary visual erythema & edge analysis.</p>
+            <a href="image_scanner.php" class="btn btn-outline-info btn-sm rounded-pill mt-auto">Launch Scanner</a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+        <div class="card card-custom p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Disease Database</h5>
                 <i class="bi bi-search text-warning fs-3"></i>
             </div>
             <p class="text-muted small mb-3">Explore 25 comprehensive medical conditions, causes, and prevention strategies.</p>
@@ -82,10 +93,10 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card-custom p-4 h-100">
+    <div class="col-lg-3 col-md-6">
+        <div class="card card-custom p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-white mb-0">What-If Simulator</h5>
+                <h5 class="fw-bold mb-0">What-If Simulator</h5>
                 <i class="bi bi-sliders text-success fs-3"></i>
             </div>
             <p class="text-muted small mb-3">Simulate metric adjustments and recalculate statistical risk scores.</p>
@@ -95,14 +106,14 @@ require_once __DIR__ . '/includes/header.php';
 
     <!-- Recent Predictions Table -->
     <div class="col-12">
-        <div class="card-custom p-4">
-            <h4 class="fw-bold text-white mb-3 d-flex align-items-center">
+        <div class="card card-custom p-4">
+            <h4 class="fw-bold mb-3 d-flex align-items-center">
                 <i class="bi bi-clock-history text-info me-2"></i> Previous AI Predictions & Symptom Checks
             </h4>
 
             <?php if (!empty($recent_predictions)): ?>
                 <div class="table-responsive">
-                    <table class="table table-dark table-hover align-middle small border-secondary">
+                    <table class="table table-custom table-hover align-middle small">
                         <thead>
                             <tr class="text-info">
                                 <th>Date & Time</th>
@@ -117,7 +128,7 @@ require_once __DIR__ . '/includes/header.php';
                                 <tr>
                                     <td><?= date('M d, Y H:i', strtotime($p['created_at'])) ?></td>
                                     <td><span class="text-truncate d-inline-block" style="max-width: 250px;"><?= sanitize($p['symptoms_selected']) ?></span></td>
-                                    <td class="fw-bold text-white"><?= sanitize($p['predicted_disease']) ?></td>
+                                    <td class="fw-bold"><?= sanitize($p['predicted_disease']) ?></td>
                                     <td class="text-info fw-bold"><?= number_format($p['confidence'], 1) ?>%</td>
                                     <td>
                                         <a href="disease_detail.php?name=<?= urlencode($p['predicted_disease']) ?>" class="btn btn-sm btn-outline-info rounded-pill px-3">
@@ -141,14 +152,14 @@ require_once __DIR__ . '/includes/header.php';
 
     <!-- User Profile Section -->
     <div class="col-12">
-        <div class="card-custom p-4">
-            <h5 class="fw-bold text-white mb-3"><i class="bi bi-person-circle text-info me-2"></i> Account Profile Information</h5>
+        <div class="card card-custom p-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-person-circle text-info me-2"></i> Account Profile Information</h5>
             <div class="row g-3 text-muted small">
                 <div class="col-md-4">
-                    <strong>Full Name:</strong> <span class="text-white"><?= sanitize($user['name']) ?></span>
+                    <strong>Full Name:</strong> <span class="text-primary-theme fw-semibold"><?= sanitize($user['name']) ?></span>
                 </div>
                 <div class="col-md-4">
-                    <strong>Email Address:</strong> <span class="text-white"><?= sanitize($user['email']) ?></span>
+                    <strong>Email Address:</strong> <span class="text-primary-theme fw-semibold"><?= sanitize($user['email']) ?></span>
                 </div>
                 <div class="col-md-4">
                     <strong>Account Status:</strong> <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-25">Active Student Account</span>

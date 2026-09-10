@@ -22,8 +22,7 @@ $user = get_logged_in_user();
     <script>
     (function() {
         var saved = localStorage.getItem('ai_healthcare_theme');
-        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var theme = saved ? saved : (prefersDark ? 'dark' : 'dark');
+        var theme = (saved === 'light' || saved === 'dark') ? saved : 'dark';
         document.documentElement.setAttribute('data-theme', theme);
     })();
     </script>
@@ -54,6 +53,11 @@ $user = get_logged_in_user();
                         <a class="nav-link <?= $current_page == 'prediction.php' ? 'active text-info fw-bold' : '' ?>" href="prediction.php">AI Prediction</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link <?= $current_page == 'image_scanner.php' ? 'active text-info fw-bold' : '' ?>" href="image_scanner.php">
+                            <i class="bi bi-camera me-1"></i>Injury Scanner
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link <?= $current_page == 'assessment.php' ? 'active text-info fw-bold' : '' ?>" href="assessment.php">Clinical Risk</a>
                     </li>
                     <li class="nav-item">
@@ -72,19 +76,30 @@ $user = get_logged_in_user();
                         <a class="nav-link <?= $current_page == 'dataset_info.php' ? 'active text-info fw-bold' : '' ?>" href="dataset_info.php">Dataset & AI</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= $current_page == 'project_info.php' ? 'active text-info fw-bold' : '' ?>" href="project_info.php">About Project</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link <?= $current_page == 'contact.php' ? 'active text-info fw-bold' : '' ?>" href="contact.php">Contact</a>
                     </li>
 
                     <!-- Theme Toggle Button -->
                     <li class="nav-item ms-xl-2 my-1 my-xl-0">
-                        <button id="themeToggleBtn" class="btn btn-sm rounded-pill px-3 py-1 theme-toggle-btn d-inline-flex align-items-center gap-1" title="Toggle Dark/Light Mode">
+                        <button id="themeToggleBtn" class="btn btn-sm rounded-pill px-3 py-1 theme-toggle-btn d-inline-flex align-items-center gap-1" title="Toggle Dark/Light Mode" aria-label="Toggle dark/light theme">
                             <i class="bi bi-moon-stars-fill theme-icon-dark text-warning"></i>
                             <i class="bi bi-sun-fill theme-icon-light text-warning d-none"></i>
                             <span class="theme-text small fw-semibold">Dark</span>
                         </button>
+                        <script>
+                        (function() {
+                            var t = document.documentElement.getAttribute('data-theme') || 'dark';
+                            var btn = document.getElementById('themeToggleBtn');
+                            if (btn && t === 'light') {
+                                var dIcon = btn.querySelector('.theme-icon-dark');
+                                var lIcon = btn.querySelector('.theme-icon-light');
+                                var txt = btn.querySelector('.theme-text');
+                                if (dIcon) dIcon.classList.add('d-none');
+                                if (lIcon) lIcon.classList.remove('d-none');
+                                if (txt) txt.textContent = 'Light';
+                            }
+                        })();
+                        </script>
                     </li>
 
                     <?php if (is_logged_in()): ?>
@@ -101,7 +116,7 @@ $user = get_logged_in_user();
                             <a class="btn btn-outline-info rounded-pill px-3 btn-sm" href="login.php">Login</a>
                         </li>
                         <li class="nav-item ms-xl-1">
-                            <a class="btn btn-info rounded-pill px-3 btn-sm text-white" href="register.php">Register</a>
+                            <a class="btn btn-info rounded-pill px-3 btn-sm" href="register.php">Register</a>
                         </li>
                     <?php endif; ?>
                 </ul>

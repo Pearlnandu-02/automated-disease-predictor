@@ -8,6 +8,9 @@ from flask import Flask, request, jsonify, render_template_string, redirect, url
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from ml.prediction.predict import predict_disease, predict_symptoms
+from ml.vision.scanner import compute_vision_metrics
+import base64
+import tempfile
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(16))
@@ -145,20 +148,90 @@ def render_page(content_html, **kwargs):
             transition: background 0.25s ease, border 0.25s ease;
         }
 
-        [data-theme="light"] .text-white {
-            color: #0f172a !important;
+        .btn-info, .btn-primary, .btn-danger, .btn-success {
+            color: #ffffff !important;
+            font-weight: 600;
         }
 
-        [data-theme="light"] .text-light {
-            color: #1e293b !important;
+        /* AI Scanner styles */
+        .scanner-dropzone {
+            border: 2px dashed var(--card-border);
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
         }
-
-        [data-theme="light"] .text-muted {
-            color: #475569 !important;
+        .scanner-dropzone:hover, .scanner-dropzone.dragover {
+            border-color: var(--accent-primary);
+            background: rgba(6, 182, 212, 0.08);
         }
-
-        [data-theme="light"] .bg-dark {
-            background-color: #f1f5f9 !important;
+        .scanner-preview-wrapper {
+            position: relative;
+            max-width: 480px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid var(--card-border);
+            background: #000;
+        }
+        .scanner-preview-img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            display: block;
+        }
+        .scanner-laser-beam {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent 0%, #06b6d4 25%, #22d3ee 50%, #06b6d4 75%, transparent 100%);
+            box-shadow: 0 0 16px 4px rgba(6, 182, 212, 0.85);
+            z-index: 10;
+            display: none;
+        }
+        .scanning-active .scanner-laser-beam {
+            display: block;
+            animation: laserScanSweep 2.2s ease-in-out infinite alternate;
+        }
+        @keyframes laserScanSweep {
+            0% { top: 0%; }
+            100% { top: calc(100% - 4px); }
+        }
+        .badge-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+        .badge-category-infection { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.35); }
+        .badge-category-inflammation { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.35); }
+        .badge-category-injury { background: rgba(6, 182, 212, 0.15); color: #06b6d4; border: 1px solid rgba(6, 182, 212, 0.35); }
+        .badge-category-rash { background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.35); }
+        .badge-category-swelling { background: rgba(13, 148, 136, 0.15); color: #0d9488; border: 1px solid rgba(13, 148, 136, 0.35); }
+        .badge-category-unable { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.35); }
+        .metric-pill-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            text-align: center;
+        }
+        .metric-pill-val { font-size: 1.3rem; font-weight: 800; color: var(--text-primary); }
+        .metric-pill-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+        .warning-sign-card {
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-left: 4px solid #ef4444;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 0.88rem;
         }
 
         [data-theme="dark"] .bg-light {
@@ -359,6 +432,7 @@ def render_page(content_html, **kwargs):
                     <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
                     <li class="nav-item"><a class="nav-link" href="/prediction">AI Prediction</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/scanner"><i class="bi bi-camera me-1"></i>Injury Scanner</a></li>
                     <li class="nav-item"><a class="nav-link" href="/assessment">Clinical Risk</a></li>
                     <li class="nav-item"><a class="nav-link" href="/simulator">Simulator</a></li>
                     <li class="nav-item"><a class="nav-link" href="/diseases">Diseases Library</a></li>
@@ -1824,6 +1898,390 @@ def api_predict():
         return jsonify(result_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/scanner')
+@app.route('/image_scanner.php')
+@app.route('/api/scanner')
+def scanner_page():
+    content = """
+    <!-- Page Header & Hero -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card-custom p-4 p-md-5 mb-3" style="background: linear-gradient(135deg, #0b1120 0%, #151f32 50%, #0f766e 100%);">
+                <span class="badge bg-white text-dark fw-bold px-3 py-2 rounded-pill mb-3">
+                    <i class="bi bi-camera-fill text-info me-1"></i> Computer Vision Pipeline
+                </span>
+                <h1 class="display-6 fw-bold text-white mb-2">AI Infection & Injury Scanner</h1>
+                <p class="lead mb-0 text-white-50">
+                    Upload a clear image of a skin injury, wound, rash, swelling, or redness for an AI-assisted preliminary visual assessment.
+                </p>
+            </div>
+
+            <!-- Mandatory Educational Disclaimer -->
+            <div class="alert alert-warning border-0 p-3 mb-3 shadow-sm" style="background: rgba(245, 158, 11, 0.12); border-left: 4px solid #f59e0b !important;">
+                <i class="bi bi-exclamation-triangle-fill fs-5 me-2"></i>
+                <strong>Important Medical Notice:</strong> This AI scanner provides an <em>educational preliminary visual assessment</em> and is not a medical diagnosis. For concerning, worsening, infected, or serious injuries, consult a qualified healthcare professional.
+            </div>
+
+            <!-- Privacy Assurance Banner -->
+            <div class="alert alert-secondary py-2 px-3 small border d-flex align-items-center gap-2 mb-4">
+                <i class="bi bi-shield-lock-fill text-success fs-5"></i>
+                <div>
+                    <strong>Privacy Assurance:</strong> Uploaded images are processed ephemerally in memory and permanently deleted immediately after visual metric extraction. Photos are <strong>never stored</strong> in our database. <em>Do not upload identifying personal documents or faces.</em>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Scanner Layout -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-6">
+            <div class="card-custom h-100 p-4">
+                <h4 class="fw-bold mb-1 d-flex align-items-center gap-2">
+                    <i class="bi bi-cloud-arrow-up text-info"></i> Scan an Infection or Injury
+                </h4>
+                <p class="text-muted small mb-3">Upload a clear, well-lit image of the affected skin area for preliminary analysis.</p>
+
+                <div id="scannerErrorAlert" class="alert alert-danger d-none mb-3 py-2 px-3 small">
+                    <i class="bi bi-exclamation-circle-fill me-1"></i> <span id="scannerErrorMsg"></span>
+                </div>
+
+                <div id="dropZone" class="scanner-dropzone mb-3">
+                    <div class="p-3 bg-info bg-opacity-10 text-info rounded-circle d-inline-block mb-3">
+                        <i class="bi bi-image fs-1"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1">Drag & Drop Image Here</h5>
+                    <p class="text-muted small mb-3">or choose from your device</p>
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        <button type="button" class="btn btn-outline-info rounded-pill px-3 py-2 btn-sm" id="btnBrowseFiles">
+                            <i class="bi bi-folder2-open me-1"></i> Upload Image
+                        </button>
+                        <button type="button" class="btn btn-outline-info rounded-pill px-3 py-2 btn-sm" id="btnTakePhoto">
+                            <i class="bi bi-camera me-1"></i> Take Photo
+                        </button>
+                    </div>
+                    <div class="mt-3 text-muted small">
+                        <span class="badge bg-secondary-subtle text-secondary me-1">JPG</span>
+                        <span class="badge bg-secondary-subtle text-secondary me-1">PNG</span>
+                        <span class="badge bg-secondary-subtle text-secondary">WEBP</span>
+                        <span class="ms-2">Max 8 MB</span>
+                    </div>
+                    <input type="file" id="imageFileInput" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="d-none">
+                    <input type="file" id="cameraFileInput" accept="image/*" capture="environment" class="d-none">
+                </div>
+
+                <div id="previewContainer" class="d-none mt-2">
+                    <div class="scanner-preview-wrapper mb-3" id="previewFrame">
+                        <img id="previewImage" class="scanner-preview-img" alt="Skin Preview">
+                        <div class="scanner-laser-beam"></div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center p-2 px-3 rounded-3 mb-3 border" style="background: var(--bg-secondary);">
+                        <span id="previewFilename" class="small fw-semibold text-truncate me-2">image.jpg</span>
+                        <span id="previewFilesize" class="badge bg-secondary rounded-pill">0 KB</span>
+                    </div>
+                    <div class="d-flex gap-2" id="previewActions">
+                        <button type="button" class="btn btn-outline-danger flex-fill py-2 rounded-3" id="btnRemoveImage">
+                            <i class="bi bi-trash3 me-1"></i> Remove Image
+                        </button>
+                        <button type="button" class="btn btn-primary-custom flex-fill py-2" id="btnScanImage">
+                            <i class="bi bi-cpu me-1"></i> Scan Image
+                        </button>
+                    </div>
+                    <div id="scanningState" class="d-none text-center py-3">
+                        <strong class="text-info fs-5 d-block mb-2">Analyzing image...</strong>
+                        <p id="scanningStatusText" class="text-muted small mb-2">Evaluating visual characteristics...</p>
+                        <div class="progress" style="height: 6px;">
+                            <div id="scanProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-info" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card-custom h-100 p-4" id="resultCardContainer">
+                <div id="idleState" class="text-center py-5 my-auto">
+                    <i class="bi bi-activity text-info display-1 mb-3 opacity-50"></i>
+                    <h4 class="fw-bold mb-2">Preliminary Assessment Output</h4>
+                    <p class="text-muted small mb-0">Select or capture a photo and click <strong>"Scan Image"</strong>. The computer vision analyzer evaluates erythema index, edge gradients, and textural dispersion.</p>
+                </div>
+
+                <div id="resultContent" class="d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted small fw-bold text-uppercase"><i class="bi bi-clipboard2-pulse me-1"></i> Visual Assessment</span>
+                        <span class="small text-muted">Just now</span>
+                    </div>
+                    <div class="mb-3">
+                        <span id="resultCategoryBadge" class="badge-category badge-category-injury">
+                            <span id="resultCategoryText">Evaluating...</span>
+                        </span>
+                    </div>
+                    <div class="p-3 rounded-3 border mb-3" style="background: var(--bg-secondary);">
+                        <h5 class="fw-bold mb-1" id="resultSummaryHeading">Visual indicators may be consistent with...</h5>
+                        <p class="text-muted small mb-0" id="resultSummaryDesc">Assessment generated via spectrophotometric color analysis and surface edge gradient measurement.</p>
+                    </div>
+                    <div class="mb-3 p-3 rounded-3 border" style="background: var(--bg-secondary);">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="small fw-semibold">Visual Feature Correlation Score:</span>
+                            <span id="resultScoreText" class="fw-bold text-info">0.0%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div id="resultScoreBar" class="progress-bar bg-info" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-4">
+                            <div class="metric-pill-card">
+                                <div class="metric-pill-val" id="valErythema">--</div>
+                                <div class="metric-pill-lbl">Erythema</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="metric-pill-card">
+                                <div class="metric-pill-val" id="valRoughness">--</div>
+                                <div class="metric-pill-lbl">Roughness</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="metric-pill-card">
+                                <div class="metric-pill-val" id="valChroma">--</div>
+                                <div class="metric-pill-lbl">Variance</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="fw-bold small text-uppercase text-muted mb-2">Visual Observations</h6>
+                        <ul id="resultFindingsList" class="small text-muted ps-3 mb-0"></ul>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="fw-bold small text-uppercase text-muted mb-2">General Educational Guidance</h6>
+                        <ul id="resultRecsList" class="small text-muted ps-3 mb-0"></ul>
+                    </div>
+                    <button type="button" class="btn btn-outline-info w-100 rounded-3 py-2" id="btnScanAnother">
+                        <i class="bi bi-arrow-repeat me-1"></i> Scan Another Image
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Safety Warning Signs -->
+    <div class="card-custom p-4 mb-5 border-danger-subtle">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="badge bg-danger text-white px-3 py-2 rounded-pill">
+                <i class="bi bi-hospital me-1"></i> Patient Safety Notice
+            </span>
+            <h4 class="fw-bold mb-0">When to Seek Immediate Medical Attention</h4>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-4 col-sm-6"><div class="warning-sign-card h-100"><div class="fw-bold text-danger mb-1"><i class="bi bi-droplet-fill me-1"></i> Severe Bleeding</div><div class="small text-muted">Blood that continues to flow after 10 minutes of direct pressure.</div></div></div>
+            <div class="col-md-4 col-sm-6"><div class="warning-sign-card h-100"><div class="fw-bold text-danger mb-1"><i class="bi bi-graph-up-arrow me-1"></i> Rapidly Spreading Redness</div><div class="small text-muted">Red streaks radiating from the wound or expanding borders.</div></div></div>
+            <div class="col-md-4 col-sm-6"><div class="warning-sign-card h-100"><div class="fw-bold text-danger mb-1"><i class="bi bi-thermometer-high me-1"></i> Fever & Systemic Chills</div><div class="small text-muted">Elevated body temperature (>100.4°F), rigors, or nausea.</div></div></div>
+            <div class="col-md-4 col-sm-6"><div class="warning-sign-card h-100"><div class="fw-bold text-danger mb-1"><i class="bi bi-radioactive me-1"></i> Foul Pus or Drainage</div><div class="small text-muted">Thick, yellow/green discharge or wound that feels unusually hot.</div></div></div>
+            <div class="col-md-4 col-sm-6"><div class="warning-sign-card h-100"><div class="fw-bold text-danger mb-1"><i class="bi bi-arrows-fullscreen me-1"></i> Rapidly Increasing Swelling</div><div class="small text-muted">Swelling that produces severe throbbing pain or numbs limb.</div></div></div>
+            <div class="col-md-4 col-sm-6"><div class="warning-sign-card h-100"><div class="fw-bold text-danger mb-1"><i class="bi bi-bandaid-fill me-1"></i> Deep or Gaping Wounds</div><div class="small text-muted">Cuts exposing yellow fat or muscle requiring sutures.</div></div></div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var dropZone = document.getElementById('dropZone');
+        var imageFileInput = document.getElementById('imageFileInput');
+        var cameraFileInput = document.getElementById('cameraFileInput');
+        var btnBrowseFiles = document.getElementById('btnBrowseFiles');
+        var btnTakePhoto = document.getElementById('btnTakePhoto');
+        var previewContainer = document.getElementById('previewContainer');
+        var previewImage = document.getElementById('previewImage');
+        var previewFilename = document.getElementById('previewFilename');
+        var previewFilesize = document.getElementById('previewFilesize');
+        var previewActions = document.getElementById('previewActions');
+        var btnRemoveImage = document.getElementById('btnRemoveImage');
+        var btnScanImage = document.getElementById('btnScanImage');
+        var scanningState = document.getElementById('scanningState');
+        var previewFrame = document.getElementById('previewFrame');
+        var idleState = document.getElementById('idleState');
+        var resultContent = document.getElementById('resultContent');
+        var resultCategoryBadge = document.getElementById('resultCategoryBadge');
+        var resultCategoryText = document.getElementById('resultCategoryText');
+        var resultSummaryHeading = document.getElementById('resultSummaryHeading');
+        var resultScoreText = document.getElementById('resultScoreText');
+        var resultScoreBar = document.getElementById('resultScoreBar');
+        var valErythema = document.getElementById('valErythema');
+        var valRoughness = document.getElementById('valRoughness');
+        var valChroma = document.getElementById('valChroma');
+        var resultFindingsList = document.getElementById('resultFindingsList');
+        var resultRecsList = document.getElementById('resultRecsList');
+        var btnScanAnother = document.getElementById('btnScanAnother');
+        var scannerErrorAlert = document.getElementById('scannerErrorAlert');
+        var scannerErrorMsg = document.getElementById('scannerErrorMsg');
+
+        var currentFile = null;
+
+        function showError(msg) {
+            scannerErrorMsg.textContent = msg;
+            scannerErrorAlert.classList.remove('d-none');
+        }
+        function clearError() {
+            scannerErrorAlert.classList.add('d-none');
+        }
+
+        btnBrowseFiles.onclick = function(e) { e.stopPropagation(); imageFileInput.click(); };
+        btnTakePhoto.onclick = function(e) { e.stopPropagation(); cameraFileInput.click(); };
+        dropZone.onclick = function() { imageFileInput.click(); };
+
+        ['dragenter', 'dragover'].forEach(function(ev) {
+            dropZone.addEventListener(ev, function(e) { e.preventDefault(); dropZone.classList.add('dragover'); });
+        });
+        ['dragleave', 'drop'].forEach(function(ev) {
+            dropZone.addEventListener(ev, function(e) { e.preventDefault(); dropZone.classList.remove('dragover'); });
+        });
+        dropZone.addEventListener('drop', function(e) {
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+        });
+
+        imageFileInput.onchange = function() { if (this.files.length) handleFile(this.files[0]); };
+        cameraFileInput.onchange = function() { if (this.files.length) handleFile(this.files[0]); };
+
+        function handleFile(file) {
+            clearError();
+            if (file.size > 8 * 1024 * 1024) { showError('Image is too large (max 8 MB).'); return; }
+            currentFile = file;
+            previewFilename.textContent = file.name;
+            previewFilesize.textContent = (file.size / 1024).toFixed(1) + ' KB';
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                dropZone.classList.add('d-none');
+                previewContainer.classList.remove('d-none');
+                previewActions.classList.remove('d-none');
+                scanningState.classList.add('d-none');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        btnRemoveImage.onclick = resetScanner;
+        btnScanAnother.onclick = resetScanner;
+
+        function resetScanner() {
+            currentFile = null;
+            imageFileInput.value = '';
+            cameraFileInput.value = '';
+            previewImage.src = '';
+            previewContainer.classList.add('d-none');
+            dropZone.classList.remove('d-none');
+            previewFrame.classList.remove('scanning-active');
+            resultContent.classList.add('d-none');
+            idleState.classList.remove('d-none');
+            clearError();
+        }
+
+        btnScanImage.onclick = function() {
+            if (!currentFile) { showError('Please select an image first.'); return; }
+            clearError();
+            previewActions.classList.add('d-none');
+            scanningState.classList.remove('d-none');
+            previewFrame.classList.add('scanning-active');
+
+            var formData = new FormData();
+            formData.append('image', currentFile);
+
+            fetch('/api/scan-image', { method: 'POST', body: formData })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                previewFrame.classList.remove('scanning-active');
+                scanningState.classList.add('d-none');
+                previewActions.classList.remove('d-none');
+                renderResult(data);
+            })
+            .catch(function(err) {
+                previewFrame.classList.remove('scanning-active');
+                scanningState.classList.add('d-none');
+                previewActions.classList.remove('d-none');
+                showError('Error during scan: ' + err.message);
+            });
+        };
+
+        function renderResult(res) {
+            idleState.classList.add('d-none');
+            resultContent.classList.remove('d-none');
+            var cat = res.category || 'Unable to Assess';
+            resultCategoryText.textContent = cat;
+            resultCategoryBadge.className = 'badge-category';
+            if (cat.includes('Infection')) resultCategoryBadge.classList.add('badge-category-infection');
+            else if (cat.includes('Inflammation')) resultCategoryBadge.classList.add('badge-category-inflammation');
+            else if (cat.includes('Minor Injury')) resultCategoryBadge.classList.add('badge-category-injury');
+            else if (cat.includes('Rash')) resultCategoryBadge.classList.add('badge-category-rash');
+            else if (cat.includes('Swelling')) resultCategoryBadge.classList.add('badge-category-swelling');
+            else resultCategoryBadge.classList.add('badge-category-unable');
+
+            resultSummaryHeading.textContent = 'Visual indicators may be consistent with ' + cat.toLowerCase();
+            var score = res.confidence_score || 0;
+            resultScoreText.textContent = score.toFixed(1) + '%';
+            resultScoreBar.style.width = score + '%';
+
+            var metrics = res.metrics || {};
+            valErythema.textContent = (metrics.erythema_index !== undefined) ? metrics.erythema_index : '--';
+            valRoughness.textContent = (metrics.surface_roughness !== undefined) ? metrics.surface_roughness : '--';
+            valChroma.textContent = (metrics.chromatic_variance !== undefined) ? metrics.chromatic_variance : '--';
+
+            resultFindingsList.innerHTML = '';
+            (res.findings || []).forEach(function(f) {
+                var li = document.createElement('li');
+                li.className = 'mb-1';
+                li.textContent = f;
+                resultFindingsList.appendChild(li);
+            });
+
+            resultRecsList.innerHTML = '';
+            (res.recommendations || []).forEach(function(r) {
+                var li = document.createElement('li');
+                li.className = 'mb-1';
+                li.textContent = r;
+                resultRecsList.appendChild(li);
+            });
+        }
+    });
+    </script>
+    """
+    return render_page(content)
+
+@app.route('/api/scan-image', methods=['POST'])
+def api_scan_image():
+    temp_path = None
+    try:
+        if 'image' in request.files:
+            file = request.files['image']
+            if file.filename == '':
+                return jsonify({"success": False, "category": "Unable to Assess", "error": "No file selected"}), 400
+            fd, temp_path = tempfile.mkstemp(suffix='.jpg')
+            os.close(fd)
+            file.save(temp_path)
+            res = compute_vision_metrics(temp_path)
+            return jsonify(res)
+
+        req_data = request.get_json(silent=True) or {}
+        if 'image_base64' in req_data:
+            b64_val = req_data['image_base64']
+            if ',' in b64_val:
+                b64_val = b64_val.split(',', 1)[1]
+            img_bytes = base64.b64decode(b64_val)
+            fd, temp_path = tempfile.mkstemp(suffix='.jpg')
+            os.close(fd)
+            with open(temp_path, 'wb') as f:
+                f.write(img_bytes)
+            res = compute_vision_metrics(temp_path)
+            return jsonify(res)
+
+        return jsonify({"success": False, "category": "Unable to Assess", "error": "No image data provided"}), 400
+    except Exception as e:
+        return jsonify({"success": False, "category": "Unable to Assess", "error": str(e)}), 500
+    finally:
+        if temp_path and os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except Exception:
+                pass
+
 
 handler = app
 app_handler = app

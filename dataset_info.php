@@ -10,8 +10,8 @@ if (file_exists($eval_path)) {
 
 <div class="row py-3">
     <div class="col-lg-12 text-center mb-4">
-        <span class="badge bg-info text-dark px-3 py-2 rounded-pill fw-bold mb-2">SYSTEM ARCHITECTURE</span>
-        <h1 class="display-5 fw-extrabold text-white">Large Dataset Handling & AI Model Metrics</h1>
+        <span class="badge bg-info text-white px-3 py-2 rounded-pill fw-bold mb-2">SYSTEM ARCHITECTURE</span>
+        <h1 class="display-5 fw-extrabold mb-2">Large Dataset Handling & AI Model Metrics</h1>
         <p class="lead text-muted mx-auto" style="max-width: 800px;">
             Detailed technical documentation explaining how high-volume healthcare datasets are preprocessed offline and served efficiently via decoupled REST prediction microservices without client-side performance degradation.
         </p>
@@ -20,13 +20,13 @@ if (file_exists($eval_path)) {
 
 <!-- Architecture Design Principles -->
 <div class="card-custom p-4 p-md-5 mb-5">
-    <h3 class="fw-bold text-white mb-4 d-flex align-items-center">
+    <h3 class="fw-bold mb-4 d-flex align-items-center">
         <i class="bi bi-hdd-network-fill text-info me-2"></i> Scalable Large Healthcare Data Architecture
     </h3>
 
     <div class="row g-4">
         <div class="col-md-6">
-            <div class="p-3 bg-dark bg-opacity-50 rounded border border-secondary border-opacity-25 h-100">
+            <div class="p-3 bg-card-subtle rounded border h-100">
                 <h5 class="fw-bold text-info mb-2"><i class="bi bi-database-down me-2"></i> 1. Offline Preprocessing & Storage Separation</h5>
                 <p class="small text-muted mb-0">
                     Raw clinical records and symptom datasets are stored separately in designated data repositories (`ml/datasets/`). Preprocessing, scaling, and feature transformation occur offline before model serialization.
@@ -35,7 +35,7 @@ if (file_exists($eval_path)) {
         </div>
 
         <div class="col-md-6">
-            <div class="p-3 bg-dark bg-opacity-50 rounded border border-secondary border-opacity-25 h-100">
+            <div class="p-3 bg-card-subtle rounded border h-100">
                 <h5 class="fw-bold text-info mb-2"><i class="bi bi-file-earmark-zip me-2"></i> 2. Serialized Pipeline Execution</h5>
                 <p class="small text-muted mb-0">
                     Only lightweight, serialized model artifacts (`joblib` binaries) are loaded during runtime inference. The web server never transmits raw medical datasets to client browsers.
@@ -44,16 +44,16 @@ if (file_exists($eval_path)) {
         </div>
 
         <div class="col-md-6">
-            <div class="p-3 bg-dark bg-opacity-50 rounded border border-secondary border-opacity-25 h-100">
+            <div class="p-3 bg-card-subtle rounded border h-100">
                 <h5 class="fw-bold text-info mb-2"><i class="bi bi-cpu me-2"></i> 3. Decoupled REST Microservice API</h5>
                 <p class="small text-muted mb-0">
-                    Web requests are handled asynchronously. PHP / Frontend scripts communicate with Python ML inference backends via structured JSON REST endpoints (`POST /predict`).
+                    Web requests are handled asynchronously. PHP / Frontend scripts communicate with Python ML inference backends via structured JSON REST endpoints (`POST /predict` and `POST /scan-image`).
                 </p>
             </div>
         </div>
 
         <div class="col-md-6">
-            <div class="p-3 bg-dark bg-opacity-50 rounded border border-secondary border-opacity-25 h-100">
+            <div class="p-3 bg-card-subtle rounded border h-100">
                 <h5 class="fw-bold text-info mb-2"><i class="bi bi-lightning-charge me-2"></i> 4. Indexing & Pagination</h5>
                 <p class="small text-muted mb-0">
                     Database tables (`diseases`, `symptoms`, `prediction_history`) employ B-tree primary and foreign key indexes. Large result sets utilize server-side SQL pagination (`LIMIT`, `OFFSET`).
@@ -65,13 +65,13 @@ if (file_exists($eval_path)) {
 
 <!-- Machine Learning Model Evaluation Metrics -->
 <div class="card-custom p-4 p-md-5 mb-4">
-    <h3 class="fw-bold text-white mb-3 d-flex align-items-center">
+    <h3 class="fw-bold mb-3 d-flex align-items-center">
         <i class="bi bi-graph-up-arrow text-success me-2"></i> Machine Learning Model Performance Metrics
     </h3>
-    <p class="text-muted small mb-4">Emps Empirical performance evaluation across trained classifiers:</p>
+    <p class="text-muted small mb-4">Empirical performance evaluation across trained classifiers:</p>
 
     <div class="table-responsive">
-        <table class="table table-dark table-hover align-middle small border-secondary">
+        <table class="table table-custom table-hover align-middle small">
             <thead>
                 <tr class="text-info">
                     <th>Target Problem</th>

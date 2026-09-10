@@ -4,6 +4,7 @@ import urllib.parse
 pages = [
     "http://127.0.0.1:8000/index.php",
     "http://127.0.0.1:8000/prediction.php",
+    "http://127.0.0.1:8000/image_scanner.php",
     "http://127.0.0.1:8000/symptoms_guide.php",
     "http://127.0.0.1:8000/prevention.php",
     "http://127.0.0.1:8000/diseases.php",

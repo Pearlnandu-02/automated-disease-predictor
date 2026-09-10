@@ -119,8 +119,8 @@ $chronic_prevention = [
 
 <div class="row py-3">
     <div class="col-lg-12 text-center mb-4">
-        <span class="badge bg-info text-dark px-3 py-2 rounded-pill fw-bold mb-2">PREVENTATIVE HEALTH GUIDELINES</span>
-        <h1 class="display-5 fw-extrabold text-white">Health Awareness & Disease Prevention</h1>
+        <span class="badge bg-info text-white px-3 py-2 rounded-pill fw-bold mb-2">PREVENTATIVE HEALTH GUIDELINES</span>
+        <h1 class="display-5 fw-extrabold mb-2">Health Awareness & Disease Prevention</h1>
         <p class="lead text-muted mx-auto" style="max-width: 780px;">
             Evidence-based preventative practices, lifestyle foundations, and organ-specific risk reduction strategies designed to support lifelong wellness and early clinical detection.
         </p>
@@ -134,7 +134,7 @@ $chronic_prevention = [
             <i class="bi bi-compass fs-4"></i>
         </div>
         <div>
-            <h3 class="fw-bold text-white mb-0">Foundations of Healthy Living</h3>
+            <h3 class="fw-bold mb-0">Foundations of Healthy Living</h3>
             <p class="small text-muted mb-0">Core daily behaviors that cultivate baseline physiological health and resilience</p>
         </div>
     </div>
@@ -142,22 +142,22 @@ $chronic_prevention = [
     <div class="row g-4">
         <?php foreach ($lifestyle_pillars as $pillar): ?>
             <div class="col-md-6 col-lg-3">
-                <div class="card-custom p-4 h-100 d-flex flex-column justify-content-between border border-secondary border-opacity-25 hover-elevate">
+                <div class="card-custom p-4 h-100 d-flex flex-column justify-content-between hover-elevate">
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div class="p-3 bg-dark bg-opacity-60 rounded-3 <?= $pillar['color'] ?>">
+                            <div class="p-3 bg-card-subtle rounded-3 <?= $pillar['color'] ?>">
                                 <i class="bi <?= $pillar['icon'] ?> fs-3"></i>
                             </div>
-                            <span class="badge bg-secondary bg-opacity-40 text-info border border-info border-opacity-25 small">
+                            <span class="badge bg-secondary bg-opacity-25 text-info border border-info border-opacity-25 small">
                                 <?= sanitize($pillar['badge']) ?>
                             </span>
                         </div>
-                        <h5 class="fw-bold text-white mb-2"><?= sanitize($pillar['title']) ?></h5>
+                        <h5 class="fw-bold mb-2"><?= sanitize($pillar['title']) ?></h5>
                         <p class="small text-muted mb-3" style="line-height: 1.6;">
                             <?= sanitize($pillar['explanation']) ?>
                         </p>
                     </div>
-                    <div class="p-3 bg-dark bg-opacity-40 rounded-3 border border-secondary border-opacity-15 mt-2">
+                    <div class="p-3 bg-card-subtle rounded-3 border mt-2">
                         <strong class="text-info d-block small mb-1">
                             <i class="bi bi-lightbulb-fill me-1"></i> Practical Action Tip:
                         </strong>
@@ -178,7 +178,7 @@ $chronic_prevention = [
             <i class="bi bi-shield-check fs-4"></i>
         </div>
         <div>
-            <h3 class="fw-bold text-white mb-0">Chronic Disease Prevention</h3>
+            <h3 class="fw-bold mb-0">Chronic Disease Prevention</h3>
             <p class="small text-muted mb-0">Targeted organ-system protection against widespread non-communicable conditions</p>
         </div>
     </div>
@@ -186,22 +186,22 @@ $chronic_prevention = [
     <div class="row g-4">
         <?php foreach ($chronic_prevention as $item): ?>
             <div class="col-md-6 col-lg-4">
-                <div class="card-custom p-4 h-100 d-flex flex-column justify-content-between border border-secondary border-opacity-25">
+                <div class="card-custom p-4 h-100 d-flex flex-column justify-content-between">
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div class="p-3 bg-dark bg-opacity-60 text-warning rounded-3">
+                            <div class="p-3 bg-card-subtle text-warning rounded-3">
                                 <i class="bi <?= $item['icon'] ?> fs-3"></i>
                             </div>
-                            <span class="badge bg-secondary bg-opacity-40 text-warning border border-warning border-opacity-25 small">
+                            <span class="badge bg-secondary bg-opacity-25 text-warning border border-warning border-opacity-25 small">
                                 <?= sanitize($item['badge']) ?>
                             </span>
                         </div>
-                        <h5 class="fw-bold text-white mb-2"><?= sanitize($item['title']) ?></h5>
+                        <h5 class="fw-bold mb-2"><?= sanitize($item['title']) ?></h5>
                         <p class="small text-muted mb-3" style="line-height: 1.6;">
                             <?= sanitize($item['explanation']) ?>
                         </p>
                     </div>
-                    <div class="p-3 bg-dark bg-opacity-40 rounded-3 border border-secondary border-opacity-15 mt-2">
+                    <div class="p-3 bg-card-subtle rounded-3 border mt-2">
                         <strong class="text-warning d-block small mb-1">
                             <i class="bi bi-check-circle-fill me-1"></i> Preventative Recommendation:
                         </strong>
@@ -229,7 +229,7 @@ $chronic_prevention = [
 
     <div class="row g-4 mt-1">
         <div class="col-md-6 col-lg-3">
-            <div class="p-3 bg-dark bg-opacity-50 rounded-3 border border-danger border-opacity-25 h-100">
+            <div class="p-3 bg-card-subtle rounded-3 border border-danger border-opacity-25 h-100">
                 <div class="text-danger fw-bold mb-2 d-flex align-items-center">
                     <i class="bi bi-heart-pulse-fill me-2 fs-5"></i> Cardiac Emergencies
                 </div>
@@ -241,7 +241,7 @@ $chronic_prevention = [
             </div>
         </div>
         <div class="col-md-6 col-lg-3">
-            <div class="p-3 bg-dark bg-opacity-50 rounded-3 border border-danger border-opacity-25 h-100">
+            <div class="p-3 bg-card-subtle rounded-3 border border-danger border-opacity-25 h-100">
                 <div class="text-danger fw-bold mb-2 d-flex align-items-center">
                     <i class="bi bi-wind me-2 fs-5"></i> Respiratory Crises
                 </div>
@@ -253,7 +253,7 @@ $chronic_prevention = [
             </div>
         </div>
         <div class="col-md-6 col-lg-3">
-            <div class="p-3 bg-dark bg-opacity-50 rounded-3 border border-danger border-opacity-25 h-100">
+            <div class="p-3 bg-card-subtle rounded-3 border border-danger border-opacity-25 h-100">
                 <div class="text-danger fw-bold mb-2 d-flex align-items-center">
                     <i class="bi bi-person-exclamation me-2 fs-5"></i> Neurological Emergencies
                 </div>
@@ -265,7 +265,7 @@ $chronic_prevention = [
             </div>
         </div>
         <div class="col-md-6 col-lg-3">
-            <div class="p-3 bg-dark bg-opacity-50 rounded-3 border border-danger border-opacity-25 h-100">
+            <div class="p-3 bg-card-subtle rounded-3 border border-danger border-opacity-25 h-100">
                 <div class="text-danger fw-bold mb-2 d-flex align-items-center">
                     <i class="bi bi-virus me-2 fs-5"></i> Severe Systemic Sepsis
                 </div>

@@ -258,8 +258,8 @@ $categories = ['All', 'General', 'Respiratory', 'Digestive', 'Neurological', 'Ur
 
 <div class="row py-3">
     <div class="col-lg-12 text-center mb-4">
-        <span class="badge bg-info text-dark px-3 py-2 rounded-pill fw-bold mb-2">CLINICAL DIRECTORY</span>
-        <h1 class="display-5 fw-extrabold text-white">Interactive Symptoms Guide & Clinical Index</h1>
+        <span class="badge bg-info text-white px-3 py-2 rounded-pill fw-bold mb-2">CLINICAL DIRECTORY</span>
+        <h1 class="display-5 fw-extrabold mb-2">Interactive Symptoms Guide & Clinical Index</h1>
         <p class="lead text-muted mx-auto" style="max-width: 780px;">
             Explore our clinically organized index of symptoms aligned directly with our machine learning classification model. Search, filter by body system, and seamlessly load symptoms into our AI diagnostic checker.
         </p>
@@ -271,13 +271,13 @@ $categories = ['All', 'General', 'Respiratory', 'Digestive', 'Neurological', 'Ur
     <div class="row g-3 align-items-center">
         <div class="col-lg-5">
             <div class="input-group">
-                <span class="input-group-text bg-dark bg-opacity-50 border-secondary border-opacity-25 text-info">
+                <span class="input-group-text bg-card-subtle text-info border">
                     <i class="bi bi-search"></i>
                 </span>
                 <input 
                     type="text" 
                     id="symptomSearchInput" 
-                    class="form-control bg-dark bg-opacity-50 border-secondary border-opacity-25 text-white" 
+                    class="form-control" 
                     placeholder="Search symptoms by name, description, or disease..."
                     autocomplete="off"
                 >
@@ -288,7 +288,7 @@ $categories = ['All', 'General', 'Respiratory', 'Digestive', 'Neurological', 'Ur
                 <?php foreach ($categories as $idx => $cat): ?>
                     <button 
                         type="button" 
-                        class="btn btn-sm symptom-filter-pill <?= $idx === 0 ? 'active btn-info text-dark fw-bold' : 'btn-outline-secondary' ?>"
+                        class="btn btn-sm symptom-filter-pill <?= $idx === 0 ? 'active btn-info text-white fw-bold' : 'btn-outline-secondary' ?>"
                         data-category="<?= strtolower($cat) ?>"
                     >
                         <?= sanitize($cat) ?>
@@ -306,24 +306,24 @@ $categories = ['All', 'General', 'Respiratory', 'Digestive', 'Neurological', 'Ur
              data-name="<?= strtolower($s['name']) ?>" 
              data-category="<?= strtolower($s['category']) ?>" 
              data-desc="<?= strtolower($s['explanation'] . ' ' . $s['conditions']) ?>">
-            <div class="card-custom p-4 h-100 d-flex flex-column justify-content-between border border-secondary border-opacity-25">
+            <div class="card-custom p-4 h-100 d-flex flex-column justify-content-between">
                 <div>
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div class="p-3 bg-info bg-opacity-10 text-info rounded-circle">
                             <i class="bi <?= $s['icon'] ?> fs-4"></i>
                         </div>
-                        <span class="badge bg-secondary bg-opacity-40 text-info border border-info border-opacity-25">
+                        <span class="badge bg-secondary bg-opacity-25 text-info border border-info border-opacity-25">
                             <?= sanitize($s['category']) ?>
                         </span>
                     </div>
 
-                    <h5 class="fw-bold text-white mb-2"><?= sanitize($s['name']) ?></h5>
+                    <h5 class="fw-bold mb-2"><?= sanitize($s['name']) ?></h5>
                     <p class="small text-muted mb-3" style="line-height: 1.6;">
                         <?= sanitize($s['explanation']) ?>
                     </p>
 
-                    <div class="mb-3 p-2 bg-dark bg-opacity-40 rounded border border-secondary border-opacity-10 small">
-                        <strong class="text-white d-block mb-1">
+                    <div class="mb-3 p-2 bg-card-subtle rounded border small">
+                        <strong class="text-primary-theme d-block mb-1">
                             <i class="bi bi-diagram-3-fill text-info me-1"></i> Commonly Associated:
                         </strong>
                         <span class="text-muted"><?= sanitize($s['conditions']) ?></span>
@@ -337,7 +337,7 @@ $categories = ['All', 'General', 'Respiratory', 'Digestive', 'Neurological', 'Ur
                     </div>
                 </div>
 
-                <div class="pt-3 border-top border-secondary border-opacity-25 mt-2">
+                <div class="pt-3 border-top mt-2">
                     <a href="prediction.php?symptom=<?= urlencode($s['key']) ?>" class="btn btn-sm btn-outline-info rounded-pill w-100 py-2 fw-semibold">
                         <i class="bi bi-cpu-fill me-1"></i> Use this symptom in AI checker
                     </a>
@@ -350,7 +350,7 @@ $categories = ['All', 'General', 'Respiratory', 'Digestive', 'Neurological', 'Ur
 <!-- Empty Search Fallback -->
 <div id="symptomsEmptySearch" class="card-custom p-5 text-center my-4" style="display: none;">
     <i class="bi bi-search text-muted display-4 mb-3"></i>
-    <h4 class="text-white fw-bold">No Matching Symptoms Found</h4>
+    <h4 class="fw-bold">No Matching Symptoms Found</h4>
     <p class="text-muted small mb-3">Try adjusting your search terms or select "All" from the body system filters above.</p>
     <button type="button" class="btn btn-outline-info rounded-pill px-4" onclick="document.getElementById('symptomSearchInput').value=''; document.querySelector('[data-category=all]').click();">
         Reset Search & Filters

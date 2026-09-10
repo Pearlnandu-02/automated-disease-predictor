@@ -22,7 +22,7 @@ require_once __DIR__ . '/includes/header.php';
                     <h3 class="fw-bold mb-0">Prediction History Log</h3>
                     <p class="text-muted small mb-0">Complete record of your past AI healthcare risk assessments</p>
                 </div>
-                <a href="assessment.php" class="btn btn-info text-white rounded-pill px-4 shadow-sm">
+                <a href="assessment.php" class="btn btn-info rounded-pill px-4 shadow-sm">
                     <i class="bi bi-plus-lg me-1"></i> New Assessment
                 </a>
             </div>
@@ -32,12 +32,12 @@ require_once __DIR__ . '/includes/header.php';
                     <i class="bi bi-folder2-open fs-1 text-muted"></i>
                     <h5 class="fw-bold mt-3">No Records Found</h5>
                     <p class="text-muted small">You have not recorded any disease assessments yet.</p>
-                    <a href="assessment.php" class="btn btn-info text-white rounded-pill px-4">Start Assessment Now</a>
+                    <a href="assessment.php" class="btn btn-info rounded-pill px-4">Start Assessment Now</a>
                 </div>
             <?php else: ?>
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-dark">
+                    <table class="table table-custom table-hover align-middle mb-0">
+                        <thead>
                             <tr>
                                 <th>Assessment ID</th>
                                 <th>Date & Time</th>

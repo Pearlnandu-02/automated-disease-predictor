@@ -44,8 +44,8 @@ if ($pdo) {
 
 <div class="row py-3">
     <div class="col-lg-12 text-center mb-4">
-        <span class="badge bg-info text-dark px-3 py-2 rounded-pill fw-bold mb-2">DISEASE DATABASE</span>
-        <h1 class="display-5 fw-extrabold text-white">Medical Conditions Library (25 Diseases)</h1>
+        <span class="badge bg-info text-white px-3 py-2 rounded-pill fw-bold mb-2">DISEASE DATABASE</span>
+        <h1 class="display-5 fw-extrabold mb-2">Medical Conditions Library (25 Diseases)</h1>
         <p class="lead text-muted mx-auto" style="max-width: 750px;">
             Explore comprehensive information on descriptions, causes, risk factors, prevention strategies, and medical guidance across major medical domains.
         </p>
@@ -57,7 +57,7 @@ if ($pdo) {
     <form method="GET" action="diseases.php" class="row g-3 align-items-center">
         <div class="col-md-6">
             <div class="input-group">
-                <span class="input-group-text bg-dark border-secondary text-muted"><i class="bi bi-search"></i></span>
+                <span class="input-group-text bg-card-subtle text-info border"><i class="bi bi-search"></i></span>
                 <input type="text" name="search" class="form-control" placeholder="Search disease name, cause, or keyword..." value="<?= sanitize($search) ?>">
             </div>
         </div>
@@ -85,7 +85,7 @@ if ($pdo) {
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25"><?= sanitize($d['category']) ?></span>
                         </div>
-                        <h4 class="fw-bold text-white mb-2"><?= sanitize($d['name']) ?></h4>
+                        <h4 class="fw-bold mb-2"><?= sanitize($d['name']) ?></h4>
                         <p class="small text-muted mb-3" style="min-height: 60px;">
                             <?= sanitize(substr($d['short_description'], 0, 110)) ?>...
                         </p>
@@ -99,7 +99,7 @@ if ($pdo) {
     <?php else: ?>
         <div class="col-12 text-center py-5">
             <i class="bi bi-search display-3 text-muted"></i>
-            <h4 class="text-white mt-3">No Diseases Found</h4>
+            <h4 class="fw-bold mt-3">No Diseases Found</h4>
             <p class="text-muted small">Try broadening your search query or choosing "All Categories".</p>
             <a href="diseases.php" class="btn btn-outline-secondary rounded-pill px-4">Reset Filters</a>
         </div>

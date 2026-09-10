@@ -45,12 +45,12 @@ if (!$disease) {
 
 <div class="row py-3">
     <div class="col-lg-12">
-        <a href="diseases.php" class="btn btn-outline-secondary btn-sm rounded-pill mb-3 text-white">
+        <a href="diseases.php" class="btn btn-outline-secondary btn-sm rounded-pill mb-3">
             <i class="bi bi-arrow-left me-1"></i> Back to Disease Library
         </a>
         <div class="d-flex align-items-center gap-3">
-            <h1 class="display-4 fw-extrabold text-white mb-0"><?= sanitize($disease['name']) ?></h1>
-            <span class="badge bg-info text-dark px-3 py-2 rounded-pill fw-bold fs-6"><?= sanitize($disease['category']) ?></span>
+            <h1 class="display-4 fw-extrabold mb-0"><?= sanitize($disease['name']) ?></h1>
+            <span class="badge bg-info text-white px-3 py-2 rounded-pill fw-bold fs-6"><?= sanitize($disease['category']) ?></span>
         </div>
         <p class="lead text-muted mt-3"><?= sanitize($disease['short_description']) ?></p>
     </div>
@@ -61,7 +61,7 @@ if (!$disease) {
     <div class="col-lg-8">
         <!-- Associated Symptoms -->
         <div class="card-custom p-4 mb-4">
-            <h4 class="fw-bold text-white mb-3 d-flex align-items-center">
+            <h4 class="fw-bold mb-3 d-flex align-items-center">
                 <i class="bi bi-activity text-info me-2"></i> Associated Common Symptoms
             </h4>
             <div class="d-flex flex-wrap gap-2">
@@ -79,7 +79,7 @@ if (!$disease) {
 
         <!-- Causes & Pathophysiology -->
         <div class="card-custom p-4 mb-4">
-            <h4 class="fw-bold text-white mb-2 d-flex align-items-center">
+            <h4 class="fw-bold mb-2 d-flex align-items-center">
                 <i class="bi bi-diagram-3-fill text-warning me-2"></i> Causes & Etiology
             </h4>
             <p class="text-muted mb-0"><?= sanitize($disease['causes']) ?></p>
@@ -87,7 +87,7 @@ if (!$disease) {
 
         <!-- Risk Factors -->
         <div class="card-custom p-4 mb-4">
-            <h4 class="fw-bold text-white mb-2 d-flex align-items-center">
+            <h4 class="fw-bold mb-2 d-flex align-items-center">
                 <i class="bi bi-exclamation-octagon-fill text-danger me-2"></i> Risk Factors
             </h4>
             <p class="text-muted mb-0"><?= sanitize($disease['risk_factors']) ?></p>
@@ -95,7 +95,7 @@ if (!$disease) {
 
         <!-- Prevention Strategies -->
         <div class="card-custom p-4 mb-4">
-            <h4 class="fw-bold text-white mb-2 d-flex align-items-center">
+            <h4 class="fw-bold mb-2 d-flex align-items-center">
                 <i class="bi bi-shield-check text-success me-2"></i> Prevention & Risk Reduction
             </h4>
             <p class="text-muted mb-0"><?= sanitize($disease['prevention']) ?></p>
@@ -106,7 +106,7 @@ if (!$disease) {
     <div class="col-lg-4">
         <!-- General Management -->
         <div class="card-custom p-4 mb-4 border-info">
-            <h5 class="fw-bold text-white mb-3"><i class="bi bi-journal-medical text-info me-2"></i> General Management</h5>
+            <h5 class="fw-bold mb-3"><i class="bi bi-journal-medical text-info me-2"></i> General Management</h5>
             <p class="small text-muted mb-0"><?= sanitize($disease['management']) ?></p>
         </div>
 
@@ -118,7 +118,7 @@ if (!$disease) {
 
         <!-- Action Card -->
         <div class="card-custom p-4 text-center">
-            <h6 class="text-white fw-bold mb-2">Experiencing Symptoms?</h6>
+            <h6 class="fw-bold mb-2">Experiencing Symptoms?</h6>
             <p class="small text-muted mb-3">Check your symptom profile against our AI ML classification engine.</p>
             <a href="prediction.php" class="btn btn-primary-custom w-100 rounded-pill"><i class="bi bi-cpu me-1"></i> Check Symptoms Now</a>
         </div>

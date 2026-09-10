@@ -120,8 +120,8 @@ require_once __DIR__ . '/includes/header.php';
 
 <div class="row py-3">
     <div class="col-lg-12 text-center mb-4">
-        <span class="badge bg-info text-dark px-3 py-2 rounded-pill fw-bold mb-2">AI SYMPTOM CHECKER</span>
-        <h1 class="display-5 fw-extrabold text-white">Intelligent Multi-Symptom Disease Prediction</h1>
+        <span class="badge bg-info text-white px-3 py-2 rounded-pill fw-bold mb-2">AI SYMPTOM CHECKER</span>
+        <h1 class="display-5 fw-extrabold mb-2">Intelligent Multi-Symptom Disease Prediction</h1>
         <p class="lead text-muted mx-auto" style="max-width: 750px;">
             Click the symptom tiles below to select your present indicators. Our clinical classification model evaluates co-occurrence patterns to estimate potential conditions.
         </p>
@@ -133,7 +133,7 @@ require_once __DIR__ . '/includes/header.php';
     <div class="col-lg-7">
         <div class="card-custom p-4 p-md-5">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="fw-bold text-white mb-0 d-flex align-items-center">
+                <h4 class="fw-bold mb-0 d-flex align-items-center">
                     <i class="bi bi-grid-3x3-gap-fill text-info me-2"></i> Select Present Symptoms
                 </h4>
                 <span class="badge bg-secondary bg-opacity-50 text-muted small" id="selected-count-badge">
@@ -177,7 +177,7 @@ require_once __DIR__ . '/includes/header.php';
                 <!-- Animated Loading State (Multi-step) -->
                 <div id="ai-loading-state" class="ai-loading-container mb-4" style="display: none;">
                     <div class="ai-spinner"></div>
-                    <h5 class="fw-bold text-white mb-2">Analyzing Symptom Profile...</h5>
+                    <h5 class="fw-bold mb-2">Analyzing Symptom Profile...</h5>
                     <p class="small text-muted mb-3">Evaluating clinical features through the diagnostic classifier</p>
                     <div class="ai-loading-steps">
                         <div class="ai-loading-step active" id="loading-step-1">
@@ -212,7 +212,7 @@ require_once __DIR__ . '/includes/header.php';
             <?php if (isset($prediction_result['error'])): ?>
                 <div class="card-custom p-4 text-center border-danger mb-4">
                     <i class="bi bi-exclamation-triangle-fill text-warning display-4 mb-3"></i>
-                    <h4 class="text-white fw-bold">Service Notice</h4>
+                    <h4 class="fw-bold">Service Notice</h4>
                     <p class="text-muted small mb-0">
                         <?= sanitize($prediction_result['error']) ?>
                     </p>
@@ -221,7 +221,7 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="card-custom p-4 text-center border-info mb-4">
                     <span class="badge bg-secondary mb-2 px-3 py-1">AI MODEL OUTPUT</span>
                     <h5 class="text-muted text-uppercase fw-bold small">Possible condition based on AI model</h5>
-                    <h2 class="display-6 fw-bold text-white my-2"><?= sanitize($prediction_result['prediction']) ?></h2>
+                    <h2 class="display-6 fw-bold my-2"><?= sanitize($prediction_result['prediction']) ?></h2>
                     
                     <div class="my-3 py-2 border-top border-bottom border-secondary border-opacity-25">
                         <span 
@@ -234,8 +234,8 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
 
                     <?php if (!empty($prediction_result['influencing_symptoms'])): ?>
-                        <div class="p-3 bg-dark bg-opacity-60 rounded border border-secondary border-opacity-25 my-3 text-start small">
-                            <strong class="text-white d-block mb-1">
+                        <div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 my-3 text-start small">
+                            <strong class="text-primary-theme d-block mb-1">
                                 <i class="bi bi-bounding-box-circles me-1 text-info"></i> Influencing Indicators:
                             </strong>
                             <div class="d-flex flex-wrap gap-1 mt-2">
@@ -249,15 +249,15 @@ require_once __DIR__ . '/includes/header.php';
                     <?php endif; ?>
 
                     <?php if (!empty($prediction_result['runner_ups'])): ?>
-                        <div class="p-3 bg-dark bg-opacity-40 rounded border border-secondary border-opacity-25 my-3 text-start small">
-                            <strong class="text-white d-block mb-2">
+                        <div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 my-3 text-start small">
+                            <strong class="text-primary-theme d-block mb-2">
                                 <i class="bi bi-bar-chart me-1 text-warning"></i> Alternative Possibilities Considered:
                             </strong>
                             <ul class="list-unstyled mb-0">
                                 <?php foreach ($prediction_result['runner_ups'] as $rup): ?>
                                     <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10 text-muted">
                                         <span><?= sanitize($rup['disease']) ?></span>
-                                        <span class="fw-bold text-white"><?= number_format((float)$rup['probability'], 1) ?>%</span>
+                                        <span class="fw-bold text-primary-theme"><?= number_format((float)$rup['probability'], 1) ?>%</span>
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
@@ -280,7 +280,7 @@ require_once __DIR__ . '/includes/header.php';
         <?php else: ?>
             <div class="card-custom p-5 text-center h-100 d-flex flex-column justify-content-center align-items-center">
                 <i class="bi bi-activity text-info display-1 mb-3 opacity-50"></i>
-                <h4 class="text-white fw-bold">Awaiting Symptom Selection</h4>
+                <h4 class="fw-bold">Awaiting Symptom Selection</h4>
                 <p class="text-muted small max-w-sm mb-0">
                     Click on the symptom tiles on the left to select your active indicators, then click "Submit Symptoms" to evaluate with our AI diagnostic model.
                 </p>
