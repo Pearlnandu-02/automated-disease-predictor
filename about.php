@@ -4,7 +4,7 @@ require_once __DIR__ . '/includes/header.php';
 
 <div class="row align-items-center py-4">
     <div class="col-lg-7">
-        <span class="badge bg-info text-white px-3 py-2 rounded-pill fw-bold mb-3">ABOUT AI HEALTHCARE</span>
+        <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-3">ABOUT AI HEALTHCARE</span>
         <h1 class="display-4 fw-extrabold mb-3">Intelligent Healthcare Powered by Machine Learning</h1>
         <p class="lead text-muted mb-4">
             Our platform demonstrates how modern Artificial Intelligence and Machine Learning can analyze symptom patterns to assist users with preliminary health predictions, risk evaluations, and preventive education.

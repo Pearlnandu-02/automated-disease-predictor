@@ -44,7 +44,7 @@ if ($pdo) {
 
 <div class="row py-3">
     <div class="col-lg-12 text-center mb-4">
-        <span class="badge bg-info text-white px-3 py-2 rounded-pill fw-bold mb-2">DISEASE DATABASE</span>
+        <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-2">DISEASE DATABASE</span>
         <h1 class="display-5 fw-extrabold mb-2">Medical Conditions Library (25 Diseases)</h1>
         <p class="lead text-muted mx-auto" style="max-width: 750px;">
             Explore comprehensive information on descriptions, causes, risk factors, prevention strategies, and medical guidance across major medical domains.

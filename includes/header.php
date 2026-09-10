@@ -21,8 +21,13 @@ $user = get_logged_in_user();
     <!-- Prevent Theme Flash (FOUC) & Bulletproof Theme Engine -->
     <script>
     (function() {
-        var saved = localStorage.getItem('ai_healthcare_theme');
+        var urlParams = new URLSearchParams(window.location.search);
+        var urlTheme = urlParams.get('theme');
+        var saved = urlTheme || localStorage.getItem('ai_healthcare_theme');
         var theme = (saved === 'light' || saved === 'dark') ? saved : 'dark';
+        if (urlTheme === 'light' || urlTheme === 'dark') {
+            try { localStorage.setItem('ai_healthcare_theme', urlTheme); } catch(e) {}
+        }
         document.documentElement.setAttribute('data-theme', theme);
         document.documentElement.setAttribute('data-bs-theme', theme);
     })();

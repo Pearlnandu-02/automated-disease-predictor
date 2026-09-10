@@ -42,7 +42,7 @@ require_once __DIR__ . '/includes/header.php';
 
 <div class="row py-3">
     <div class="col-lg-12 text-center mb-4">
-        <span class="badge bg-info text-white px-3 py-2 rounded-pill fw-bold mb-2">GET IN TOUCH</span>
+        <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-2">GET IN TOUCH</span>
         <h1 class="display-5 fw-extrabold mb-2">Contact & Support</h1>
         <p class="lead text-muted mx-auto" style="max-width: 650px;">
             Have questions regarding our AI Disease Prediction project or academic setup? Reach out to our project team.

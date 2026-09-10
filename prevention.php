@@ -119,7 +119,7 @@ $chronic_prevention = [
 
 <div class="row py-3">
     <div class="col-lg-12 text-center mb-4">
-        <span class="badge bg-info text-white px-3 py-2 rounded-pill fw-bold mb-2">PREVENTATIVE HEALTH GUIDELINES</span>
+        <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-2">PREVENTATIVE HEALTH GUIDELINES</span>
         <h1 class="display-5 fw-extrabold mb-2">Health Awareness & Disease Prevention</h1>
         <p class="lead text-muted mx-auto" style="max-width: 780px;">
             Evidence-based preventative practices, lifestyle foundations, and organ-specific risk reduction strategies designed to support lifelong wellness and early clinical detection.

@@ -120,7 +120,7 @@ require_once __DIR__ . '/includes/header.php';
 
 <div class="row py-3">
     <div class="col-lg-12 text-center mb-4">
-        <span class="badge bg-info text-white px-3 py-2 rounded-pill fw-bold mb-2">AI SYMPTOM CHECKER</span>
+        <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-2">AI SYMPTOM CHECKER</span>
         <h1 class="display-5 fw-extrabold mb-2">Intelligent Multi-Symptom Disease Prediction</h1>
         <p class="lead text-muted mx-auto" style="max-width: 750px;">
             Click the symptom tiles below to select your present indicators. Our clinical classification model evaluates co-occurrence patterns to estimate potential conditions.

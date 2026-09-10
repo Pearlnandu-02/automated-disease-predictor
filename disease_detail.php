@@ -37,7 +37,7 @@ if ($pdo) {
 }
 
 if (!$disease) {
-    echo '<div class="text-center py-5"><h3 class="text-white">Disease record not found.</h3><a href="diseases.php" class="btn btn-outline-info rounded-pill px-4 mt-3">Back to Diseases List</a></div>';
+    echo '<div class="text-center py-5"><h3 class="text-heading">Disease record not found.</h3><a href="diseases.php" class="btn btn-outline-info rounded-pill px-4 mt-3">Back to Diseases List</a></div>';
     require_once __DIR__ . '/includes/footer.php';
     exit;
 }
@@ -50,7 +50,7 @@ if (!$disease) {
         </a>
         <div class="d-flex align-items-center gap-3">
             <h1 class="display-4 fw-extrabold mb-0"><?= sanitize($disease['name']) ?></h1>
-            <span class="badge bg-info text-white px-3 py-2 rounded-pill fw-bold fs-6"><?= sanitize($disease['category']) ?></span>
+            <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold fs-6"><?= sanitize($disease['category']) ?></span>
         </div>
         <p class="lead text-muted mt-3"><?= sanitize($disease['short_description']) ?></p>
     </div>

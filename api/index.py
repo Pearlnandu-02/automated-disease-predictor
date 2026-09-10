@@ -63,9 +63,13 @@ def render_page(content_html, **kwargs):
     <!-- Early theme initializer to prevent FOUC & Bulletproof Theme Engine -->
     <script>
         (function() {
-            var saved = localStorage.getItem('ai_healthcare_theme');
-            var systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            var theme = (saved === 'light' || saved === 'dark') ? saved : (systemDark ? 'dark' : 'dark');
+            var urlParams = new URLSearchParams(window.location.search);
+            var urlTheme = urlParams.get('theme');
+            var saved = urlTheme || localStorage.getItem('ai_healthcare_theme');
+            var theme = (saved === 'light' || saved === 'dark') ? saved : 'dark';
+            if (urlTheme === 'light' || urlTheme === 'dark') {
+                try { localStorage.setItem('ai_healthcare_theme', urlTheme); } catch(e) {}
+            }
             document.documentElement.setAttribute('data-theme', theme);
             document.documentElement.setAttribute('data-bs-theme', theme);
         })();
@@ -102,44 +106,127 @@ def render_page(content_html, **kwargs):
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-primary: #0a0f1d;
-            --bg-secondary: #0f172a;
-            --card-bg: #131d33;
-            --card-border: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --accent-primary: #06b6d4;
+        :root,
+        [data-theme="dark"],
+        [data-bs-theme="dark"] {
+            --bg-primary: #0b1624;
+            --bg-secondary: #111f30;
+            --bg-card: #17283a;
+            --bg-card-hover: #1c2e42;
+            --bg-card-subtle: #0f1c2b;
+            --bg-input: #0f1c2b;
+            --text-input: #ffffff;
+            
+            --bg-body: #0b1624;
+            --bg-main: #0b1624;
+            --bg-surface: #111f30;
+            --card-bg: #17283a;
+            --card-border: #2b4054;
+
+            --border-color: #2b4054;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-card: #2b4054;
+            --border-input: #334a60;
+            --border-focus: #12bfe3;
+
+            --text-primary: #ffffff;
+            --text-heading: #ffffff;
+            --text-secondary: #c3cfdd;
+            --text-main: #c3cfdd;
+            --text-muted: #9aaabd;
+
+            --accent-primary: #12bfe3;
             --accent-secondary: #0d9488;
-            --tile-bg-matte: #0e1626;
-            --tile-border-matte: #1e293b;
-            --tile-selected-bg: linear-gradient(135deg, rgba(6, 182, 212, 0.18) 0%, rgba(13, 148, 136, 0.28) 100%);
-            --tile-selected-border: #06b6d4;
-            --tile-selected-shadow: 0 8px 24px -4px rgba(6, 182, 212, 0.35);
+            --accent: #12bfe3;
+            --accent-dark: #0aa6c5;
+            --button-text: #ffffff;
+
+            --navbar-bg: rgba(11, 22, 36, 0.94);
+            --navbar-text: #c3cfdd;
+            --footer-bg: #070e17;
+            --footer-heading: #ffffff;
+            --footer-text: #9aaabd;
+            --footer-border: #1a2938;
+
+            --hero-bg: linear-gradient(135deg, #0b1624 0%, #17283a 55%, #0f3545 100%);
+            --hero-heading: #ffffff;
+            --hero-text: #c3cfdd;
+            --hero-badge-bg: rgba(18, 191, 227, 0.15);
+            --hero-badge-text: #38d3f2;
+            --hero-badge-border: rgba(18, 191, 227, 0.35);
+            --hero-btn-sec-color: #ffffff;
+            --hero-btn-sec-border: rgba(255, 255, 255, 0.35);
+            --hero-btn-sec-hover: rgba(255, 255, 255, 0.12);
+
+            --shadow: rgba(0, 0, 0, 0.3);
+
+            --tile-bg-matte: #111f30;
+            --tile-border-matte: #1f3347;
+            --tile-selected-bg: linear-gradient(135deg, rgba(18, 191, 227, 0.18) 0%, rgba(13, 148, 136, 0.28) 100%);
+            --tile-selected-border: #12bfe3;
+            --tile-selected-shadow: 0 8px 24px -4px rgba(18, 191, 227, 0.35);
             --gloss-reflection: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.03) 50%, rgba(255, 255, 255, 0) 100%);
-            --navbar-bg: rgba(10, 15, 29, 0.92);
-            --footer-bg: #070a14;
         }
 
-        [data-theme="light"] {
-            --bg-primary: #f1f5f9;
-            --bg-secondary: #e2e8f0;
-            --card-bg: #ffffff;
-            --card-border: #cbd5e1;
-            --text-primary: #0f172a;
-            --text-secondary: #334155;
-            --text-muted: #64748b;
-            --accent-primary: #0284c7;
+        [data-theme="light"],
+        [data-bs-theme="light"] {
+            --accent-primary: #0aa6c5;
             --accent-secondary: #0d9488;
-            --tile-bg-matte: #f8fafc;
+            --accent: #0aa6c5;
+            --accent-dark: #088b9a;
+            --button-text: #ffffff;
+
+            --bg-primary: #f5f9fc;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f8fafc;
+            --bg-card-subtle: #edf3f8;
+            --bg-input: #ffffff;
+            --text-input: #172033;
+
+            --bg-body: #f5f9fc;
+            --bg-main: #f5f9fc;
+            --bg-surface: #ffffff;
+            --card-bg: #ffffff;
+            --card-border: #d9e2ec;
+
+            --border-color: #d9e2ec;
+            --border-subtle: #d9e2ec;
+            --border-card: #d9e2ec;
+            --border-input: #cbd5e1;
+            --border-focus: #0aa6c5;
+
+            --text-primary: #172033;
+            --text-heading: #172033;
+            --text-secondary: #526071;
+            --text-main: #405063;
+            --text-muted: #6b7280;
+
+            --navbar-bg: rgba(255, 255, 255, 0.96);
+            --navbar-text: #172033;
+            --footer-bg: #f0f4f9;
+            --footer-heading: #172033;
+            --footer-text: #6b7280;
+            --footer-border: #d9e2ec;
+
+            --hero-bg: linear-gradient(135deg, #e8f2f8 0%, #edf4f9 60%, #f0f6fa 100%);
+            --hero-heading: #172033;
+            --hero-text: #526071;
+            --hero-badge-bg: rgba(10, 166, 197, 0.1);
+            --hero-badge-text: #0aa6c5;
+            --hero-badge-border: rgba(10, 166, 197, 0.25);
+            --hero-btn-sec-color: #172033;
+            --hero-btn-sec-border: #94a3b8;
+            --hero-btn-sec-hover: rgba(15, 23, 42, 0.06);
+
+            --shadow: rgba(0, 0, 0, 0.08);
+
+            --tile-bg-matte: #ffffff;
             --tile-border-matte: #cbd5e1;
-            --tile-selected-bg: linear-gradient(135deg, rgba(2, 132, 199, 0.12) 0%, rgba(13, 148, 136, 0.18) 100%);
-            --tile-selected-border: #0284c7;
-            --tile-selected-shadow: 0 8px 24px -4px rgba(2, 132, 199, 0.25);
+            --tile-selected-bg: linear-gradient(135deg, rgba(10, 166, 197, 0.12) 0%, rgba(13, 148, 136, 0.18) 100%);
+            --tile-selected-border: #0aa6c5;
+            --tile-selected-shadow: 0 8px 24px -4px rgba(10, 166, 197, 0.25);
             --gloss-reflection: linear-gradient(180deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0) 100%);
-            --navbar-bg: rgba(255, 255, 255, 0.95);
-            --footer-bg: #e2e8f0;
         }
 
         body {
@@ -152,6 +239,19 @@ def render_page(content_html, **kwargs):
             transition: background-color 0.25s ease, color 0.25s ease;
         }
 
+        h1, h2, h3, h4, h5, h6, .text-heading {
+            color: var(--text-heading);
+            transition: color 0.2s ease;
+        }
+
+        .text-primary-theme {
+            color: var(--text-primary) !important;
+        }
+
+        .text-secondary-theme {
+            color: var(--text-secondary) !important;
+        }
+
         .navbar-custom {
             background: var(--navbar-bg);
             backdrop-filter: blur(14px);
@@ -159,22 +259,108 @@ def render_page(content_html, **kwargs):
         }
 
         [data-theme="light"] .navbar-custom .nav-link {
-            color: #1e293b !important;
+            color: #172033 !important;
         }
 
         [data-theme="light"] .navbar-brand {
-            color: #0f172a !important;
+            color: #172033 !important;
         }
 
         .card-custom {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            transition: background 0.25s ease, border 0.25s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            color: var(--text-primary);
+            transition: background 0.25s ease, border 0.25s ease, color 0.25s ease;
         }
 
-        .btn-info, .btn-primary, .btn-danger, .btn-success {
+        .hero-banner {
+            background: var(--hero-bg);
+            color: var(--text-primary);
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: background 0.25s ease, border-color 0.25s ease;
+        }
+
+        .hero-banner h1, .hero-banner .hero-heading {
+            color: var(--hero-heading) !important;
+        }
+
+        .hero-banner p, .hero-banner .hero-lead {
+            color: var(--hero-text) !important;
+        }
+
+        .hero-badge {
+            background: var(--hero-badge-bg) !important;
+            color: var(--hero-badge-text) !important;
+            border: 1px solid var(--hero-badge-border) !important;
+            font-weight: 700;
+        }
+
+        .btn-hero-secondary, .btn-explore {
+            color: var(--hero-btn-sec-color) !important;
+            border: 1.5px solid var(--hero-btn-sec-border) !important;
+            background-color: transparent !important;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-hero-secondary:hover, .btn-explore:hover {
+            color: var(--hero-btn-sec-color) !important;
+            background-color: var(--hero-btn-sec-hover) !important;
+            border-color: var(--accent-primary) !important;
+        }
+
+        [data-theme="light"] .btn-outline-light,
+        [data-bs-theme="light"] .btn-outline-light {
+            color: var(--hero-btn-sec-color) !important;
+            border-color: var(--hero-btn-sec-border) !important;
+            background-color: transparent !important;
+        }
+
+        [data-theme="light"] .btn-outline-light:hover,
+        [data-bs-theme="light"] .btn-outline-light:hover {
+            color: var(--hero-btn-sec-color) !important;
+            background-color: var(--hero-btn-sec-hover) !important;
+            border-color: var(--accent-primary) !important;
+        }
+
+        /* Light mode contrast safety */
+        [data-theme="light"] h1.text-white,
+        [data-theme="light"] h2.text-white,
+        [data-theme="light"] h3.text-white,
+        [data-theme="light"] h4.text-white,
+        [data-theme="light"] h5.text-white,
+        [data-theme="light"] h6.text-white,
+        [data-theme="light"] .hero-banner h1.text-white,
+        [data-theme="light"] .form-label.text-white,
+        [data-theme="light"] .form-label.text-light,
+        [data-theme="light"] p.text-white,
+        [data-theme="light"] p.text-light,
+        [data-theme="light"] p.text-white-50,
+        [data-theme="light"] span.text-white:not(.badge):not(.btn *),
+        [data-theme="light"] strong.text-white {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="light"] p.lead.text-white-50,
+        [data-theme="light"] p.lead.text-light {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] h1.text-dark,
+        [data-theme="dark"] h2.text-dark,
+        [data-theme="dark"] h3.text-dark,
+        [data-theme="dark"] h4.text-dark,
+        [data-theme="dark"] h5.text-dark,
+        [data-theme="dark"] h6.text-dark,
+        [data-theme="dark"] .form-label.text-dark {
+            color: var(--text-heading) !important;
+        }
+
+        .btn-info, .btn-primary, .btn-danger, .btn-success, .btn-primary-custom {
             color: #ffffff !important;
             font-weight: 600;
         }
@@ -647,20 +833,20 @@ def home():
     content = """
     <div class="row align-items-center my-4 py-5 px-4 rounded-4 hero-banner shadow-lg">
         <div class="col-lg-7">
-            <span class="badge bg-info text-dark fw-bold px-3 py-2 rounded-pill mb-3">AI & Machine Learning Platform</span>
-            <h1 class="display-4 fw-extrabold text-white mb-3">Smarter Healthcare Powered by Artificial Intelligence</h1>
-            <p class="lead text-light mb-4 opacity-90">
+            <span class="badge hero-badge fw-bold px-3 py-2 rounded-pill mb-3">AI & Machine Learning Platform</span>
+            <h1 class="display-4 fw-extrabold hero-heading mb-3">Smarter Healthcare Powered by Artificial Intelligence</h1>
+            <p class="lead hero-lead mb-4 opacity-90">
                 Analyze symptoms and assess potential conditions across <strong>25 diseases</strong> using trained classification models.
             </p>
             <div class="d-flex flex-wrap gap-3">
                 <a href="/prediction" class="btn btn-primary-custom btn-lg rounded-pill px-4">Check Symptoms Now</a>
-                <a href="/diseases" class="btn btn-outline-light btn-lg rounded-pill px-4">Explore Diseases</a>
+                <a href="/diseases" class="btn btn-hero-secondary btn-lg rounded-pill px-4">Explore Diseases</a>
             </div>
         </div>
         <div class="col-lg-5 text-center mt-4 mt-lg-0">
             <div class="card-custom p-4 border-info">
                 <i class="bi bi-heart-pulse-fill display-1 text-info mb-3"></i>
-                <h4 class="fw-bold text-white mb-2">25 Disease Records</h4>
+                <h4 class="fw-bold hero-heading mb-2">25 Disease Records</h4>
                 <p class="small text-muted">Multi-symptom classification engine & structured medical database.</p>
             </div>
         </div>
@@ -679,8 +865,8 @@ def home():
 def about():
     content = """
     <div class="card-custom p-5 text-center my-4">
-        <span class="badge bg-info text-dark px-3 py-1 rounded-pill mb-3">ABOUT PLATFORM</span>
-        <h2 class="fw-bold text-white mb-3">AI Healthcare Platform Overview</h2>
+        <span class="badge hero-badge px-3 py-1 rounded-pill mb-3">ABOUT PLATFORM</span>
+        <h2 class="fw-bold hero-heading mb-3">AI Healthcare Platform Overview</h2>
         <p class="lead text-muted max-w-xl mx-auto mb-4">
             Demonstrating how Machine Learning assists healthcare users by analyzing symptoms and evaluating statistical likelihoods of 25 medical conditions.
         </p>
@@ -772,22 +958,22 @@ def prediction():
         influencing = "".join([f'<span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 px-2 py-1 me-1">{s}</span>' for s in result.get('influencing_symptoms', [])])
         runner_ups_html = ""
         if result.get('runner_ups'):
-            ru_items = "".join([f'<li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10 text-muted"><span>{r.get("disease")}</span><span class="fw-bold text-white">{r.get("probability")}%</span></li>' for r in result.get('runner_ups', [])])
-            runner_ups_html = f'<div class="p-3 bg-dark bg-opacity-40 rounded border border-secondary border-opacity-25 my-3 text-start small"><strong class="text-white d-block mb-2"><i class="bi bi-bar-chart me-1 text-warning"></i> Alternative Possibilities:</strong><ul class="list-unstyled mb-0">{ru_items}</ul></div>'
+            ru_items = "".join([f'<li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10 text-muted"><span>{r.get("disease")}</span><span class="fw-bold text-primary-theme">{r.get("probability")}%</span></li>' for r in result.get('runner_ups', [])])
+            runner_ups_html = f'<div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 my-3 text-start small"><strong class="d-block mb-2"><i class="bi bi-bar-chart me-1 text-warning"></i> Alternative Possibilities:</strong><ul class="list-unstyled mb-0">{ru_items}</ul></div>'
 
         res_card = f"""
         <div class="card-custom p-4 text-center border-info mt-4">
             <span class="badge bg-secondary mb-2 px-3 py-1">AI MODEL OUTPUT</span>
             <h5 class="text-muted text-uppercase fw-bold small">Possible condition based on AI model</h5>
-            <h2 class="display-6 fw-bold text-white my-2">{result.get('prediction')}</h2>
+            <h2 class="display-6 fw-bold my-2">{result.get('prediction')}</h2>
             
             <div class="my-3 py-2 border-top border-bottom border-secondary border-opacity-25">
                 <span class="display-3 fw-extrabold text-info counter-text animate-counter" data-target="{prob}">00.0%</span>
                 <p class="small text-muted mb-0 mt-1">Model confidence (AI model output)</p>
             </div>
 
-            <div class="p-3 bg-dark bg-opacity-60 rounded border border-secondary border-opacity-25 my-3 text-start small">
-                <strong class="text-white d-block mb-1"><i class="bi bi-bounding-box-circles me-1 text-info"></i> Influencing Indicators:</strong>
+            <div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 my-3 text-start small">
+                <strong class="d-block mb-1"><i class="bi bi-bounding-box-circles me-1 text-info"></i> Influencing Indicators:</strong>
                 <div class="d-flex flex-wrap gap-1 mt-1">{influencing}</div>
             </div>
 
@@ -803,8 +989,8 @@ def prediction():
     content = f"""
     <div class="row py-3">
         <div class="col-lg-12 text-center mb-4">
-            <span class="badge bg-info text-dark px-3 py-2 rounded-pill fw-bold mb-2">AI SYMPTOM CHECKER</span>
-            <h1 class="display-5 fw-extrabold text-white">Intelligent Multi-Symptom Disease Prediction</h1>
+            <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-2">AI SYMPTOM CHECKER</span>
+            <h1 class="display-5 fw-extrabold mb-2">Intelligent Multi-Symptom Disease Prediction</h1>
             <p class="lead text-muted mx-auto" style="max-width: 750px;">
                 Select your experienced indicators using our tactile symptom tiles. Unselected tiles are matte; selected tiles become glossy with real-time feedback.
             </p>
@@ -814,7 +1000,7 @@ def prediction():
     <div class="row g-4">
         <div class="col-lg-7">
             <div class="card-custom p-4 p-md-5">
-                <h4 class="fw-bold text-white mb-3 d-flex align-items-center">
+                <h4 class="fw-bold mb-3 d-flex align-items-center">
                     <i class="bi bi-grid-3x3-gap-fill text-info me-2"></i> Select Present Symptoms
                 </h4>
                 <p class="small text-muted mb-4">Click tiles to toggle symptom presence:</p>
@@ -833,7 +1019,7 @@ def prediction():
             {res_card if res_card else '''
             <div class="card-custom p-5 text-center h-100 d-flex flex-column justify-content-center align-items-center">
                 <i class="bi bi-activity text-info display-1 mb-3 opacity-50"></i>
-                <h4 class="text-white fw-bold">Awaiting Symptom Selection</h4>
+                <h4 class="fw-bold">Awaiting Symptom Selection</h4>
                 <p class="text-muted small max-w-sm mb-0">
                     Click on the symptom tiles on the left to select your active indicators, then click "Submit Symptoms" to evaluate with our AI diagnostic model.
                 </p>
@@ -946,11 +1132,11 @@ def assessment():
             </div>
             <div class="row g-4 my-2">
                 <div class="col-md-6">
-                    <h5 class="fw-bold text-white mb-3"><i class="bi bi-bar-chart-line text-info me-2"></i>Explainable AI (Top Risk Drivers)</h5>
+                    <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-line text-info me-2"></i>Explainable AI (Top Risk Drivers)</h5>
                     {feat_html}
                 </div>
                 <div class="col-md-6">
-                    <h5 class="fw-bold text-white mb-3"><i class="bi bi-check-circle text-success me-2"></i>Personalized Guidance</h5>
+                    <h5 class="fw-bold mb-3"><i class="bi bi-check-circle text-success me-2"></i>Personalized Guidance</h5>
                     <ul class="text-muted small ps-3 mb-0">{recs_html}</ul>
                 </div>
             </div>
@@ -976,14 +1162,14 @@ def assessment():
                         <i class="bi bi-clipboard-pulse fs-2"></i>
                     </div>
                     <div>
-                        <h3 class="fw-bold text-white mb-0">Clinical Health Risk Assessment</h3>
+                        <h3 class="fw-bold mb-0">Clinical Health Risk Assessment</h3>
                         <p class="text-muted small mb-0">Evaluate quantitative biomarkers against trained Scikit-Learn classification pipelines</p>
                     </div>
                 </div>
 
                 <form method="POST" action="/assessment">
-                    <div class="mb-4 bg-dark bg-opacity-50 p-3 rounded-3 border border-secondary border-opacity-25">
-                        <label class="form-label fw-bold text-white fs-6 mb-2">
+                    <div class="mb-4 bg-card-subtle p-3 rounded-3 border border-secondary border-opacity-25">
+                        <label class="form-label fw-bold fs-6 mb-2">
                             <i class="bi bi-activity text-info me-2"></i>Select Assessment Target Condition
                         </label>
                         <select class="form-select" id="disease_type" name="disease_type" onchange="toggleFields(this.value)">
@@ -1000,37 +1186,37 @@ def assessment():
                         <h5 class="fw-bold text-info mb-3"><i class="bi bi-droplet-fill me-2 text-danger"></i>Diabetes Biomarkers (Pima Clinical Model)</h5>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Glucose Level (mg/dL)</label>
+                                <label class="form-label small">Glucose Level (mg/dL)</label>
                                 <input type="number" step="0.1" name="Glucose" class="form-control" value="120">
                                 <small class="text-muted">Normal fasting: 70-140 mg/dL</small>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Body Mass Index (BMI)</label>
+                                <label class="form-label small">Body Mass Index (BMI)</label>
                                 <input type="number" step="0.1" name="BMI" class="form-control" value="28.4">
                                 <small class="text-muted">Normal: 18.5-24.9</small>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Blood Pressure (mm Hg)</label>
+                                <label class="form-label small">Blood Pressure (mm Hg)</label>
                                 <input type="number" step="0.1" name="BloodPressure" class="form-control" value="75">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Age (Years)</label>
+                                <label class="form-label small">Age (Years)</label>
                                 <input type="number" name="Age" class="form-control" value="42">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Pregnancies</label>
+                                <label class="form-label small">Pregnancies</label>
                                 <input type="number" name="Pregnancies" class="form-control" value="1">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Insulin Level (mu U/ml)</label>
+                                <label class="form-label small">Insulin Level (mu U/ml)</label>
                                 <input type="number" step="0.1" name="Insulin" class="form-control" value="80">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Skin Thickness (mm)</label>
+                                <label class="form-label small">Skin Thickness (mm)</label>
                                 <input type="number" step="0.1" name="SkinThickness" class="form-control" value="22">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Diabetes Pedigree Function</label>
+                                <label class="form-label small">Diabetes Pedigree Function</label>
                                 <input type="number" step="0.001" name="DiabetesPedigreeFunction" class="form-control" value="0.47">
                             </div>
                         </div>
@@ -1041,35 +1227,35 @@ def assessment():
                         <h5 class="fw-bold text-info mb-3"><i class="bi bi-heart-pulse-fill me-2 text-danger"></i>Cardiovascular Biomarkers (Cleveland Cardiac Model)</h5>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Age (Years)</label>
+                                <label class="form-label small">Age (Years)</label>
                                 <input type="number" name="age" class="form-control" value="52">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Sex</label>
+                                <label class="form-label small">Sex</label>
                                 <select name="sex" class="form-select"><option value="1">Male</option><option value="0">Female</option></select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Chest Pain Type</label>
+                                <label class="form-label small">Chest Pain Type</label>
                                 <select name="cp" class="form-select"><option value="0">Typical Angina (0)</option><option value="1">Atypical Angina (1)</option><option value="2">Non-anginal Pain (2)</option><option value="3">Asymptomatic (3)</option></select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Resting Blood Pressure (mm Hg)</label>
+                                <label class="form-label small">Resting Blood Pressure (mm Hg)</label>
                                 <input type="number" step="0.1" name="trestbps" class="form-control" value="132">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Serum Cholesterol (mg/dL)</label>
+                                <label class="form-label small">Serum Cholesterol (mg/dL)</label>
                                 <input type="number" step="0.1" name="chol" class="form-control" value="235">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Max Heart Rate Achieved</label>
+                                <label class="form-label small">Max Heart Rate Achieved</label>
                                 <input type="number" step="0.1" name="thalach" class="form-control" value="150">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Exercise-Induced Angina</label>
+                                <label class="form-label small">Exercise-Induced Angina</label>
                                 <select name="exang" class="form-select"><option value="0">No</option><option value="1">Yes</option></select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">ST Depression (Oldpeak)</label>
+                                <label class="form-label small">ST Depression (Oldpeak)</label>
                                 <input type="number" step="0.1" name="oldpeak" class="form-control" value="1.2">
                             </div>
                         </div>
@@ -1080,26 +1266,26 @@ def assessment():
                         <h5 class="fw-bold text-info mb-3"><i class="bi bi-speedometer2 me-2 text-warning"></i>Hypertension & Hemodynamic Biomarkers</h5>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Systolic Blood Pressure (mm Hg)</label>
+                                <label class="form-label small">Systolic Blood Pressure (mm Hg)</label>
                                 <input type="number" step="1" name="systolic" class="form-control" value="135">
                                 <small class="text-muted">Target: &lt;120 mm Hg</small>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Diastolic Blood Pressure (mm Hg)</label>
+                                <label class="form-label small">Diastolic Blood Pressure (mm Hg)</label>
                                 <input type="number" step="1" name="diastolic" class="form-control" value="88">
                                 <small class="text-muted">Target: &lt;80 mm Hg</small>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Body Mass Index (BMI)</label>
+                                <label class="form-label small">Body Mass Index (BMI)</label>
                                 <input type="number" step="0.1" name="BMI" class="form-control" value="27.2">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Daily Dietary Sodium (mg/day)</label>
+                                <label class="form-label small">Daily Dietary Sodium (mg/day)</label>
                                 <input type="number" step="50" name="sodium" class="form-control" value="2800">
                                 <small class="text-muted">AHA recommendation: &lt;2,300 mg</small>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Smoking Status</label>
+                                <label class="form-label small">Smoking Status</label>
                                 <select name="smoking" class="form-select">
                                     <option value="0">Non-Smoker</option>
                                     <option value="1">Occasional / Former</option>
@@ -1107,7 +1293,7 @@ def assessment():
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Perceived Stress Level</label>
+                                <label class="form-label small">Perceived Stress Level</label>
                                 <select name="stress" class="form-select">
                                     <option value="0">Low Stress</option>
                                     <option value="1" selected>Moderate Stress</option>
@@ -1122,12 +1308,12 @@ def assessment():
                         <h5 class="fw-bold text-info mb-3"><i class="bi bi-wind me-2 text-primary"></i>Respiratory & Pulmonary Risk Profile</h5>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Smoking Pack-Years</label>
+                                <label class="form-label small">Smoking Pack-Years</label>
                                 <input type="number" step="0.5" name="pack_years" class="form-control" value="8">
                                 <small class="text-muted">Packs per day &times; years smoked</small>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Dyspnea / Breathlessness Scale</label>
+                                <label class="form-label small">Dyspnea / Breathlessness Scale</label>
                                 <select name="dyspnea" class="form-select">
                                     <option value="0">Grade 0: None except strenuous exercise</option>
                                     <option value="1" selected>Grade 1: Short of breath when hurrying</option>
@@ -1136,11 +1322,11 @@ def assessment():
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Chronic Cough Duration (Weeks)</label>
+                                <label class="form-label small">Chronic Cough Duration (Weeks)</label>
                                 <input type="number" step="1" name="cough_weeks" class="form-control" value="3">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">Environmental / Dust Exposure</label>
+                                <label class="form-label small">Environmental / Dust Exposure</label>
                                 <select name="env_exposure" class="form-select">
                                     <option value="0">Low / Clean indoor</option>
                                     <option value="1" selected>Moderate (Urban traffic / occasional dust)</option>
@@ -1155,7 +1341,7 @@ def assessment():
                         <h5 class="fw-bold text-info mb-3"><i class="bi bi-person-lines-fill me-2 text-success"></i>11-Factor Health &amp; Lifestyle Multi-Risk Assessment</h5>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label class="form-label text-light small">1. Age Group</label>
+                                <label class="form-label small">1. Age Group</label>
                                 <select name="age_group" class="form-select">
                                     <option value="0">Under 30 years</option>
                                     <option value="1">30 - 45 years</option>
@@ -1164,7 +1350,7 @@ def assessment():
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">2. Smoking &amp; Tobacco</label>
+                                <label class="form-label small">2. Smoking &amp; Tobacco</label>
                                 <select name="smoking" class="form-select">
                                     <option value="0">Never smoked</option>
                                     <option value="1">Former smoker</option>
@@ -1173,7 +1359,7 @@ def assessment():
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">3. Physical Activity Level</label>
+                                <label class="form-label small">3. Physical Activity Level</label>
                                 <select name="physical_activity" class="form-select">
                                     <option value="3">Active (&gt; 150 mins/week)</option>
                                     <option value="2">Moderate (60 - 150 mins/week)</option>
@@ -1182,7 +1368,7 @@ def assessment():
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">4. Family History of Chronic Disease</label>
+                                <label class="form-label small">4. Family History of Chronic Disease</label>
                                 <select name="family_history" class="form-select">
                                     <option value="0">No known family history</option>
                                     <option value="1">One first-degree relative</option>
@@ -1190,7 +1376,7 @@ def assessment():
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">5. Blood Pressure Category</label>
+                                <label class="form-label small">5. Blood Pressure Category</label>
                                 <select name="bp_category" class="form-select">
                                     <option value="0">Optimal (&lt; 120/80 mm Hg)</option>
                                     <option value="1" selected>Elevated (120-129 / &lt;80)</option>
@@ -1199,7 +1385,7 @@ def assessment():
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">6. BMI / Weight Category</label>
+                                <label class="form-label small">6. BMI / Weight Category</label>
                                 <select name="bmi_category" class="form-select">
                                     <option value="0">Normal weight (18.5 - 24.9)</option>
                                     <option value="1">Overweight (25.0 - 29.9)</option>
@@ -1208,7 +1394,7 @@ def assessment():
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">7. Blood Sugar Level</label>
+                                <label class="form-label small">7. Blood Sugar Level</label>
                                 <select name="blood_sugar" class="form-select">
                                     <option value="0">Normal (&lt; 100 mg/dL fasting)</option>
                                     <option value="1" selected>Impaired / Prediabetic (100 - 125 mg/dL)</option>
@@ -1216,7 +1402,7 @@ def assessment():
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">8. Cholesterol Profile</label>
+                                <label class="form-label small">8. Cholesterol Profile</label>
                                 <select name="cholesterol" class="form-select">
                                     <option value="0">Desirable (&lt; 200 mg/dL)</option>
                                     <option value="1" selected>Borderline high (200 - 239 mg/dL)</option>
@@ -1224,7 +1410,7 @@ def assessment():
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">9. Diet &amp; Nutritional Quality</label>
+                                <label class="form-label small">9. Diet &amp; Nutritional Quality</label>
                                 <select name="diet_quality" class="form-select">
                                     <option value="0">Healthy / Whole-food balanced</option>
                                     <option value="1" selected>Average / Mixed diet</option>
@@ -1232,7 +1418,7 @@ def assessment():
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label text-light small">10. Stress &amp; Sleep Health</label>
+                                <label class="form-label small">10. Stress &amp; Sleep Health</label>
                                 <select name="sleep_stress" class="form-select">
                                     <option value="0">Restful sleep (7-9h) &amp; low stress</option>
                                     <option value="1" selected>Occasional insomnia / moderate stress</option>
@@ -1240,7 +1426,7 @@ def assessment():
                                 </select>
                             </div>
                             <div class="col-md-12">
-                                <label class="form-label text-light small">11. Existing Chronic Conditions</label>
+                                <label class="form-label small">11. Existing Chronic Conditions</label>
                                 <select name="chronic_conditions" class="form-select">
                                     <option value="0">None diagnosed</option>
                                     <option value="1">One chronic condition managed</option>
@@ -1373,28 +1559,28 @@ def simulator():
         sliders_markup = f"""
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Fasting Glucose (mg/dL)</label>
+                <label class="form-label small fw-bold mb-0">Fasting Glucose (mg/dL)</label>
                 <span id="val_Glucose" class="slider-val-badge bg-info text-dark">{int(glucose)}</span>
             </div>
             <input type="range" class="form-range" name="Glucose" id="slider_glucose" data-target="Glucose" min="70" max="250" value="{int(glucose)}">
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Body Mass Index (BMI)</label>
+                <label class="form-label small fw-bold mb-0">Body Mass Index (BMI)</label>
                 <span id="val_BMI" class="slider-val-badge bg-info text-dark">{bmi:.1f}</span>
             </div>
             <input type="range" class="form-range" name="BMI" id="slider_bmi" data-target="BMI" min="15" max="50" step="0.5" value="{bmi}">
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Blood Pressure (mm Hg)</label>
+                <label class="form-label small fw-bold mb-0">Blood Pressure (mm Hg)</label>
                 <span id="val_BloodPressure" class="slider-val-badge bg-info text-dark">{int(bp)}</span>
             </div>
             <input type="range" class="form-range" name="BloodPressure" id="slider_bp" data-target="BloodPressure" min="50" max="130" value="{int(bp)}">
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Age (Years)</label>
+                <label class="form-label small fw-bold mb-0">Age (Years)</label>
                 <span id="val_Age" class="slider-val-badge bg-info text-dark">{int(age)}</span>
             </div>
             <input type="range" class="form-range" name="Age" id="slider_age" data-target="Age" min="20" max="85" value="{int(age)}">
@@ -1404,28 +1590,28 @@ def simulator():
         sliders_markup = f"""
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Serum Cholesterol (mg/dL)</label>
+                <label class="form-label small fw-bold mb-0">Serum Cholesterol (mg/dL)</label>
                 <span id="val_chol" class="slider-val-badge bg-info text-dark">{int(chol)}</span>
             </div>
             <input type="range" class="form-range" name="chol" id="slider_chol" data-target="chol" min="120" max="400" value="{int(chol)}">
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Resting Blood Pressure (mm Hg)</label>
+                <label class="form-label small fw-bold mb-0">Resting Blood Pressure (mm Hg)</label>
                 <span id="val_trestbps" class="slider-val-badge bg-info text-dark">{int(trestbps)}</span>
             </div>
             <input type="range" class="form-range" name="trestbps" id="slider_trestbps" data-target="trestbps" min="90" max="200" value="{int(trestbps)}">
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Max Heart Rate (bpm)</label>
+                <label class="form-label small fw-bold mb-0">Max Heart Rate (bpm)</label>
                 <span id="val_thalach" class="slider-val-badge bg-info text-dark">{int(thalach)}</span>
             </div>
             <input type="range" class="form-range" name="thalach" id="slider_thalach" data-target="thalach" min="80" max="210" value="{int(thalach)}">
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Age (Years)</label>
+                <label class="form-label small fw-bold mb-0">Age (Years)</label>
                 <span id="val_Age" class="slider-val-badge bg-info text-dark">{int(age)}</span>
             </div>
             <input type="range" class="form-range" name="Age" id="slider_age" data-target="Age" min="20" max="85" value="{int(age)}">
@@ -1435,28 +1621,28 @@ def simulator():
         sliders_markup = f"""
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Systolic Blood Pressure (mm Hg)</label>
+                <label class="form-label small fw-bold mb-0">Systolic Blood Pressure (mm Hg)</label>
                 <span id="val_systolic" class="slider-val-badge bg-info text-dark">{int(systolic)}</span>
             </div>
             <input type="range" class="form-range" name="systolic" id="slider_systolic" data-target="systolic" min="90" max="200" value="{int(systolic)}">
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Diastolic Blood Pressure (mm Hg)</label>
+                <label class="form-label small fw-bold mb-0">Diastolic Blood Pressure (mm Hg)</label>
                 <span id="val_diastolic" class="slider-val-badge bg-info text-dark">{int(diastolic)}</span>
             </div>
             <input type="range" class="form-range" name="diastolic" id="slider_diastolic" data-target="diastolic" min="60" max="120" value="{int(diastolic)}">
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Daily Sodium Intake (mg)</label>
+                <label class="form-label small fw-bold mb-0">Daily Sodium Intake (mg)</label>
                 <span id="val_sodium" class="slider-val-badge bg-info text-dark">{int(sodium)}</span>
             </div>
             <input type="range" class="form-range" name="sodium" id="slider_sodium" data-target="sodium" min="1000" max="5000" step="50" value="{int(sodium)}">
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Age (Years)</label>
+                <label class="form-label small fw-bold mb-0">Age (Years)</label>
                 <span id="val_Age" class="slider-val-badge bg-info text-dark">{int(age)}</span>
             </div>
             <input type="range" class="form-range" name="Age" id="slider_age" data-target="Age" min="20" max="85" value="{int(age)}">
@@ -1466,28 +1652,28 @@ def simulator():
         sliders_markup = f"""
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Smoking Pack-Years</label>
+                <label class="form-label small fw-bold mb-0">Smoking Pack-Years</label>
                 <span id="val_pack_years" class="slider-val-badge bg-info text-dark">{int(pack_years)}</span>
             </div>
             <input type="range" class="form-range" name="pack_years" id="slider_pack_years" data-target="pack_years" min="0" max="50" value="{int(pack_years)}">
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Dyspnea Breathlessness Grade (0-3)</label>
+                <label class="form-label small fw-bold mb-0">Dyspnea Breathlessness Grade (0-3)</label>
                 <span id="val_dyspnea" class="slider-val-badge bg-info text-dark">{int(dyspnea)}</span>
             </div>
             <input type="range" class="form-range" name="dyspnea" id="slider_dyspnea" data-target="dyspnea" min="0" max="3" value="{int(dyspnea)}">
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Chronic Cough Duration (Weeks)</label>
+                <label class="form-label small fw-bold mb-0">Chronic Cough Duration (Weeks)</label>
                 <span id="val_cough_weeks" class="slider-val-badge bg-info text-dark">{int(cough_weeks)}</span>
             </div>
             <input type="range" class="form-range" name="cough_weeks" id="slider_cough_weeks" data-target="cough_weeks" min="0" max="12" value="{int(cough_weeks)}">
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Age (Years)</label>
+                <label class="form-label small fw-bold mb-0">Age (Years)</label>
                 <span id="val_Age" class="slider-val-badge bg-info text-dark">{int(age)}</span>
             </div>
             <input type="range" class="form-range" name="Age" id="slider_age" data-target="Age" min="20" max="85" value="{int(age)}">
@@ -1497,28 +1683,28 @@ def simulator():
         sliders_markup = f"""
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Physical Activity Grade (0=Sedentary, 3=High)</label>
+                <label class="form-label small fw-bold mb-0">Physical Activity Grade (0=Sedentary, 3=High)</label>
                 <span id="val_physical_activity" class="slider-val-badge bg-info text-dark">{int(activity)}</span>
             </div>
             <input type="range" class="form-range" name="physical_activity" id="slider_activity" data-target="physical_activity" min="0" max="3" value="{int(activity)}">
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Sleep &amp; Stress Scale (0=Optimal, 2=Poor)</label>
+                <label class="form-label small fw-bold mb-0">Sleep &amp; Stress Scale (0=Optimal, 2=Poor)</label>
                 <span id="val_sleep_stress" class="slider-val-badge bg-info text-dark">{int(sleep_stress)}</span>
             </div>
             <input type="range" class="form-range" name="sleep_stress" id="slider_sleep_stress" data-target="sleep_stress" min="0" max="2" value="{int(sleep_stress)}">
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Diet Quality (0=Balanced, 2=Unhealthy)</label>
+                <label class="form-label small fw-bold mb-0">Diet Quality (0=Balanced, 2=Unhealthy)</label>
                 <span id="val_diet_quality" class="slider-val-badge bg-info text-dark">{int(diet)}</span>
             </div>
             <input type="range" class="form-range" name="diet_quality" id="slider_diet" data-target="diet_quality" min="0" max="2" value="{int(diet)}">
         </div>
         <div class="col-md-6">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="form-label text-white small fw-bold mb-0">Age (Years)</label>
+                <label class="form-label small fw-bold mb-0">Age (Years)</label>
                 <span id="val_Age" class="slider-val-badge bg-info text-dark">{int(age)}</span>
             </div>
             <input type="range" class="form-range" name="Age" id="slider_age" data-target="Age" min="20" max="85" value="{int(age)}">
@@ -1534,14 +1720,14 @@ def simulator():
                         <i class="bi bi-sliders fs-2"></i>
                     </div>
                     <div>
-                        <h3 class="fw-bold text-white mb-0">What-If Clinical Risk Simulator</h3>
+                        <h3 class="fw-bold mb-0">What-If Clinical Risk Simulator</h3>
                         <p class="text-muted small mb-0">Simulate lifestyle or biometric adjustments to observe real-time risk score changes</p>
                     </div>
                 </div>
 
                 <form method="POST" action="/simulator">
                     <div class="mb-4">
-                        <label class="form-label text-white fw-bold">Select Target Condition Model:</label>
+                        <label class="form-label fw-bold">Select Target Condition Model:</label>
                         <select name="disease_type" class="form-select" onchange="this.form.submit()">
                             <option value="diabetes" {'selected' if disease_type == 'diabetes' else ''}>1. Diabetes Risk Simulator (Pima Clinical Model)</option>
                             <option value="heart" {'selected' if disease_type == 'heart' else ''}>2. Heart Disease Risk Simulator (Cleveland Cardiac Model)</option>
@@ -1562,7 +1748,7 @@ def simulator():
 
                 <div class="card-custom p-4 text-center border-{risk_color} mt-4">
                     <span class="badge bg-secondary mb-2">SIMULATED RISK OUTPUT</span>
-                    <h3 class="fw-bold text-white">{sim_result.get('disease')}</h3>
+                    <h3 class="fw-bold">{sim_result.get('disease')}</h3>
                     <h1 class="display-3 fw-extrabold text-{risk_color} my-2">{sim_result.get('probability')}%</h1>
                     <span class="badge bg-{risk_color} fs-6 px-3 py-1">Risk Category: {sim_result.get('risk_level')}</span>
                     <div class="disclaimer-banner small text-start my-3">{sim_result.get('disclaimer')}</div>

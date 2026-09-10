@@ -7,21 +7,21 @@ require_once __DIR__ . '/includes/header.php';
 <div class="hero-banner p-4 p-md-5 mb-5 text-center position-relative">
     <div class="row align-items-center py-4">
         <div class="col-lg-7 text-lg-start z-1">
-            <span class="badge bg-white text-dark fw-bold px-3 py-2 rounded-pill mb-3 shadow-sm">
-                <i class="bi bi-stars text-info me-1"></i> AI & ML Healthcare Decision Support
+            <span class="badge hero-badge px-3 py-2 rounded-pill mb-3 shadow-sm">
+                <i class="bi bi-stars me-1"></i> AI & ML Healthcare Decision Support
             </span>
-            <h1 class="display-4 fw-extrabold text-white mb-3">Smarter Healthcare Powered by Artificial Intelligence</h1>
-            <p class="lead text-white-50 mb-4">
+            <h1 class="display-4 fw-extrabold hero-heading mb-3">Smarter Healthcare Powered by Artificial Intelligence</h1>
+            <p class="lead hero-lead mb-4">
                 Explore intelligent multi-symptom disease predictions, clinical chronic disease risk assessments, what-if health parameter simulations, and computer vision infection & injury scanning.
             </p>
             <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
                 <a href="prediction.php" class="btn btn-primary-custom btn-lg">
                     <i class="bi bi-cpu-fill me-2"></i> Run AI Symptom Check
                 </a>
-                <a href="image_scanner.php" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                <a href="image_scanner.php" class="btn btn-hero-secondary btn-lg rounded-pill px-4">
                     <i class="bi bi-camera me-2"></i> Injury Image Scanner
                 </a>
-                <a href="diseases.php" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                <a href="diseases.php" class="btn btn-hero-secondary btn-lg rounded-pill px-4">
                     <i class="bi bi-journal-medical me-2"></i> Explore 25 Diseases
                 </a>
             </div>

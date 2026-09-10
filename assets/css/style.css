@@ -7,14 +7,14 @@
 [data-theme="dark"],
 [data-bs-theme="dark"] {
   /* Common Accent & Status Tokens */
-  --accent-primary: #06b6d4;
-  --accent-primary-hover: #0891b2;
+  --accent-primary: #12bfe3;
+  --accent-primary-hover: #0aa6c5;
   --accent-secondary: #0d9488;
   --accent-secondary-hover: #0f766e;
   --accent-teal: #0d9488;
   --accent-teal-hover: #0f766e;
-  --accent-cyan: #06b6d4;
-  --accent-cyan-hover: #0891b2;
+  --accent-cyan: #12bfe3;
+  --accent-cyan-hover: #0aa6c5;
   --accent-blue: #0284c7;
   --accent-amber: #f59e0b;
   --accent-rose: #f43f5e;
@@ -22,38 +22,57 @@
   --color-danger: #ef4444;
   --color-warning: #f59e0b;
   --color-success: #10b981;
-  --color-info: #06b6d4;
+  --color-info: #12bfe3;
+  --accent: #12bfe3;
+  --accent-dark: #0aa6c5;
+  --button-text: #ffffff;
 
   /* ================= DARK THEME (Default) ================= */
-  --bg-body: #0b1120;
-  --bg-main: #0b1120;
-  --bg-surface: #111a2e;
-  --bg-card: #151f32;
-  --bg-card-hover: #1c2942;
-  --bg-card-subtle: #0f172a;
-  --bg-input: #0f172a;
-  --text-input: #f8fafc;
+  --bg-primary: #0b1624;
+  --bg-secondary: #111f30;
+  --bg-card: #17283a;
+  --bg-card-hover: #1c2e42;
+  --bg-card-subtle: #0f1c2b;
+  --bg-input: #0f1c2b;
+  --text-input: #ffffff;
   
-  --border-color: #25334e;
+  --bg-body: #0b1624;
+  --bg-main: #0b1624;
+  --bg-surface: #111f30;
+  --card-bg: #17283a;
+  --card-border: #2b4054;
+
+  --border-color: #2b4054;
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-card: #25334e;
-  --border-input: #334155;
-  --border-focus: #06b6d4;
+  --border-card: #2b4054;
+  --border-input: #334a60;
+  --border-focus: #12bfe3;
 
-  --text-primary: #f8fafc;
-  --text-heading: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-main: #cbd5e1;
-  --text-muted: #94a3b8;
+  --text-primary: #ffffff;
+  --text-heading: #ffffff;
+  --text-secondary: #c3cfdd;
+  --text-main: #c3cfdd;
+  --text-muted: #9aaabd;
 
-  --navbar-bg: rgba(11, 17, 32, 0.94);
-  --navbar-text: #cbd5e1;
-  --footer-bg: #070b14;
-  --footer-heading: #f8fafc;
-  --footer-text: #94a3b8;
-  --footer-border: #1e293b;
+  --navbar-bg: rgba(11, 22, 36, 0.94);
+  --navbar-text: #c3cfdd;
+  --footer-bg: #070e17;
+  --footer-heading: #ffffff;
+  --footer-text: #9aaabd;
+  --footer-border: #1a2938;
 
-  --hero-gradient: linear-gradient(135deg, #0b1120 0%, #151f32 50%, #0f766e 100%);
+  --hero-bg: linear-gradient(135deg, #0b1624 0%, #17283a 55%, #0f3545 100%);
+  --hero-gradient: linear-gradient(135deg, #0b1624 0%, #17283a 55%, #0f3545 100%);
+  --hero-heading: #ffffff;
+  --hero-text: #c3cfdd;
+  --hero-badge-bg: rgba(18, 191, 227, 0.15);
+  --hero-badge-text: #38d3f2;
+  --hero-badge-border: rgba(18, 191, 227, 0.35);
+  --hero-btn-sec-color: #ffffff;
+  --hero-btn-sec-border: rgba(255, 255, 255, 0.35);
+  --hero-btn-sec-hover: rgba(255, 255, 255, 0.12);
+
+  --shadow: rgba(0, 0, 0, 0.3);
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.55);
@@ -61,52 +80,88 @@
   --shadow-elevated: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
 
   /* Symptom Tile Tokens - Dark */
-  --tile-bg-unselected: #111a2e;
-  --tile-border-unselected: #1e2b45;
-  --tile-text-unselected: #94a3b8;
-  --tile-hover-bg: #17233c;
-  --tile-hover-border: #334155;
+  --tile-bg-unselected: #111f30;
+  --tile-border-unselected: #1f3347;
+  --tile-text-unselected: #9aaabd;
+  --tile-hover-bg: #17283a;
+  --tile-hover-border: #334a60;
   
   --tile-bg-selected: linear-gradient(135deg, #0f4c5c 0%, #0c3852 100%);
-  --tile-border-selected: #06b6d4;
+  --tile-border-selected: #12bfe3;
   --tile-text-selected: #ffffff;
-  --tile-shadow-selected: 0 8px 24px -4px rgba(6, 182, 212, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  --tile-indicator-bg: #06b6d4;
-  --tile-indicator-color: #0b1120;
+  --tile-shadow-selected: 0 8px 24px -4px rgba(18, 191, 227, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  --tile-indicator-bg: #12bfe3;
+  --tile-indicator-color: #0b1624;
 }
 
 [data-theme="light"],
 [data-bs-theme="light"] {
   /* ================= LIGHT THEME ================= */
-  --bg-body: #f8fafc;
-  --bg-main: #f8fafc;
-  --bg-surface: #f1f5f9;
+  --accent-primary: #0aa6c5;
+  --accent-primary-hover: #088b9a;
+  --accent-secondary: #0d9488;
+  --accent-secondary-hover: #0f766e;
+  --accent-teal: #0d9488;
+  --accent-teal-hover: #0f766e;
+  --accent-cyan: #0aa6c5;
+  --accent-cyan-hover: #088b9a;
+  --accent-blue: #0284c7;
+  --accent-amber: #d97706;
+  --accent-rose: #e11d48;
+  --accent-green: #059669;
+  --color-danger: #dc2626;
+  --color-warning: #d97706;
+  --color-success: #059669;
+  --color-info: #0aa6c5;
+  --accent: #0aa6c5;
+  --accent-dark: #088b9a;
+  --button-text: #ffffff;
+
+  --bg-primary: #f5f9fc;
+  --bg-secondary: #ffffff;
   --bg-card: #ffffff;
   --bg-card-hover: #f8fafc;
-  --bg-card-subtle: #f1f5f9;
+  --bg-card-subtle: #edf3f8;
   --bg-input: #ffffff;
-  --text-input: #0f172a;
+  --text-input: #172033;
 
-  --border-color: #e2e8f0;
-  --border-subtle: #e2e8f0;
-  --border-card: #e2e8f0;
+  --bg-body: #f5f9fc;
+  --bg-main: #f5f9fc;
+  --bg-surface: #ffffff;
+  --card-bg: #ffffff;
+  --card-border: #d9e2ec;
+
+  --border-color: #d9e2ec;
+  --border-subtle: #d9e2ec;
+  --border-card: #d9e2ec;
   --border-input: #cbd5e1;
-  --border-focus: #0d9488;
+  --border-focus: #0aa6c5;
 
-  --text-primary: #0f172a;
-  --text-heading: #0f172a;
-  --text-secondary: #475569;
-  --text-main: #334155;
-  --text-muted: #64748b;
+  --text-primary: #172033;
+  --text-heading: #172033;
+  --text-secondary: #526071;
+  --text-main: #405063;
+  --text-muted: #6b7280;
 
   --navbar-bg: rgba(255, 255, 255, 0.96);
-  --navbar-text: #1e293b;
-  --footer-bg: #f1f5f9;
-  --footer-heading: #0f172a;
-  --footer-text: #64748b;
-  --footer-border: #e2e8f0;
+  --navbar-text: #172033;
+  --footer-bg: #f0f4f9;
+  --footer-heading: #172033;
+  --footer-text: #6b7280;
+  --footer-border: #d9e2ec;
 
-  --hero-gradient: linear-gradient(135deg, #0f766e 0%, #0284c7 60%, #1e293b 100%);
+  --hero-bg: linear-gradient(135deg, #e8f2f8 0%, #edf4f9 60%, #f0f6fa 100%);
+  --hero-gradient: linear-gradient(135deg, #e8f2f8 0%, #edf4f9 60%, #f0f6fa 100%);
+  --hero-heading: #172033;
+  --hero-text: #526071;
+  --hero-badge-bg: rgba(10, 166, 197, 0.1);
+  --hero-badge-text: #0aa6c5;
+  --hero-badge-border: rgba(10, 166, 197, 0.25);
+  --hero-btn-sec-color: #172033;
+  --hero-btn-sec-border: #94a3b8;
+  --hero-btn-sec-hover: rgba(15, 23, 42, 0.06);
+
+  --shadow: rgba(0, 0, 0, 0.08);
   --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
   --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
   --shadow-lg: 0 12px 30px rgba(15, 23, 42, 0.12);
@@ -116,15 +171,15 @@
   /* Symptom Tile Tokens - Light */
   --tile-bg-unselected: #ffffff;
   --tile-border-unselected: #cbd5e1;
-  --tile-text-unselected: #475569;
+  --tile-text-unselected: #526071;
   --tile-hover-bg: #f8fafc;
   --tile-hover-border: #94a3b8;
   
   --tile-bg-selected: linear-gradient(135deg, #ecfdf5 0%, #e0f2fe 100%);
-  --tile-border-selected: #0d9488;
-  --tile-text-selected: #0f766e;
-  --tile-shadow-selected: 0 6px 20px -3px rgba(13, 148, 136, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  --tile-indicator-bg: #0d9488;
+  --tile-border-selected: #0aa6c5;
+  --tile-text-selected: #088b9a;
+  --tile-shadow-selected: 0 6px 20px -3px rgba(10, 166, 197, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --tile-indicator-bg: #0aa6c5;
   --tile-indicator-color: #ffffff;
 }
 
@@ -223,16 +278,102 @@ h1, h2, h3, h4, h5, h6, .text-heading {
 }
 
 .hero-banner {
-  background: var(--hero-gradient);
-  color: #ffffff !important;
+  background: var(--hero-bg);
+  color: var(--text-primary);
   border-radius: 26px;
   position: relative;
   overflow: hidden;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-card);
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 
-.hero-banner h1, .hero-banner h2, .hero-banner h3, .hero-banner p {
-  color: #ffffff !important;
+.hero-banner h1,
+.hero-banner h2,
+.hero-banner h3,
+.hero-banner .hero-heading {
+  color: var(--hero-heading) !important;
+  transition: color 0.2s ease;
+}
+
+.hero-banner p,
+.hero-banner .hero-lead {
+  color: var(--hero-text) !important;
+  transition: color 0.2s ease;
+}
+
+.hero-badge {
+  background: var(--hero-badge-bg) !important;
+  color: var(--hero-badge-text) !important;
+  border: 1px solid var(--hero-badge-border) !important;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.btn-hero-secondary,
+.btn-explore {
+  color: var(--hero-btn-sec-color) !important;
+  border: 1.5px solid var(--hero-btn-sec-border) !important;
+  background-color: transparent !important;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-hero-secondary:hover,
+.btn-explore:hover {
+  color: var(--hero-btn-sec-color) !important;
+  background-color: var(--hero-btn-sec-hover) !important;
+  border-color: var(--accent-primary) !important;
+  transform: translateY(-1px);
+}
+
+/* Fallback for legacy btn-outline-light in Light Mode so it never becomes invisible */
+[data-theme="light"] .btn-outline-light,
+[data-bs-theme="light"] .btn-outline-light {
+  color: var(--hero-btn-sec-color) !important;
+  border-color: var(--hero-btn-sec-border) !important;
+  background-color: transparent !important;
+}
+
+[data-theme="light"] .btn-outline-light:hover,
+[data-bs-theme="light"] .btn-outline-light:hover {
+  color: var(--hero-btn-sec-color) !important;
+  background-color: var(--hero-btn-sec-hover) !important;
+  border-color: var(--accent-primary) !important;
+}
+
+/* Contrast guardrails for light mode */
+[data-theme="light"] h1.text-white,
+[data-theme="light"] h2.text-white,
+[data-theme="light"] h3.text-white,
+[data-theme="light"] h4.text-white,
+[data-theme="light"] h5.text-white,
+[data-theme="light"] h6.text-white,
+[data-theme="light"] .hero-banner h1.text-white,
+[data-theme="light"] .form-label.text-white,
+[data-theme="light"] .form-label.text-light,
+[data-theme="light"] p.text-white,
+[data-theme="light"] p.text-light,
+[data-theme="light"] p.text-white-50,
+[data-theme="light"] span.text-white:not(.badge):not(.btn *),
+[data-theme="light"] strong.text-white {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] p.lead.text-white-50,
+[data-theme="light"] p.lead.text-light {
+  color: var(--text-secondary) !important;
+}
+
+/* Dark mode guardrails for accidental text-dark on headings/labels */
+[data-theme="dark"] h1.text-dark,
+[data-theme="dark"] h2.text-dark,
+[data-theme="dark"] h3.text-dark,
+[data-theme="dark"] h4.text-dark,
+[data-theme="dark"] h5.text-dark,
+[data-theme="dark"] h6.text-dark,
+[data-theme="dark"] .form-label.text-dark {
+  color: var(--text-heading) !important;
 }
 
 /* ================= Forms & Inputs ================= */

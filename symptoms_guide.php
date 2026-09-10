@@ -258,7 +258,7 @@ $categories = ['All', 'General', 'Respiratory', 'Digestive', 'Neurological', 'Ur
 
 <div class="row py-3">
     <div class="col-lg-12 text-center mb-4">
-        <span class="badge bg-info text-white px-3 py-2 rounded-pill fw-bold mb-2">CLINICAL DIRECTORY</span>
+        <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-2">CLINICAL DIRECTORY</span>
         <h1 class="display-5 fw-extrabold mb-2">Interactive Symptoms Guide & Clinical Index</h1>
         <p class="lead text-muted mx-auto" style="max-width: 780px;">
             Explore our clinically organized index of symptoms aligned directly with our machine learning classification model. Search, filter by body system, and seamlessly load symptoms into our AI diagnostic checker.

@@ -35,9 +35,9 @@ require_once __DIR__ . '/includes/header.php';
         <div class="card-custom p-4 p-md-5 hero-banner">
             <div class="row align-items-center">
                 <div class="col-lg-8">
-                    <span class="badge bg-info text-dark px-3 py-1 mb-2 fw-bold">User Dashboard</span>
-                    <h2 class="fw-extrabold text-white mb-2">Welcome back, <?= sanitize($user['name']) ?>!</h2>
-                    <p class="text-muted mb-3">
+                    <span class="badge hero-badge px-3 py-1 mb-2 fw-bold">User Dashboard</span>
+                    <h2 class="fw-extrabold hero-heading mb-2">Welcome back, <?= sanitize($user['name']) ?>!</h2>
+                    <p class="hero-lead mb-3">
                         Access your previous AI disease predictions, check current health symptoms, explore disease information, and run simulations.
                     </p>
                     <div class="d-flex flex-wrap gap-2">
@@ -50,7 +50,7 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
                 </div>
                 <div class="col-lg-4 text-center mt-4 mt-lg-0">
-                    <div class="p-3 bg-dark bg-opacity-60 rounded-4 border border-secondary border-opacity-25">
+                    <div class="p-3 bg-card-subtle rounded-4 border border-secondary border-opacity-25">
                         <small class="text-uppercase fw-bold text-muted">Total AI Predictions</small>
                         <h1 class="display-3 fw-extrabold text-info mb-0"><?= number_format($total_predictions) ?></h1>
                     </div>

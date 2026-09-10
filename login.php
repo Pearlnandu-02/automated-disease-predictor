@@ -38,7 +38,7 @@ require_once __DIR__ . '/includes/header.php';
         <div class="card card-custom p-4 p-md-5 shadow-lg">
             <div class="text-center mb-4">
                 <i class="bi bi-shield-lock-fill fs-1 text-info"></i>
-                <h3 class="fw-bold text-dark mt-2">Member Login</h3>
+                <h3 class="fw-bold mt-2">Member Login</h3>
                 <p class="text-muted small">Sign in to manage your health risk assessments</p>
             </div>
 

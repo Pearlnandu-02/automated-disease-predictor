@@ -76,11 +76,11 @@ require_once __DIR__ . '/includes/header.php';
         <div class="hero-banner p-4 p-md-5 mb-3">
             <div class="row align-items-center">
                 <div class="col-lg-8">
-                    <span class="badge bg-white text-dark fw-bold px-3 py-2 rounded-pill mb-3">
-                        <i class="bi bi-camera-fill text-info me-1"></i> Computer Vision Pipeline
+                    <span class="badge hero-badge px-3 py-2 rounded-pill mb-3">
+                        <i class="bi bi-camera-fill me-1"></i> Computer Vision Pipeline
                     </span>
-                    <h1 class="display-6 fw-bold mb-2">AI Infection & Injury Scanner</h1>
-                    <p class="lead mb-0 text-white-50">
+                    <h1 class="display-6 fw-bold hero-heading mb-2">AI Infection & Injury Scanner</h1>
+                    <p class="lead mb-0 hero-lead">
                         Upload a clear image of a skin injury, wound, rash, swelling, or redness for an AI-assisted preliminary visual assessment.
                     </p>
                 </div>
