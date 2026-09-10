@@ -17,7 +17,7 @@ pages_to_test = [
     ("/image_scanner.php", "Scanner"),
     ("/login.php", "Login"),
     ("/register.php", "Register"),
-    ("/dataset_info.php", "Dataset"),
+    ("/about.php", "About"),
     ("/project_info.php", "Project"),
 ]
 

@@ -1,4 +1,7 @@
 <?php
+// User-facing Dataset & AI page has been retired from public navigation.
+header("Location: about.php", true, 301);
+exit;
 require_once __DIR__ . '/includes/header.php';
 
 $eval_results = [];

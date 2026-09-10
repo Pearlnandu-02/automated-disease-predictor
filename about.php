@@ -32,10 +32,10 @@ require_once __DIR__ . '/includes/header.php';
     <div class="col-md-4">
         <div class="card-custom h-100 p-4">
             <div class="p-3 bg-success bg-opacity-10 text-success rounded-circle d-inline-block mb-3">
-                <i class="bi bi-database-check fs-3"></i>
+                <i class="bi bi-journal-medical fs-3"></i>
             </div>
-            <h4 class="fw-bold mb-2">Large Dataset Scaling</h4>
-            <p class="text-muted small">Offline data preprocessing and batch model training ensure lightweight, high-performance web deployment.</p>
+            <h4 class="fw-bold mb-2">Comprehensive Clinical Library</h4>
+            <p class="text-muted small">Clinical reference index mapping 65 medical conditions, 58 symptoms, and evidence-based prevention guidelines.</p>
         </div>
     </div>
     <div class="col-md-4">

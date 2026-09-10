@@ -223,31 +223,132 @@ h1, h2, h3, h4, h5, h6, .text-heading {
   color: var(--text-muted) !important;
 }
 
-/* ================= Navbar ================= */
+/* ================= Navbar & Dropdowns ================= */
 .navbar-custom {
+  min-height: 74px;
   background: var(--navbar-bg);
   backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border-subtle);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-color);
   transition: background-color 0.25s ease, border-color 0.25s ease;
+  z-index: 1030;
 }
 
 .navbar-custom .navbar-brand {
   color: var(--text-heading) !important;
+  letter-spacing: -0.01em;
 }
 
 .navbar-custom .nav-link {
   color: var(--text-secondary) !important;
-  transition: color 0.2s ease;
+  font-size: 0.92rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  white-space: nowrap;
 }
 
-.navbar-custom .nav-link:hover,
+.navbar-custom .nav-link:hover {
+  color: var(--text-primary) !important;
+  background-color: var(--bg-card-subtle);
+}
+
 .navbar-custom .nav-link.active {
-  color: var(--accent-cyan) !important;
+  color: var(--accent-primary) !important;
+  font-weight: 700 !important;
 }
 
-[data-theme="light"] .navbar-custom .nav-link:hover,
-[data-theme="light"] .navbar-custom .nav-link.active {
-  color: var(--accent-teal) !important;
+[data-theme="light"] .navbar-custom .nav-link.active,
+[data-bs-theme="light"] .navbar-custom .nav-link.active {
+  color: var(--accent-primary) !important;
+}
+
+/* Polished Dropdown Menu Card */
+.dropdown-menu-custom {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 16px !important;
+  padding: 8px !important;
+  min-width: 320px;
+  max-width: 380px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12) !important;
+  animation: dropdownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"] .dropdown-menu-custom,
+[data-bs-theme="dark"] .dropdown-menu-custom {
+  background-color: #152436 !important;
+  border-color: #273e54 !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5) !important;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-item {
+  color: var(--text-primary) !important;
+  text-decoration: none;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+  white-space: normal !important;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: var(--bg-card-subtle) !important;
+  transform: translateX(2px);
+}
+
+.dropdown-item.active-sub {
+  background-color: var(--bg-card-subtle) !important;
+  border-left: 3px solid var(--accent-primary);
+}
+
+.dropdown-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background-color: var(--bg-card-subtle);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover .dropdown-icon-box {
+  background-color: rgba(10, 166, 197, 0.15);
+}
+
+.dropdown-item-title {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.88rem;
+  line-height: 1.3;
+}
+
+.dropdown-item-desc {
+  color: var(--text-muted);
+  font-size: 0.77rem;
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+/* Dropdown arrow styling */
+.dropdown-toggle::after {
+  vertical-align: middle;
+  margin-left: 0.35rem;
+  transition: transform 0.2s ease;
+}
+
+.dropdown.show .dropdown-toggle::after {
+  transform: rotate(180deg);
 }
 
 /* Theme Toggle Button */
@@ -264,6 +365,30 @@ h1, h2, h3, h4, h5, h6, .text-heading {
   background: var(--bg-card-hover);
   border-color: var(--accent-cyan);
   color: var(--text-heading);
+}
+
+/* Mobile Navbar Optimization */
+@media (max-width: 1199.98px) {
+  .navbar-collapse {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-top: 12px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15);
+  }
+  .navbar-custom .nav-link {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.95rem;
+  }
+  .dropdown-menu-custom {
+    min-width: 100%;
+    box-shadow: none !important;
+    border: 1px solid var(--border-color) !important;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    background-color: var(--bg-card-subtle) !important;
+  }
 }
 
 /* ================= Cards ================= */

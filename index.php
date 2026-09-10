@@ -175,11 +175,11 @@ require_once __DIR__ . '/includes/header.php';
     <div class="col-md-3 col-sm-6">
         <div class="card-custom h-100 p-4">
             <div class="bg-warning bg-opacity-10 p-3 rounded-circle d-inline-block mb-3 text-warning">
-                <i class="bi bi-database-check fs-3"></i>
+                <i class="bi bi-shield-check fs-3"></i>
             </div>
-            <h5 class="fw-bold mb-2">Large Dataset Scaling</h5>
+            <h5 class="fw-bold mb-2">Clinical Risk Assessment</h5>
             <p class="text-muted small mb-0">
-                Data preprocessing occurs offline before model training; web client receives serialized inference responses.
+                Multi-parameter risk stratification models for diabetes, cardiovascular disease, and hypertension.
             </p>
         </div>
     </div>

@@ -77,18 +77,28 @@ $user = get_logged_in_user();
 </head>
 <body>
 
+    <?php
+    $is_clinical_active = in_array($current_page, ['assessment.php', 'simulator.php']);
+    $is_library_active = in_array($current_page, ['diseases.php', 'disease_detail.php', 'symptoms_guide.php', 'prevention.php']);
+    ?>
     <!-- Navigation Header -->
-    <nav class="navbar navbar-expand-xl navbar-custom sticky-top py-3">
+    <nav class="navbar navbar-expand-xl navbar-custom sticky-top">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center me-3" href="index.php">
+            <!-- Brand Logo -->
+            <a class="navbar-brand d-flex align-items-center me-3 me-xl-4" href="index.php">
                 <i class="bi bi-heart-pulse-fill text-info me-2 fs-4"></i>
                 <span class="fs-4 fw-bold">AI Healthcare<span class="text-info">.</span></span>
             </a>
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
-                <span class="navbar-toggler-icon"></span>
+
+            <!-- Mobile Hamburger Toggler -->
+            <button class="navbar-toggler border-0 shadow-none px-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="bi bi-list fs-2 text-primary-theme"></i>
             </button>
+
+            <!-- Navbar Collapse -->
             <div class="collapse navbar-collapse" id="navbarMain">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-xl-center gap-1 small fw-medium">
+                <!-- Center Links -->
+                <ul class="navbar-nav mx-auto mb-2 mb-xl-0 align-items-xl-center gap-xl-1 py-2 py-xl-0 small fw-semibold">
                     <li class="nav-item">
                         <a class="nav-link <?= $current_page == 'index.php' ? 'active text-info fw-bold' : '' ?>" href="index.php">Home</a>
                     </li>
@@ -96,70 +106,128 @@ $user = get_logged_in_user();
                         <a class="nav-link <?= $current_page == 'about.php' ? 'active text-info fw-bold' : '' ?>" href="about.php">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= $current_page == 'prediction.php' ? 'active text-info fw-bold' : '' ?>" href="prediction.php">AI Prediction</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= $current_page == 'image_scanner.php' ? 'active text-info fw-bold' : '' ?>" href="image_scanner.php">
-                            <i class="bi bi-camera me-1"></i>Injury Scanner
+                        <a class="nav-link <?= $current_page == 'prediction.php' ? 'active text-info fw-bold' : '' ?>" href="prediction.php">
+                            <i class="bi bi-cpu me-1 text-info"></i>AI Prediction
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= $current_page == 'assessment.php' ? 'active text-info fw-bold' : '' ?>" href="assessment.php">Clinical Risk</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= $current_page == 'simulator.php' ? 'active text-info fw-bold' : '' ?>" href="simulator.php">Simulator</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= $current_page == 'diseases.php' || $current_page == 'disease_detail.php' ? 'active text-info fw-bold' : '' ?>" href="diseases.php">Diseases Library</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= $current_page == 'symptoms_guide.php' ? 'active text-info fw-bold' : '' ?>" href="symptoms_guide.php">Symptoms Guide</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= $current_page == 'prevention.php' ? 'active text-info fw-bold' : '' ?>" href="prevention.php">Prevention</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= $current_page == 'dataset_info.php' ? 'active text-info fw-bold' : '' ?>" href="dataset_info.php">Dataset & AI</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?= $current_page == 'contact.php' ? 'active text-info fw-bold' : '' ?>" href="contact.php">Contact</a>
+                        <a class="nav-link <?= $current_page == 'image_scanner.php' ? 'active text-info fw-bold' : '' ?>" href="image_scanner.php">
+                            <i class="bi bi-camera me-1 text-info"></i>Injury Scanner
+                        </a>
                     </li>
 
-                    <!-- Theme Toggle Button -->
-                    <li class="nav-item ms-xl-2 my-1 my-xl-0">
-                        <button id="themeToggleBtn" type="button" class="btn btn-sm rounded-pill px-3 py-1 theme-toggle-btn d-inline-flex align-items-center gap-1" onclick="toggleSiteTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle dark/light theme">
-                            <i class="bi bi-moon-stars-fill theme-icon-dark text-warning"></i>
-                            <i class="bi bi-sun-fill theme-icon-light text-warning d-none"></i>
-                            <span class="theme-text small fw-semibold">Dark</span>
-                        </button>
-                        <script>
-                        (function() {
-                            var t = document.documentElement.getAttribute('data-theme') || 'dark';
-                            if (typeof applyTheme === 'function') {
-                                applyTheme(t);
-                            }
-                        })();
-                        </script>
+                    <!-- Clinical Tools Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-inline-flex align-items-center gap-1 <?= $is_clinical_active ? 'active text-info fw-bold' : '' ?>" href="#" id="clinicalToolsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span>Clinical Tools</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-custom shadow-lg border-0" aria-labelledby="clinicalToolsDropdown">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 <?= ($current_page == 'assessment.php' && ($_GET['type'] ?? '') !== 'diabetes') ? 'active-sub' : '' ?>" href="assessment.php">
+                                    <div class="dropdown-icon-box text-info mt-1">
+                                        <i class="bi bi-shield-check fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-item-title">Clinical Risk Assessment</div>
+                                        <div class="dropdown-item-desc">Evaluate selected health risk factors.</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 <?= $current_page == 'simulator.php' ? 'active-sub' : '' ?>" href="simulator.php">
+                                    <div class="dropdown-icon-box text-info mt-1">
+                                        <i class="bi bi-sliders fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-item-title">Health Simulator</div>
+                                        <div class="dropdown-item-desc">Explore educational health calculations.</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 <?= ($current_page == 'assessment.php' && ($_GET['type'] ?? '') === 'diabetes') ? 'active-sub' : '' ?>" href="assessment.php?type=diabetes">
+                                    <div class="dropdown-icon-box text-danger mt-1">
+                                        <i class="bi bi-droplet-fill fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-item-title">Diabetes Assessment</div>
+                                        <div class="dropdown-item-desc">Review diabetes-related health indicators.</div>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
+
+                    <!-- Health Library Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-inline-flex align-items-center gap-1 <?= $is_library_active ? 'active text-info fw-bold' : '' ?>" href="#" id="healthLibraryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span>Health Library</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-custom shadow-lg border-0" aria-labelledby="healthLibraryDropdown">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 <?= in_array($current_page, ['diseases.php', 'disease_detail.php']) ? 'active-sub' : '' ?>" href="diseases.php">
+                                    <div class="dropdown-icon-box text-info mt-1">
+                                        <i class="bi bi-journal-medical fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-item-title">Diseases Library</div>
+                                        <div class="dropdown-item-desc">Explore supported conditions.</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 <?= $current_page == 'symptoms_guide.php' ? 'active-sub' : '' ?>" href="symptoms_guide.php">
+                                    <div class="dropdown-icon-box text-info mt-1">
+                                        <i class="bi bi-diagram-3-fill fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-item-title">Symptoms Guide</div>
+                                        <div class="dropdown-item-desc">Browse symptoms and associated conditions.</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 <?= $current_page == 'prevention.php' ? 'active-sub' : '' ?>" href="prevention.php">
+                                    <div class="dropdown-icon-box text-success mt-1">
+                                        <i class="bi bi-heart-pulse-fill fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-item-title">Prevention</div>
+                                        <div class="dropdown-item-desc">Explore preventive health guidance.</div>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <!-- Right Actions -->
+                <div class="d-flex align-items-center gap-2 pt-2 pt-xl-0 border-top border-xl-0 border-secondary border-opacity-25 mt-2 mt-xl-0">
+                    <!-- Theme Toggle Button -->
+                    <button id="themeToggleBtn" type="button" class="btn btn-sm rounded-pill px-3 py-1 theme-toggle-btn d-inline-flex align-items-center gap-1" onclick="toggleSiteTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle dark/light theme">
+                        <i class="bi bi-moon-stars-fill theme-icon-dark text-warning"></i>
+                        <i class="bi bi-sun-fill theme-icon-light text-warning d-none"></i>
+                        <span class="theme-text small fw-semibold">Dark</span>
+                    </button>
+                    <script>
+                    (function() {
+                        var t = document.documentElement.getAttribute('data-theme') || 'dark';
+                        if (typeof applyTheme === 'function') {
+                            applyTheme(t);
+                        }
+                    })();
+                    </script>
 
                     <?php if (is_logged_in()): ?>
-                        <li class="nav-item ms-xl-1">
-                            <a class="nav-link <?= $current_page == 'dashboard.php' ? 'active text-info fw-bold' : '' ?>" href="dashboard.php">Dashboard</a>
-                        </li>
-                        <li class="nav-item ms-xl-1">
-                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1 fw-semibold d-inline-flex align-items-center" href="logout.php">
-                                <i class="bi bi-box-arrow-right me-1"></i> Logout (<?= sanitize($user['name']) ?>)
-                            </a>
-                        </li>
+                        <a class="nav-link px-2 <?= $current_page == 'dashboard.php' ? 'active text-info fw-bold' : '' ?>" href="dashboard.php">Dashboard</a>
+                        <a class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1 fw-semibold d-inline-flex align-items-center" href="logout.php">
+                            <i class="bi bi-box-arrow-right me-1"></i> Logout (<?= sanitize($user['name']) ?>)
+                        </a>
                     <?php else: ?>
-                        <li class="nav-item ms-xl-2">
-                            <a class="btn btn-outline-info rounded-pill px-3 btn-sm" href="login.php">Login</a>
-                        </li>
-                        <li class="nav-item ms-xl-1">
-                            <a class="btn btn-info rounded-pill px-3 btn-sm" href="register.php">Register</a>
-                        </li>
+                        <a class="btn btn-outline-info rounded-pill px-3 py-1 btn-sm fw-semibold" href="login.php">Login</a>
+                        <a class="btn btn-info rounded-pill px-3 py-1 btn-sm text-white fw-semibold" href="register.php">Register</a>
                     <?php endif; ?>
-                </ul>
+                </div>
             </div>
         </div>
     </nav>

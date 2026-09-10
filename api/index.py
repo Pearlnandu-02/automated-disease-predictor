@@ -93,6 +93,20 @@ DISEASES_DB = [
 
 def render_page(content_html, **kwargs):
     user = session.get('user')
+    path = request.path
+    type_arg = request.args.get('type', '')
+    is_home = (path in ['/', '/index.php'])
+    is_about = (path in ['/about', '/about.php'])
+    is_prediction = (path in ['/prediction', '/prediction.php'])
+    is_scanner = (path in ['/scanner', '/image_scanner.php'])
+    is_clinical = ('assessment' in path or 'simulator' in path)
+    is_library = (path in ['/diseases', '/symptoms', '/prevention'] or path.startswith('/disease/'))
+    is_sub_risk = ('assessment' in path and type_arg != 'diabetes')
+    is_sub_sim = ('simulator' in path)
+    is_sub_diab = ('assessment' in path and type_arg == 'diabetes')
+    is_sub_dis = (path in ['/diseases', '/diseases.php'] or path.startswith('/disease/'))
+    is_sub_sym = (path in ['/symptoms', '/symptoms_guide.php'])
+    is_sub_prev = (path in ['/prevention', '/prevention.php'])
     base_template = """
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -311,18 +325,147 @@ def render_page(content_html, **kwargs):
             color: var(--text-secondary) !important;
         }
 
+        /* Navbar & Dropdowns */
         .navbar-custom {
+            min-height: 74px;
             background: var(--navbar-bg);
-            backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--card-border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.25s ease, border-color 0.25s ease;
+            z-index: 1030;
         }
 
-        [data-theme="light"] .navbar-custom .nav-link {
-            color: #172033 !important;
+        .navbar-custom .navbar-brand {
+            color: var(--text-heading) !important;
+            letter-spacing: -0.01em;
         }
 
-        [data-theme="light"] .navbar-brand {
-            color: #172033 !important;
+        .navbar-custom .nav-link {
+            color: var(--text-secondary) !important;
+            font-size: 0.92rem;
+            padding: 0.45rem 0.75rem;
+            border-radius: 8px;
+            transition: color 0.2s ease, background-color 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .navbar-custom .nav-link:hover {
+            color: var(--text-primary) !important;
+            background-color: var(--bg-card-subtle);
+        }
+
+        .navbar-custom .nav-link.active {
+            color: var(--accent-primary) !important;
+            font-weight: 700 !important;
+        }
+
+        [data-theme="light"] .navbar-custom .nav-link.active,
+        [data-bs-theme="light"] .navbar-custom .nav-link.active {
+            color: var(--accent-primary) !important;
+        }
+
+        /* Dropdown Card */
+        .dropdown-menu-custom {
+            background-color: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 16px !important;
+            padding: 8px !important;
+            min-width: 320px;
+            max-width: 380px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12) !important;
+            animation: dropdownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        [data-theme="dark"] .dropdown-menu-custom,
+        [data-bs-theme="dark"] .dropdown-menu-custom {
+            background-color: #152436 !important;
+            border-color: #273e54 !important;
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        @keyframes dropdownFade {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-item {
+            color: var(--text-primary) !important;
+            text-decoration: none;
+            transition: background-color 0.15s ease, transform 0.15s ease;
+            white-space: normal !important;
+        }
+
+        .dropdown-item:hover, .dropdown-item:focus {
+            background-color: var(--bg-card-subtle) !important;
+            transform: translateX(2px);
+        }
+
+        .dropdown-item.active-sub {
+            background-color: var(--bg-card-subtle) !important;
+            border-left: 3px solid var(--accent-primary);
+        }
+
+        .dropdown-icon-box {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background-color: var(--bg-card-subtle);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .dropdown-item:hover .dropdown-icon-box {
+            background-color: rgba(10, 166, 197, 0.15);
+        }
+
+        .dropdown-item-title {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.88rem;
+            line-height: 1.3;
+        }
+
+        .dropdown-item-desc {
+            color: var(--text-muted);
+            font-size: 0.77rem;
+            line-height: 1.35;
+            margin-top: 2px;
+        }
+
+        .dropdown-toggle::after {
+            vertical-align: middle;
+            margin-left: 0.35rem;
+            transition: transform 0.2s ease;
+        }
+
+        .dropdown.show .dropdown-toggle::after {
+            transform: rotate(180deg);
+        }
+
+        @media (max-width: 1199.98px) {
+            .navbar-collapse {
+                background-color: var(--bg-card);
+                border: 1px solid var(--border-color);
+                border-radius: 16px;
+                padding: 16px 20px;
+                margin-top: 12px;
+                box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15);
+            }
+            .navbar-custom .nav-link {
+                padding: 0.65rem 0.75rem;
+                font-size: 0.95rem;
+            }
+            .dropdown-menu-custom {
+                min-width: 100%;
+                box-shadow: none !important;
+                border: 1px solid var(--border-color) !important;
+                margin-top: 6px;
+                margin-bottom: 6px;
+                background-color: var(--bg-card-subtle) !important;
+            }
         }
 
         .card-custom {
@@ -766,47 +909,144 @@ def render_page(content_html, **kwargs):
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-xl navbar-custom sticky-top py-3">
+    <nav class="navbar navbar-expand-xl navbar-custom sticky-top">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center me-4" href="/">
+            <!-- Brand Logo -->
+            <a class="navbar-brand d-flex align-items-center me-3 me-xl-4" href="/">
                 <i class="bi bi-heart-pulse-fill text-info me-2 fs-4"></i>
                 <span class="fs-4 fw-bold">AI Healthcare<span class="text-info">.</span></span>
             </a>
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
-                <span class="navbar-toggler-icon"></span>
+
+            <!-- Mobile Hamburger Toggler -->
+            <button class="navbar-toggler border-0 shadow-none px-2" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="bi bi-list fs-2 text-primary-theme"></i>
             </button>
+
+            <!-- Navbar Collapse -->
             <div class="collapse navbar-collapse" id="navMain">
-                <ul class="navbar-nav ms-auto align-items-center gap-1 small fw-medium">
-                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/prediction">AI Prediction</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/scanner"><i class="bi bi-camera me-1"></i>Injury Scanner</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/assessment">Clinical Risk</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/simulator">Simulator</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/diseases">Diseases Library</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/symptoms">Symptoms Guide</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/prevention">Prevention</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/dataset-info">Dataset & AI</a></li>
-                    
-                    <!-- Theme Toggle Button -->
-                    <li class="nav-item mx-xl-2">
-                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 theme-toggle-btn d-flex align-items-center gap-1" id="themeToggleBtn" onclick="toggleSiteTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle dark/light theme">
-                            <i class="bi bi-moon-stars-fill theme-icon-dark text-info"></i>
-                            <i class="bi bi-sun-fill theme-icon-light text-warning d-none"></i>
-                            <span class="theme-text small fw-semibold">Dark</span>
-                        </button>
+                <!-- Center Links -->
+                <ul class="navbar-nav mx-auto mb-2 mb-xl-0 align-items-xl-center gap-xl-1 py-2 py-xl-0 small fw-semibold">
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active text-info fw-bold' if is_home else '' }}" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active text-info fw-bold' if is_about else '' }}" href="/about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active text-info fw-bold' if is_prediction else '' }}" href="/prediction">
+                            <i class="bi bi-cpu me-1 text-info"></i>AI Prediction
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active text-info fw-bold' if is_scanner else '' }}" href="/scanner">
+                            <i class="bi bi-camera me-1 text-info"></i>Injury Scanner
+                        </a>
                     </li>
 
-                    {% if user %}
-                        <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
-                        <li class="nav-item ms-xl-1">
-                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3" href="/logout">Logout ({{ user.name }})</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item ms-xl-1"><a class="btn btn-outline-info btn-sm rounded-pill px-3" href="/login">Login</a></li>
-                        <li class="nav-item ms-xl-1"><a class="btn btn-info text-white btn-sm rounded-pill px-3" href="/register">Register</a></li>
-                    {% endif %}
+                    <!-- Clinical Tools Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-inline-flex align-items-center gap-1 {{ 'active text-info fw-bold' if is_clinical else '' }}" href="#" id="clinicalToolsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span>Clinical Tools</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-custom shadow-lg border-0" aria-labelledby="clinicalToolsDropdown">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 {{ 'active-sub' if is_sub_risk else '' }}" href="/assessment">
+                                    <div class="dropdown-icon-box text-info mt-1">
+                                        <i class="bi bi-shield-check fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-item-title">Clinical Risk Assessment</div>
+                                        <div class="dropdown-item-desc">Evaluate selected health risk factors.</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 {{ 'active-sub' if is_sub_sim else '' }}" href="/simulator">
+                                    <div class="dropdown-icon-box text-info mt-1">
+                                        <i class="bi bi-sliders fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-item-title">Health Simulator</div>
+                                        <div class="dropdown-item-desc">Explore educational health calculations.</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 {{ 'active-sub' if is_sub_diab else '' }}" href="/assessment?type=diabetes">
+                                    <div class="dropdown-icon-box text-danger mt-1">
+                                        <i class="bi bi-droplet-fill fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-item-title">Diabetes Assessment</div>
+                                        <div class="dropdown-item-desc">Review diabetes-related health indicators.</div>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Health Library Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-inline-flex align-items-center gap-1 {{ 'active text-info fw-bold' if is_library else '' }}" href="#" id="healthLibraryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span>Health Library</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-custom shadow-lg border-0" aria-labelledby="healthLibraryDropdown">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 {{ 'active-sub' if is_sub_dis else '' }}" href="/diseases">
+                                    <div class="dropdown-icon-box text-info mt-1">
+                                        <i class="bi bi-journal-medical fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-item-title">Diseases Library</div>
+                                        <div class="dropdown-item-desc">Explore supported conditions.</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 {{ 'active-sub' if is_sub_sym else '' }}" href="/symptoms">
+                                    <div class="dropdown-icon-box text-info mt-1">
+                                        <i class="bi bi-diagram-3-fill fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-item-title">Symptoms Guide</div>
+                                        <div class="dropdown-item-desc">Browse symptoms and associated conditions.</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 {{ 'active-sub' if is_sub_prev else '' }}" href="/prevention">
+                                    <div class="dropdown-icon-box text-success mt-1">
+                                        <i class="bi bi-heart-pulse-fill fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-item-title">Prevention</div>
+                                        <div class="dropdown-item-desc">Explore preventive health guidance.</div>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
+
+                <!-- Right Actions -->
+                <div class="d-flex align-items-center gap-2 pt-2 pt-xl-0 border-top border-xl-0 border-secondary border-opacity-25 mt-2 mt-xl-0">
+                    <!-- Theme Toggle Button -->
+                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 theme-toggle-btn d-inline-flex align-items-center gap-1" id="themeToggleBtn" onclick="toggleSiteTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle dark/light theme">
+                        <i class="bi bi-moon-stars-fill theme-icon-dark text-info"></i>
+                        <i class="bi bi-sun-fill theme-icon-light text-warning d-none"></i>
+                        <span class="theme-text small fw-semibold">Dark</span>
+                    </button>
+
+                    {% if user %}
+                        <a class="nav-link px-2 {{ 'active text-info fw-bold' if path == '/dashboard' else '' }}" href="/dashboard">Dashboard</a>
+                        <a class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1 fw-semibold d-inline-flex align-items-center" href="/logout">
+                            <i class="bi bi-box-arrow-right me-1"></i> Logout ({{ user.name }})
+                        </a>
+                    {% else %}
+                        <a class="btn btn-outline-info btn-sm rounded-pill px-3 py-1 fw-semibold" href="/login">Login</a>
+                        <a class="btn btn-info text-white btn-sm rounded-pill px-3 py-1 fw-semibold" href="/register">Register</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </nav>
@@ -818,9 +1058,50 @@ def render_page(content_html, **kwargs):
     </main>
 
     <footer>
-        <div class="container text-center">
-            <p class="small text-muted mb-1">&copy; 2026 AI Healthcare – Intelligent Disease Prediction & Health Assistance System.</p>
-            <p class="small text-warning">Educational College Project — Not a Medical Diagnosis System.</p>
+        <div class="container">
+            <div class="row gy-4 mb-4">
+                <div class="col-lg-4">
+                    <h5 class="font-weight-bold mb-3 d-flex align-items-center">
+                        <i class="bi bi-heart-pulse-fill text-info me-2"></i> AI Healthcare<span class="text-info">.</span>
+                    </h5>
+                    <p class="small text-muted mb-3">
+                        An Academic Machine Learning & Computer Vision project dedicated to personalized preventative health risk assessments, multi-symptom prediction, and educational infection & injury scanning.
+                    </p>
+                    <div class="disclaimer-banner small">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i> <strong>Academic Disclaimer:</strong> This system provides preliminary educational assessments and risk scores. It does NOT provide medical diagnoses or prescriptions. Always consult a qualified healthcare professional.
+                    </div>
+                </div>
+                <div class="col-lg-2 col-6 col-sm-4 ms-auto">
+                    <h6 class="mb-3 fw-bold text-primary-theme">Explore</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="/">Home</a></li>
+                        <li class="mb-2"><a href="/about">About</a></li>
+                        <li class="mb-2"><a href="/prediction">AI Prediction</a></li>
+                        <li class="mb-2"><a href="/scanner"><i class="bi bi-camera me-1 text-info"></i>Injury Scanner</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-6 col-sm-4">
+                    <h6 class="mb-3 fw-bold text-primary-theme">Clinical Tools</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="/assessment">Clinical Risk Assessment</a></li>
+                        <li class="mb-2"><a href="/simulator">Health Simulator</a></li>
+                        <li class="mb-2"><a href="/assessment?type=diabetes">Diabetes Assessment</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-6 col-sm-4">
+                    <h6 class="mb-3 fw-bold text-primary-theme">Health Library</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="/diseases">Diseases Library</a></li>
+                        <li class="mb-2"><a href="/symptoms">Symptoms Guide</a></li>
+                        <li class="mb-2"><a href="/prevention">Prevention</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="border-secondary opacity-25">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center small text-muted">
+                <p class="mb-0">&copy; 2026 AI Healthcare – Intelligent Disease Prediction & Health Assistance System.</p>
+                <p class="mb-0">Educational College Project — Not a Medical Diagnosis System.</p>
+            </div>
         </div>
     </footer>
 
@@ -995,7 +1276,24 @@ def render_page(content_html, **kwargs):
 </body>
 </html>
     """
-    return render_template_string(base_template, **kwargs)
+    return render_template_string(
+        base_template,
+        user=user,
+        path=path,
+        is_home=is_home,
+        is_about=is_about,
+        is_prediction=is_prediction,
+        is_scanner=is_scanner,
+        is_clinical=is_clinical,
+        is_library=is_library,
+        is_sub_risk=is_sub_risk,
+        is_sub_sim=is_sub_sim,
+        is_sub_diab=is_sub_diab,
+        is_sub_dis=is_sub_dis,
+        is_sub_sym=is_sub_sym,
+        is_sub_prev=is_sub_prev,
+        **kwargs
+    )
 
 @app.route('/')
 @app.route('/index.php')
@@ -2343,13 +2641,7 @@ def prevention():
 @app.route('/dataset_info.php')
 @app.route('/api/dataset-info')
 def dataset_info():
-    content = """
-    <div class="card-custom p-5 my-4">
-        <h2 class="fw-bold text-white mb-3">Dataset & Large Data Handling Architecture</h2>
-        <p class="text-muted small mb-4">Offline data preprocessing, separate dataset storage, lightweight joblib pipelines, and REST API inference microservices.</p>
-    </div>
-    """
-    return render_page(content)
+    return redirect('/about', code=301)
 
 @app.route('/project-info')
 @app.route('/project_info.php')
