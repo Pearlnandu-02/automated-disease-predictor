@@ -67,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+$page_title = 'MediSense AI | Injury Scanner';
 require_once __DIR__ . '/includes/header.php';
 ?>
 

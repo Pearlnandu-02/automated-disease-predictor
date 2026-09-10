@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+$page_title = 'MediSense AI | Contact';
 require_once __DIR__ . '/includes/header.php';
 ?>
 
@@ -85,7 +86,7 @@ require_once __DIR__ . '/includes/header.php';
         <div class="card-custom p-4 mb-4">
             <h5 class="fw-bold mb-3"><i class="bi bi-info-circle text-info me-2"></i> Project Details</h5>
             <ul class="list-unstyled text-muted small mb-0 lh-lg">
-                <li><strong>Project:</strong> AI Healthcare System</li>
+                <li><strong>Project:</strong> MediSense AI</li>
                 <li><strong>Scope:</strong> Academic College Project</li>
                 <li><strong>Backend:</strong> PHP 8 + MySQL PDO + Python ML</li>
             </ul>

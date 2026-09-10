@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/includes/functions.php';
+$page_title = 'MediSense AI | Symptoms Guide';
 require_once __DIR__ . '/includes/header.php';
 
 // Comprehensive structured symptom knowledge base aligned with 58 ML features and 65 diseases

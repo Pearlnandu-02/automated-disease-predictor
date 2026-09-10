@@ -107,13 +107,50 @@ def render_page(content_html, **kwargs):
     is_sub_dis = (path in ['/diseases', '/diseases.php'] or path.startswith('/disease/'))
     is_sub_sym = (path in ['/symptoms', '/symptoms_guide.php'])
     is_sub_prev = (path in ['/prevention', '/prevention.php'])
+
+    page_title = kwargs.get('page_title') or kwargs.get('title')
+    if not page_title:
+        if is_home:
+            page_title = 'MediSense AI | Smarter Insights. Better Health.'
+        elif is_about:
+            page_title = 'MediSense AI | About'
+        elif is_prediction:
+            page_title = 'MediSense AI | AI Prediction'
+        elif is_scanner:
+            page_title = 'MediSense AI | Injury Scanner'
+        elif is_sub_diab:
+            page_title = 'MediSense AI | Diabetes Assessment'
+        elif is_sub_risk:
+            page_title = 'MediSense AI | Clinical Risk Assessment'
+        elif is_sub_sim:
+            page_title = 'MediSense AI | Health Simulator'
+        elif is_sub_dis:
+            page_title = 'MediSense AI | Diseases Library'
+        elif is_sub_sym:
+            page_title = 'MediSense AI | Symptoms Guide'
+        elif is_sub_prev:
+            page_title = 'MediSense AI | Prevention'
+        elif 'login' in path:
+            page_title = 'MediSense AI | Login'
+        elif 'register' in path:
+            page_title = 'MediSense AI | Register'
+        elif 'dashboard' in path:
+            page_title = 'MediSense AI | Dashboard'
+        else:
+            page_title = 'MediSense AI | AI Disease Prediction & Health Assistance'
+
     base_template = """
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Healthcare - Intelligent Disease Prediction & Health Assistance System</title>
+    <title>{{ page_title }}</title>
+    <meta name="description" content="MediSense AI - Smarter Insights. Better Health. An educational AI healthcare platform providing multi-symptom disease predictions, clinical risk assessments, health simulations, and computer vision infection & injury scanning.">
+    <meta property="og:title" content="{{ page_title }}">
+    <meta property="og:description" content="Smarter Insights. Better Health. Educational disease prediction, clinical risk evaluations, and visual infection & injury assessments powered by AI.">
+    <meta property="og:site_name" content="MediSense AI">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2312bfe3'><path fill-rule='evenodd' d='m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z'/></svg>">
     <!-- Early theme initializer to prevent FOUC & Bulletproof Theme Engine -->
     <script>
         function applyTheme(theme) {
@@ -1232,7 +1269,7 @@ def render_page(content_html, **kwargs):
             <!-- Brand Logo -->
             <a class="navbar-brand d-flex align-items-center me-3 me-xl-4" href="/">
                 <i class="bi bi-heart-pulse-fill text-info me-2 fs-4"></i>
-                <span class="fs-4 fw-bold">AI Healthcare<span class="text-info">.</span></span>
+                <span class="fs-4 fw-bold">MediSense<span class="text-info"> AI</span></span>
             </a>
 
             <!-- Mobile Hamburger Toggler -->
@@ -1380,10 +1417,13 @@ def render_page(content_html, **kwargs):
             <div class="row gy-4 mb-4">
                 <div class="col-lg-4">
                     <h5 class="font-weight-bold mb-3 d-flex align-items-center">
-                        <i class="bi bi-heart-pulse-fill text-info me-2"></i> AI Healthcare<span class="text-info">.</span>
+                        <i class="bi bi-heart-pulse-fill text-info me-2"></i> MediSense<span class="text-info"> AI</span>
                     </h5>
+                    <p class="small text-muted mb-2 fw-semibold text-info">
+                        Smarter Insights. Better Health.
+                    </p>
                     <p class="small text-muted mb-3">
-                        An Academic Machine Learning & Computer Vision project dedicated to personalized preventative health risk assessments, multi-symptom prediction, and educational infection & injury scanning.
+                        MediSense AI is a web-based AI healthcare platform that provides educational disease prediction, clinical risk assessment, health simulation, disease and symptom information, preventive health guidance, and AI-assisted preliminary visual assessment of infections and injuries.
                     </p>
                     <div class="disclaimer-banner small">
                         <i class="bi bi-exclamation-triangle-fill me-1"></i> <strong>Academic Disclaimer:</strong> This system provides preliminary educational assessments and risk scores. It does NOT provide medical diagnoses or prescriptions. Always consult a qualified healthcare professional.
@@ -1417,7 +1457,7 @@ def render_page(content_html, **kwargs):
             </div>
             <hr class="border-secondary opacity-25">
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center small text-muted">
-                <p class="mb-0">&copy; 2026 AI Healthcare – Intelligent Disease Prediction & Health Assistance System.</p>
+                <p class="mb-0">&copy; 2026 MediSense AI – Smarter Insights. Better Health.</p>
                 <p class="mb-0">Educational College Project — Not a Medical Diagnosis System.</p>
             </div>
         </div>
@@ -1596,6 +1636,7 @@ def render_page(content_html, **kwargs):
     """
     return render_template_string(
         base_template,
+        page_title=page_title,
         user=user,
         path=path,
         is_home=is_home,
@@ -1654,7 +1695,7 @@ def about():
     content = """
     <div class="card-custom p-5 text-center my-4">
         <span class="badge hero-badge px-3 py-1 rounded-pill mb-3">ABOUT PLATFORM</span>
-        <h2 class="fw-bold hero-heading mb-3">AI Healthcare Platform Overview</h2>
+        <h2 class="fw-bold hero-heading mb-3">MediSense AI Platform Overview</h2>
         <p class="lead text-muted max-w-xl mx-auto mb-4">
             Demonstrating how Machine Learning assists healthcare users by analyzing symptoms and evaluating statistical likelihoods of 25 medical conditions.
         </p>
@@ -2659,7 +2700,7 @@ def report():
     <body class="p-4 p-md-5 bg-light text-dark">
         <div class="container" style="max-width:800px;background:#fff;padding:40px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
             <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-                <h2 class="fw-bold mb-0">AI Healthcare Clinical Assessment Report</h2>
+                <h2 class="fw-bold mb-0">MediSense AI Clinical Assessment Report</h2>
                 <button onclick="window.print()" class="btn btn-primary rounded-pill px-4">Print / Save PDF</button>
             </div>
             <h4>Condition: {res.get('disease')}</h4>
@@ -2968,7 +3009,7 @@ def project_info():
     content = """
     <div class="card-custom p-5 my-4">
         <h2 class="fw-bold text-white mb-3">About College Project</h2>
-        <p class="text-muted small">AI Healthcare – Intelligent Disease Prediction & Health Assistance System built with HTML5, CSS3, Bootstrap 5, JavaScript, PHP, MySQL, Python Scikit-Learn.</p>
+        <p class="text-muted small">MediSense AI - Intelligent Disease Prediction & Health Assistance System built with HTML5, CSS3, Bootstrap 5, JavaScript, PHP, MySQL, Python Scikit-Learn.</p>
     </div>
     """
     return render_page(content)

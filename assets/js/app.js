@@ -1,5 +1,5 @@
 // ==========================================================================
-// AI Healthcare Client Application Engine
+// MediSense AI Client Application Engine
 // Theme Toggle | Symptom Tiles (Matte/Glossy) | Counter Animation | Search
 // ==========================================================================
 

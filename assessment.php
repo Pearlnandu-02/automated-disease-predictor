@@ -137,6 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+$page_title = ($disease_type === 'diabetes') ? 'MediSense AI | Diabetes Assessment' : 'MediSense AI | Clinical Risk Assessment';
 require_once __DIR__ . '/includes/header.php';
 ?>
 

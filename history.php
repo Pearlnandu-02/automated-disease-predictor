@@ -11,6 +11,7 @@ $stmt = $db->prepare("SELECT * FROM health_assessments WHERE user_id = ? ORDER B
 $stmt->execute([$user_id]);
 $assessments = $stmt->fetchAll();
 
+$page_title = 'MediSense AI | Assessment History';
 require_once __DIR__ . '/includes/header.php';
 ?>
 
@@ -20,7 +21,7 @@ require_once __DIR__ . '/includes/header.php';
             <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
                 <div>
                     <h3 class="fw-bold mb-0">Prediction History Log</h3>
-                    <p class="text-muted small mb-0">Complete record of your past AI healthcare risk assessments</p>
+                    <p class="text-muted small mb-0">Complete record of your past MediSense AI health risk assessments</p>
                 </div>
                 <a href="assessment.php" class="btn btn-info rounded-pill px-4 shadow-sm">
                     <i class="bi bi-plus-lg me-1"></i> New Assessment

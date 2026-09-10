@@ -20,7 +20,7 @@ def run_live_tests():
     with urllib.request.urlopen(req, timeout=15) as resp:
         html = resp.read().decode('utf-8')
         assert resp.status == 200
-        assert "AI Healthcare" in html
+        assert "MediSense AI" in html or "AI Healthcare" in html
         assert "themeToggleBtn" in html
         print("-> Home Page PASSED (HTTP 200, Theme toggle present)")
 

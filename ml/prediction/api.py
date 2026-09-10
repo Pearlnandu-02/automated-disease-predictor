@@ -17,7 +17,7 @@ app = Flask(__name__)
 def health():
     return jsonify({
         "status": "healthy",
-        "service": "AI Healthcare Disease Prediction & Health Assistance API",
+        "service": "MediSense AI Disease Prediction & Health Assistance API",
         "diseases_supported": 65,
         "model_version": "Multi-Disease Prediction Model v2",
         "features": ["symptoms_prediction", "clinical_risk", "health_simulator", "infection_injury_scanner"]
@@ -92,6 +92,6 @@ def scan_image():
                 pass
 
 if __name__ == '__main__':
-    print("Starting AI Healthcare Prediction API Service on port 5000...")
+    print("Starting MediSense AI Prediction API Service on port 5000...")
     app.run(host='127.0.0.1', port=5000, debug=False)
 

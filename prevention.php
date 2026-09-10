@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/includes/functions.php';
+$page_title = 'MediSense AI | Prevention';
 require_once __DIR__ . '/includes/header.php';
 
 // Structured Healthy Lifestyle Pillars

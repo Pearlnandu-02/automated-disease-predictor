@@ -10,10 +10,13 @@
             <div class="row gy-4 mb-4">
                 <div class="col-lg-4">
                     <h5 class="font-weight-bold mb-3 d-flex align-items-center">
-                        <i class="bi bi-heart-pulse-fill text-info me-2"></i> AI Healthcare<span class="text-info">.</span>
+                        <i class="bi bi-heart-pulse-fill text-info me-2"></i> MediSense<span class="text-info"> AI</span>
                     </h5>
+                    <p class="small text-muted mb-2 fw-semibold text-info">
+                        Smarter Insights. Better Health.
+                    </p>
                     <p class="small text-muted mb-3">
-                        An Academic Machine Learning & Computer Vision project dedicated to personalized preventative health risk assessments, multi-symptom prediction, and educational infection & injury scanning.
+                        MediSense AI is a web-based AI healthcare platform that provides educational disease prediction, clinical risk assessment, health simulation, disease and symptom information, preventive health guidance, and AI-assisted preliminary visual assessment of infections and injuries.
                     </p>
                     <div class="disclaimer-banner small">
                         <i class="bi bi-exclamation-triangle-fill me-1"></i> <strong>Academic Disclaimer:</strong> This system provides preliminary educational assessments and risk scores. It does NOT provide medical diagnoses or prescriptions. Always consult a qualified healthcare professional.
@@ -47,7 +50,7 @@
             </div>
             <hr class="border-secondary opacity-25">
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center small text-muted">
-                <p class="mb-0">&copy; <?= date('Y') ?> HealthRisk AI - College Academic Project.</p>
+                <p class="mb-0">&copy; <?= date('Y') ?> MediSense AI – Smarter Insights. Better Health.</p>
                 <p class="mb-0">Built with PHP, MySQL & Machine Learning</p>
             </div>
         </div>

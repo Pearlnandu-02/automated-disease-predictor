@@ -114,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $simulation_result = call_ml_prediction($disease_type, $input_params);
 }
 
+$page_title = 'MediSense AI | Health Simulator';
 require_once __DIR__ . '/includes/header.php';
 ?>
 

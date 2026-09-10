@@ -1,13 +1,14 @@
 <?php
+$page_title = 'MediSense AI | About';
 require_once __DIR__ . '/includes/header.php';
 ?>
 
 <div class="row align-items-center py-4">
     <div class="col-lg-7">
-        <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-3">ABOUT AI HEALTHCARE</span>
+        <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-3">ABOUT MEDISENSE AI</span>
         <h1 class="display-4 fw-extrabold mb-3">Intelligent Healthcare Powered by Machine Learning</h1>
         <p class="lead text-muted mb-4">
-            Our platform demonstrates how modern Artificial Intelligence and Machine Learning can analyze symptom patterns to assist users with preliminary health predictions, risk evaluations, and preventive education.
+            MediSense AI is a web-based AI healthcare platform that provides educational disease prediction, clinical risk assessment, health simulation, disease and symptom information, preventive health guidance, and AI-assisted preliminary visual assessment of infections and injuries.
         </p>
     </div>
     <div class="col-lg-5 text-center">

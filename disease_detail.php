@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/functions.php';
 
 $pdo = get_db_connection();
@@ -35,6 +34,9 @@ if ($pdo) {
         $disease = null;
     }
 }
+
+$page_title = $disease ? ('MediSense AI | ' . $disease['name']) : 'MediSense AI | Disease Detail';
+require_once __DIR__ . '/includes/header.php';
 
 if (!$disease) {
     echo '<div class="text-center py-5"><h3 class="text-heading">Disease record not found.</h3><a href="diseases.php" class="btn btn-outline-info rounded-pill px-4 mt-3">Back to Diseases List</a></div>';

@@ -50,6 +50,7 @@ if (file_exists($eval_path)) {
     }
 }
 
+$page_title = 'MediSense AI | Dashboard';
 require_once __DIR__ . '/includes/header.php';
 ?>
 

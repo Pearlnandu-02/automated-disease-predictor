@@ -9,7 +9,12 @@ $user = get_logged_in_user();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Healthcare - Intelligent Disease Prediction & Health Assistance System</title>
+    <title><?= isset($page_title) ? htmlspecialchars($page_title) : 'MediSense AI | AI Disease Prediction & Health Assistance' ?></title>
+    <meta name="description" content="MediSense AI - Smarter Insights. Better Health. An educational AI healthcare platform providing multi-symptom disease predictions, clinical risk assessments, health simulations, and computer vision infection & injury scanning.">
+    <meta property="og:title" content="MediSense AI | Smarter Insights. Better Health.">
+    <meta property="og:description" content="Smarter Insights. Better Health. Educational disease prediction, clinical risk evaluations, and visual infection & injury assessments powered by AI.">
+    <meta property="og:site_name" content="MediSense AI">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2312bfe3'><path fill-rule='evenodd' d='m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z'/></svg>">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -87,7 +92,7 @@ $user = get_logged_in_user();
             <!-- Brand Logo -->
             <a class="navbar-brand d-flex align-items-center me-3 me-xl-4" href="index.php">
                 <i class="bi bi-heart-pulse-fill text-info me-2 fs-4"></i>
-                <span class="fs-4 fw-bold">AI Healthcare<span class="text-info">.</span></span>
+                <span class="fs-4 fw-bold">MediSense<span class="text-info"> AI</span></span>
             </a>
 
             <!-- Mobile Hamburger Toggler -->

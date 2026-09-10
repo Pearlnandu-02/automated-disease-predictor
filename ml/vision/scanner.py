@@ -1,5 +1,5 @@
 """
-AI Healthcare - Infection & Injury Image Scanner (Computer Vision Pipeline)
+MediSense AI - Infection & Injury Image Scanner (Computer Vision Pipeline)
 =============================================================================
 Genuine Computer Vision feature extraction for educational preliminary visual assessment.
 Uses pure Pillow (PIL) and NumPy to analyze physical image characteristics:

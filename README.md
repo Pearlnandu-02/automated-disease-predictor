@@ -1,6 +1,8 @@
-# AI Healthcare – Intelligent Disease Prediction & Health Assistance System
+# MediSense AI – Intelligent Disease Prediction & Health Assistance System
 
-An educational, modern, full-stack web application demonstrating how **Artificial Intelligence** and **Machine Learning** can assist users by analyzing symptoms and health parameters to predict potential medical conditions across **25 diseases**, accompanied by comprehensive clinical information, interactive risk simulations, and large dataset architecture principles.
+> **Smarter Insights. Better Health.**
+
+An educational, modern, full-stack web application demonstrating how **Artificial Intelligence** and **Machine Learning** can assist users by analyzing symptoms and health parameters to predict potential medical conditions across **65 conditions**, accompanied by comprehensive clinical information, interactive risk simulations, and large dataset architecture principles.
 
 ---
 
@@ -45,7 +47,7 @@ In healthcare informatics, early awareness of potential health risks empowers pa
 ## Key Features & Modules
 
 - **Home Landing Page (`index.php`):** Interactive hero banner, high-impact clinical metrics, disease category explorer, workflow summary, and safety disclaimers.
-- **About AI Healthcare (`about.php`):** Educational mission, ethical considerations, and clinical assistance principles.
+- **About MediSense AI (`about.php`):** Educational mission, ethical considerations, and clinical assistance principles.
 - **AI Disease Prediction (`prediction.php`):** Multi-symptom selection form grouped by body system (Endocrine, Cardiovascular, Respiratory, Neurological, Gastrointestinal, Hepatic, Renal, Hematological, Systemic) with real-time confidence scores and runner-up differentials.
 - **Diseases Library (`diseases.php`):** Searchable, filterable catalog of all 25 diseases with dynamic category filtering.
 - **Disease Detail View (`disease_detail.php?id=X`):** Structured medical dossiers detailing pathology, etiology, risk factors, prevention protocols, management plans, and emergency indicators.
@@ -244,7 +246,7 @@ automated-disease-predictor/
 │   ├── training/
 │   │   └── train_models.py    # Training & evaluation pipeline
 │   └── evaluation_results.json# Verified evaluation metrics (Accuracy, F1, CM)
-├── about.php                  # About AI Healthcare page
+├── about.php                  # About MediSense AI page
 ├── assessment.php             # Clinical biomarker assessment form
 ├── contact.php                # Contact & support submission page
 ├── dashboard.php              # Authenticated user dashboard
@@ -328,7 +330,7 @@ The Flask microservice runs on port `5000` and provides the following endpoints:
 ```json
 {
   "diseases_supported": 25,
-  "service": "AI Healthcare Disease Prediction & Health Assistance API",
+  "service": "MediSense AI Disease Prediction & Health Assistance API",
   "status": "healthy"
 }
 ```

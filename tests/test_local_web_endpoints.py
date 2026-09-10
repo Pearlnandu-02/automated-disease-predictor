@@ -3,8 +3,8 @@ import requests
 BASE_URL = "http://127.0.0.1:8000"
 
 pages_to_test = [
-    ("/", "AI Healthcare"),
-    ("/index.php", "AI Healthcare"),
+    ("/", "MediSense AI"),
+    ("/index.php", "MediSense AI"),
     ("/prediction.php", "Symptom"),
     ("/diseases.php", "Diseases"),
     ("/disease_detail.php?id=1", "Diabetes"),

@@ -4,7 +4,7 @@
 
 require_once __DIR__ . '/../config/db.php';
 
-echo "Running AI Healthcare Database Expansion Migration (65 Diseases)...\n";
+echo "Running MediSense AI Database Expansion Migration (65 Diseases)...\n";
 $pdo = get_db_connection();
 
 if (!$pdo) {

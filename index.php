@@ -1,5 +1,5 @@
 <?php
-// index.php - AI Healthcare Landing Page
+// index.php - MediSense AI Landing Page
 require_once __DIR__ . '/includes/functions.php';
 
 $pdo = get_db_connection();
@@ -31,6 +31,7 @@ if (file_exists($eval_path)) {
     }
 }
 
+$page_title = 'MediSense AI | Smarter Insights. Better Health.';
 require_once __DIR__ . '/includes/header.php';
 ?>
 
@@ -39,9 +40,9 @@ require_once __DIR__ . '/includes/header.php';
     <div class="row align-items-center py-4">
         <div class="col-lg-7 text-lg-start z-1">
             <span class="badge hero-badge px-3 py-2 rounded-pill mb-3 shadow-sm">
-                <i class="bi bi-stars me-1"></i> AI & ML Healthcare Decision Support
+                <i class="bi bi-stars me-1"></i> Smarter Insights. Better Health.
             </span>
-            <h1 class="display-4 fw-extrabold hero-heading mb-3">Smarter Healthcare Powered by Artificial Intelligence</h1>
+            <h1 class="display-4 fw-extrabold hero-heading mb-3">MediSense AI — Smarter Healthcare Powered by Artificial Intelligence</h1>
             <p class="lead hero-lead mb-4">
                 Explore intelligent multi-symptom disease predictions across <?= $disease_count ?> conditions, clinical chronic disease risk assessments, what-if health parameter simulations, and computer vision infection & injury scanning.
             </p>
@@ -122,7 +123,7 @@ require_once __DIR__ . '/includes/header.php';
 
 <!-- How It Works Section -->
 <div class="card-custom p-4 p-md-5 my-4">
-    <h3 class="fw-bold mb-4 text-center">How AI Healthcare Works</h3>
+    <h3 class="fw-bold mb-4 text-center">How MediSense AI Works</h3>
     <div class="row g-4 text-center">
         <div class="col-md-4">
             <div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 h-100">

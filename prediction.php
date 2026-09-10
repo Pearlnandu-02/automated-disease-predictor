@@ -115,6 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $selected_lookup = array_flip($selected_keys);
 
+$page_title = 'MediSense AI | AI Prediction';
 require_once __DIR__ . '/includes/header.php';
 ?>
 

@@ -1,4 +1,5 @@
 <?php
+$page_title = 'MediSense AI | Diseases Library';
 require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/functions.php';
 
