@@ -383,6 +383,41 @@ require_once __DIR__ . '/includes/header.php';
             </div>
         </div>
     </div>
+
+<!-- Live Camera Modal -->
+<div class="modal fade" id="cameraModal" tabindex="-1" aria-labelledby="cameraModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content card-custom border-info">
+            <div class="modal-header border-bottom border-subtle">
+                <h5 class="modal-title fw-bold" id="cameraModalLabel">
+                    <i class="bi bi-camera-fill text-info me-2"></i>Photograph Affected Area
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btnCloseCameraX"></button>
+            </div>
+            <div class="modal-body p-3 text-center">
+                <div id="cameraStreamContainer" class="position-relative overflow-hidden rounded-3 bg-black" style="min-height: 280px; max-height: 420px;">
+                    <video id="cameraVideo" autoplay playsinline muted class="w-100 h-100" style="object-fit: cover;"></video>
+                    <!-- Visual focus reticle -->
+                    <div class="position-absolute top-50 start-50 translate-middle border border-info border-2 rounded-circle opacity-75 pointer-events-none" style="width: 140px; height: 140px; border-style: dashed !important;"></div>
+                </div>
+                <canvas id="cameraCanvas" class="d-none"></canvas>
+                <div id="cameraAlert" class="alert alert-warning d-none mt-2 py-2 px-3 small text-start"></div>
+            </div>
+            <div class="modal-footer border-top border-subtle d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-3" id="btnFlipCamera">
+                    <i class="bi bi-arrow-repeat me-1"></i> Flip Camera
+                </button>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-danger rounded-pill px-3" data-bs-dismiss="modal" id="btnCancelCamera">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-info rounded-pill px-4 text-white fw-bold" id="btnSnapPhoto">
+                        <i class="bi bi-circle-fill me-1"></i> Capture
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Interactive Scanner Client Script -->
@@ -422,11 +457,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const scannerErrorAlert = document.getElementById('scannerErrorAlert');
     const scannerErrorMsg = document.getElementById('scannerErrorMsg');
 
+    // Camera Modal Elements
+    const cameraModalElem = document.getElementById('cameraModal');
+    let cameraModalInstance = null;
+    const cameraVideo = document.getElementById('cameraVideo');
+    const cameraCanvas = document.getElementById('cameraCanvas');
+    const cameraAlert = document.getElementById('cameraAlert');
+    const btnSnapPhoto = document.getElementById('btnSnapPhoto');
+    const btnFlipCamera = document.getElementById('btnFlipCamera');
+    let activeCameraStream = null;
+    let currentFacingMode = 'environment'; // default rear camera for wounds/injuries
+
     let currentSelectedFile = null;
     let scanAnimationTimer = null;
 
     function showError(msg) {
-        scannerErrorMsg.textContent = msg;
+        scannerErrorMsg.innerHTML = msg;
         scannerErrorAlert.classList.remove('d-none');
     }
 
@@ -435,22 +481,113 @@ document.addEventListener('DOMContentLoaded', function() {
         scannerErrorMsg.textContent = '';
     }
 
-    // Trigger file dialogs
+    // Trigger normal file browser upload
     btnBrowseFiles.addEventListener('click', (e) => {
         e.stopPropagation();
         imageFileInput.click();
     });
 
+    // Trigger Camera capture
     btnTakePhoto.addEventListener('click', (e) => {
         e.stopPropagation();
-        cameraFileInput.click();
+        clearError();
+
+        // Check if WebRTC getUserMedia is available and supported
+        if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
+            startLiveCamera(currentFacingMode);
+        } else {
+            // Native fallback for mobile browsers without getUserMedia or non-HTTPS
+            cameraFileInput.click();
+        }
     });
 
+    function startLiveCamera(facingMode) {
+        if (!cameraModalInstance && typeof bootstrap !== 'undefined') {
+            cameraModalInstance = new bootstrap.Modal(cameraModalElem);
+        }
+
+        stopActiveCameraStream();
+        cameraAlert.classList.add('d-none');
+        cameraAlert.textContent = '';
+
+        const constraints = {
+            video: {
+                facingMode: { ideal: facingMode },
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            },
+            audio: false
+        };
+
+        navigator.mediaDevices.getUserMedia(constraints)
+        .then(stream => {
+            activeCameraStream = stream;
+            cameraVideo.srcObject = stream;
+            if (cameraModalInstance) {
+                cameraModalInstance.show();
+            }
+        })
+        .catch(err => {
+            console.warn("Camera getUserMedia error:", err);
+            // Handle permission denial or unavailable camera gracefully
+            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                showError('<strong>Camera access denied.</strong> Please allow camera access in your browser settings, or use the <em>Upload Image</em> button.');
+            } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                showError('<strong>No camera device detected.</strong> Please use the <em>Upload Image</em> button to select an image from your device.');
+            } else {
+                // Fallback to native capture input
+                cameraFileInput.click();
+            }
+        });
+    }
+
+    function stopActiveCameraStream() {
+        if (activeCameraStream) {
+            activeCameraStream.getTracks().forEach(track => track.stop());
+            activeCameraStream = null;
+        }
+        if (cameraVideo) {
+            cameraVideo.srcObject = null;
+        }
+    }
+
+    if (cameraModalElem) {
+        cameraModalElem.addEventListener('hidden.bs.modal', function() {
+            stopActiveCameraStream();
+        });
+    }
+
+    // Flip Camera button
+    btnFlipCamera.addEventListener('click', () => {
+        currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
+        startLiveCamera(currentFacingMode);
+    });
+
+    // Snap Photo from camera stream
+    btnSnapPhoto.addEventListener('click', () => {
+        if (!cameraVideo || !cameraVideo.videoWidth) return;
+
+        cameraCanvas.width = cameraVideo.videoWidth;
+        cameraCanvas.height = cameraVideo.videoHeight;
+        const ctx = cameraCanvas.getContext('2d');
+        ctx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
+
+        cameraCanvas.toBlob(blob => {
+            if (!blob) return;
+            const capturedFile = new File([blob], 'camera_photo_' + Date.now() + '.jpg', { type: 'image/jpeg' });
+            if (cameraModalInstance) {
+                cameraModalInstance.hide();
+            }
+            stopActiveCameraStream();
+            handleFileSelect(capturedFile);
+        }, 'image/jpeg', 0.92);
+    });
+
+    // Drag and Drop
     dropZone.addEventListener('click', () => {
         imageFileInput.click();
     });
 
-    // Drag and Drop
     ['dragenter', 'dragover'].forEach(eventName => {
         dropZone.addEventListener(eventName, (e) => {
             e.preventDefault();
@@ -490,12 +627,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const maxSize = 8 * 1024 * 1024; // 8 MB
 
         if (!allowedTypes.includes(file.type.toLowerCase()) && !file.name.match(/\.(jpg|jpeg|png|webp)$/i)) {
-            showError('Unsupported file type. Please upload a JPG, JPEG, PNG, or WEBP image.');
+            showError('<strong>Unsupported file type.</strong> Please upload a JPG, JPEG, PNG, or WEBP image.');
             return;
         }
 
         if (file.size > maxSize) {
-            showError('Image file is too large (' + (file.size / (1024 * 1024)).toFixed(1) + ' MB). Maximum allowed size is 8 MB.');
+            showError('<strong>Image file is too large</strong> (' + (file.size / (1024 * 1024)).toFixed(1) + ' MB). Maximum allowed size is 8 MB.');
             return;
         }
 
@@ -512,6 +649,10 @@ document.addEventListener('DOMContentLoaded', function() {
             previewContainer.classList.remove('d-none');
             previewActions.classList.remove('d-none');
             scanningState.classList.add('d-none');
+
+            // Reset result panel when new image loaded
+            resultContent.classList.add('d-none');
+            idleState.classList.remove('d-none');
         };
         reader.readAsDataURL(file);
     }
@@ -537,6 +678,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Reset preview frame animation
         previewFrame.classList.remove('scanning-active');
         previewActions.classList.remove('d-none');
+        btnScanImage.removeAttribute('disabled');
+        btnScanImage.innerHTML = '<i class="bi bi-cpu me-1"></i> Scan Image';
         scanningState.classList.add('d-none');
         if (scanAnimationTimer) clearInterval(scanAnimationTimer);
 
@@ -555,30 +698,32 @@ document.addEventListener('DOMContentLoaded', function() {
         clearError();
 
         // 1. Enter Scanning State
+        btnScanImage.setAttribute('disabled', 'disabled');
+        btnScanImage.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Processing...';
         previewActions.classList.add('d-none');
         scanningState.classList.remove('d-none');
         previewFrame.classList.add('scanning-active');
 
-        // Progress text animation
+        // Progress text animation with real sequential progression
         const steps = [
-            "Initializing computer vision matrix...",
+            "Preparing image for analysis...",
             "Computing spectrophotometric erythema index...",
-            "Calculating Sobel edge gradient roughness...",
+            "Analyzing surface texture & edge roughness...",
             "Evaluating chromatic dispersion & color variance...",
             "Checking focus sharpness and exposure balance...",
-            "Synthesizing preliminary educational assessment..."
+            "Generating preliminary assessment..."
         ];
         let stepIdx = 0;
         scanningStatusText.textContent = steps[0];
-        scanProgressBar.style.width = '20%';
+        scanProgressBar.style.width = '15%';
 
         scanAnimationTimer = setInterval(() => {
             stepIdx++;
             if (stepIdx < steps.length) {
                 scanningStatusText.textContent = steps[stepIdx];
-                scanProgressBar.style.width = Math.min(92, 20 + stepIdx * 15) + '%';
+                scanProgressBar.style.width = Math.min(90, 15 + stepIdx * 15) + '%';
             }
-        }, 380);
+        }, 300);
 
         // Prepare multipart form data
         const formData = new FormData();
@@ -605,22 +750,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 previewFrame.classList.remove('scanning-active');
                 scanningState.classList.add('d-none');
                 previewActions.classList.remove('d-none');
+                btnScanImage.removeAttribute('disabled');
+                btnScanImage.innerHTML = '<i class="bi bi-cpu me-1"></i> Scan Image';
 
-                if (data.error && !data.success && data.category === 'Unable to Assess') {
-                    displayResult(data);
-                } else if (data.success) {
-                    displayResult(data);
+                // Check for real failure (do not display empty fake result)
+                if (!data || data.success === false) {
+                    showError('<strong>Image analysis could not be completed.</strong><br>Reason: ' + (data.error || 'Image processing service unavailable. Please ensure the backend is running.'));
+                    resultContent.classList.add('d-none');
+                    idleState.classList.remove('d-none');
                 } else {
-                    showError(data.error || 'Failed to complete visual scan.');
+                    displayResult(data);
                 }
-            }, 500);
+            }, 350);
         })
         .catch(err => {
             clearInterval(scanAnimationTimer);
             previewFrame.classList.remove('scanning-active');
             scanningState.classList.add('d-none');
             previewActions.classList.remove('d-none');
-            showError('Network or server processing error: ' + err.message);
+            btnScanImage.removeAttribute('disabled');
+            btnScanImage.innerHTML = '<i class="bi bi-cpu me-1"></i> Scan Image';
+            showError('<strong>Analysis unavailable:</strong> Unable to connect to the image analysis service. ' + err.message);
+            resultContent.classList.add('d-none');
+            idleState.classList.remove('d-none');
         });
     });
 
@@ -650,16 +802,24 @@ document.addEventListener('DOMContentLoaded', function() {
         // Mandatory educational cautious phrasing
         resultSummaryHeading.textContent = "Visual indicators may be consistent with " + category.toLowerCase();
 
-        // Metrics
+        // Metrics: Use calculated values or display "Not available"
         const metrics = res.metrics || {};
-        valErythema.textContent = (metrics.erythema_index !== undefined) ? metrics.erythema_index : '--';
-        valRoughness.textContent = (metrics.surface_roughness !== undefined) ? metrics.surface_roughness : '--';
-        valChroma.textContent = (metrics.chromatic_variance !== undefined) ? metrics.chromatic_variance : '--';
+        valErythema.textContent = (metrics.erythema_index !== undefined) ? metrics.erythema_index : 'Not available';
+        
+        const roughnessVal = (metrics.surface_roughness !== undefined) 
+            ? metrics.surface_roughness 
+            : ((metrics.roughness_score !== undefined) ? metrics.roughness_score : 'Not available');
+        valRoughness.textContent = roughnessVal;
+
+        const chromaVal = (metrics.chromatic_variance !== undefined) 
+            ? metrics.chromatic_variance 
+            : ((metrics.color_variance !== undefined) ? metrics.color_variance : 'Not available');
+        valChroma.textContent = chromaVal;
 
         // Correlation Score Counter
-        const score = res.confidence_score || 0;
+        const score = (typeof res.confidence_score === 'number') ? res.confidence_score : 0;
         resultScoreText.textContent = score.toFixed(1) + '%';
-        resultScoreBar.style.width = score + '%';
+        resultScoreBar.style.width = Math.min(100, Math.max(0, score)) + '%';
 
         // Observations List
         resultFindingsList.innerHTML = '';
@@ -671,7 +831,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 resultFindingsList.appendChild(li);
             });
         } else {
-            resultFindingsList.innerHTML = '<li>No unusual visual disruption noted.</li>';
+            resultFindingsList.innerHTML = '<li>Visual observation metrics recorded within standard baseline range.</li>';
         }
 
         // Recommendations List

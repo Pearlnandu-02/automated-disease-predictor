@@ -60,7 +60,30 @@ def run_tests():
     print(f"  Category: {res4.get('category')} | Score: {res4.get('confidence_score')}%")
     assert res4.get('success') is True
 
+    print("\nTest 5: Testing 4 distinct image fixtures for dynamic metrics...")
+    fixtures = [
+        'tests/fixtures/infection_wound.jpg',
+        'tests/fixtures/minor_abrasion.jpg',
+        'tests/fixtures/rash_irritation.jpg',
+        'tests/fixtures/swelling_bruise.jpg'
+    ]
+    seen_categories = set()
+    for fix in fixtures:
+        with open(fix, 'rb') as f:
+            arr = np.array(Image.open(f))
+        res = upload_synthetic_image(arr, fix.split('/')[-1])
+        cat = res.get('category')
+        seen_categories.add(cat)
+        print(f"  Fixture {fix.split('/')[-1]}: {cat} | Score: {res.get('confidence_score')}% | EI: {res.get('metrics', {}).get('erythema_index')} | Roughness: {res.get('metrics', {}).get('surface_roughness')}")
+        assert res.get('success') is True
+        assert cat != 'Unable to Assess'
+        assert res.get('confidence_score') > 0
+        assert res.get('metrics', {}).get('surface_roughness') is not None
+        assert res.get('metrics', {}).get('erythema_index') is not None
+
+    print(f"  Distinct categories observed: {seen_categories}")
     print("\nALL SCANNER UNIT TESTS PASSED!")
 
 if __name__ == '__main__':
     run_tests()
+

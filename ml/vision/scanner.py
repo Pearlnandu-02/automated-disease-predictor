@@ -2,8 +2,8 @@
 AI Healthcare - Infection & Injury Image Scanner (Computer Vision Pipeline)
 =============================================================================
 Genuine Computer Vision feature extraction for educational preliminary visual assessment.
-Uses Pillow (PIL), NumPy, and SciPy to analyze physical image characteristics:
-  - Blur detection via Laplacian edge variance
+Uses pure Pillow (PIL) and NumPy to analyze physical image characteristics:
+  - Blur detection via discrete Laplacian edge variance
   - Exposure & lighting feasibility check
   - Dermatological Erythema Index (EI = 100 * [log10(R) - log10(G)])
   - Surface gradient roughness (Sobel filter for cuts, abrasions, scabbing)
@@ -20,7 +20,6 @@ import json
 import math
 import numpy as np
 from PIL import Image, ImageOps, ImageFilter
-
 
 # Educational assessment categories
 CAT_INFECTION = "Possible Infection Indicators"
@@ -49,24 +48,30 @@ def assess_image_quality(gray_arr):
     Returns (is_acceptable: bool, blur_score: float, brightness: float, reason: str)
     """
     h, w = gray_arr.shape
-    if h < 80 or w < 80:
-        return False, 0.0, 0.0, "Image resolution is too low (< 80x80 px). Please upload a higher resolution photo."
+    if h < 40 or w < 40:
+        return False, 0.0, 0.0, "Image resolution is too low (< 40x40 px). Please upload a higher resolution photo."
 
     # Mean brightness (0-255)
     brightness = float(np.mean(gray_arr))
-    if brightness < 28.0:
+    if brightness < 12.0:
         return False, 0.0, brightness, "Image is severely underexposed (too dark). Please take a photo in good lighting."
-    if brightness > 238.0:
+    if brightness > 248.0:
         return False, 0.0, brightness, "Image is severely overexposed (washed out). Please adjust lighting to avoid glare."
 
-    # Blur estimation using Laplacian variance
-    # Discrete Laplacian kernel
-    laplacian = ndimage.laplace(gray_arr.astype(np.float64))
-    blur_variance = float(laplacian.var())
+    # Discrete Laplacian kernel [[0, 1, 0], [1, -4, 1], [0, 1, 0]]
+    padded = np.pad(gray_arr, 1, mode='edge')
+    laplacian = (
+        padded[:-2, 1:-1] +
+        padded[2:, 1:-1] +
+        padded[1:-1, :-2] +
+        padded[1:-1, 2:] -
+        4.0 * padded[1:-1, 1:-1]
+    )
+    blur_variance = float(np.var(laplacian))
 
-    # If blur variance is too low, the image is out of focus
-    if blur_variance < 35.0:
-        return False, blur_variance, brightness, "Image is out of focus or blurry. Please hold camera steady for a sharp image."
+    # Only reject if virtually zero detail (pure blur or featureless solid)
+    if blur_variance < 4.0:
+        return False, blur_variance, brightness, "Image appears out of focus or blurry. Please hold camera steady for a sharp image."
 
     return True, blur_variance, brightness, "Quality check passed"
 
@@ -107,28 +112,6 @@ def compute_vision_metrics(img_path):
 
     # 1. Quality & Feasibility Gate
     acceptable, blur_score, brightness, quality_msg = assess_image_quality(gray_arr)
-    if not acceptable:
-        return {
-            "success": True,
-            "category": CAT_UNABLE,
-            "confidence_score": 0.0,
-            "assessment_summary": "The uploaded photo could not be reliably assessed due to visual quality limitations.",
-            "metrics": {
-                "sharpness_score": round(blur_score, 1),
-                "brightness_score": round(brightness, 1),
-                "erythema_index": 0.0,
-                "roughness_score": 0.0,
-                "color_variance": 0.0
-            },
-            "findings": [quality_msg],
-            "recommendations": [
-                "Ensure steady lighting without heavy flash glare or deep shadows.",
-                "Hold your camera steady and tap to focus directly on the affected skin.",
-                "Include a small border of normal surrounding skin for comparative contrast."
-            ],
-            "warning_signs": WARNING_SIGNS,
-            "is_preliminary": True
-        }
 
     # Normalized color channels
     R = rgb_arr[:, :, 0]
@@ -137,7 +120,7 @@ def compute_vision_metrics(img_path):
     total_intensity = R + G + B + 1e-6
 
     # 2. Spectrophotometric Erythema Index (EI)
-    # Standard formula approximation: 100 * (log10(R) - log10(G)) for pixels with R > 0 and G > 0
+    # Standard formula: 100 * (log10(R) - log10(G)) for pixels with R > 0 and G > 0
     safe_R = np.clip(R, 1.0, 255.0)
     safe_G = np.clip(G, 1.0, 255.0)
     erythema_map = 100.0 * (np.log10(safe_R) - np.log10(safe_G))
@@ -149,24 +132,60 @@ def compute_vision_metrics(img_path):
     red_ratio_score = float(np.mean(red_excess)) * 100.0
     p90_red_ratio = float(np.percentile(red_excess, 90)) * 100.0
 
-    # 3. Surface Roughness / Edge Gradient Density (Sobel filter via SciPy)
-    # Detects skin tears, lacerations, scabs, abrasions, and sharp textural disruption
-    sobel_h = ndimage.sobel(gray_arr, axis=0)
-    sobel_v = ndimage.sobel(gray_arr, axis=1)
+    # 3. Surface Roughness / Edge Gradient Density (3x3 Sobel filter via pure NumPy)
+    pad = np.pad(gray_arr, 1, mode='edge')
+    sobel_h = (
+        -1.0 * pad[:-2, :-2] + 1.0 * pad[:-2, 2:] +
+        -2.0 * pad[1:-1, :-2] + 2.0 * pad[1:-1, 2:] +
+        -1.0 * pad[2:, :-2] + 1.0 * pad[2:, 2:]
+    )
+    sobel_v = (
+        -1.0 * pad[:-2, :-2] - 2.0 * pad[:-2, 1:-1] - 1.0 * pad[:-2, 2:] +
+        1.0 * pad[2:, :-2] + 2.0 * pad[2:, 1:-1] + 1.0 * pad[2:, 2:]
+    )
     gradient_magnitude = np.hypot(sobel_h, sobel_v)
     roughness_score = float(np.mean(gradient_magnitude))
     p90_roughness = float(np.percentile(gradient_magnitude, 90))
 
     # 4. Chromatic Dispersion & Micro-clustering (Rashes / Dermatitis)
-    # High standard deviation in color space across distinct local patches indicates macules/papules
     hue_diff = np.abs(R - B) + np.abs(R - G)
     chromatic_dispersion = float(np.std(hue_diff))
 
     # 5. Localized Luminance Convexity (Swelling / Edema Indicator)
-    # Swollen tissue causes gentle curvature and diffuse specular reflections with low edge roughness
-    smoothed_gray = ndimage.gaussian_filter(gray_arr, sigma=5)
+    # Swollen tissue causes smooth curvature with low high-frequency textural variance
+    smoothed_gray = np.array(gray_img.filter(ImageFilter.GaussianBlur(radius=5)), dtype=np.float64)
     high_freq = np.abs(gray_arr - smoothed_gray)
     texture_uniformity = float(np.mean(high_freq))
+
+    # Standardized metrics payload supporting all frontend key conventions
+    metrics_dict = {
+        "erythema_index": round(max(0.0, mean_ei), 1),
+        "peak_erythema": round(max(0.0, p90_ei), 1),
+        "surface_roughness": round(max(0.0, roughness_score), 1),
+        "roughness_score": round(max(0.0, roughness_score), 1),
+        "peak_gradient": round(max(0.0, p90_roughness), 1),
+        "chromatic_variance": round(max(0.0, chromatic_dispersion), 1),
+        "color_variance": round(max(0.0, chromatic_dispersion), 1),
+        "sharpness_score": round(max(0.0, blur_score), 1),
+        "brightness_score": round(max(0.0, brightness), 1)
+    }
+
+    if not acceptable:
+        return {
+            "success": True,
+            "category": CAT_UNABLE,
+            "confidence_score": 0.0,
+            "assessment_summary": "The uploaded photo could not be reliably assessed due to visual quality limitations.",
+            "metrics": metrics_dict,
+            "findings": [quality_msg],
+            "recommendations": [
+                "Ensure steady lighting without heavy flash glare or deep shadows.",
+                "Hold your camera steady and tap to focus directly on the affected skin.",
+                "Include a small border of normal surrounding skin for comparative contrast."
+            ],
+            "warning_signs": WARNING_SIGNS,
+            "is_preliminary": True
+        }
 
     # Determine educational assessment category and confidence score
     category, confidence, findings, recommendations = classify_visual_patterns(
@@ -185,15 +204,7 @@ def compute_vision_metrics(img_path):
         "category": category,
         "confidence_score": round(confidence, 1),
         "assessment_summary": f"Visual indicators may be consistent with {category.lower()}.",
-        "metrics": {
-            "erythema_index": round(max(0.0, mean_ei), 1),
-            "peak_erythema": round(max(0.0, p90_ei), 1),
-            "surface_roughness": round(roughness_score, 1),
-            "peak_gradient": round(p90_roughness, 1),
-            "chromatic_variance": round(chromatic_dispersion, 1),
-            "sharpness_score": round(blur_score, 1),
-            "brightness_score": round(brightness, 1)
-        },
+        "metrics": metrics_dict,
         "findings": findings,
         "recommendations": recommendations,
         "warning_signs": WARNING_SIGNS,
@@ -211,29 +222,29 @@ def classify_visual_patterns(mean_ei, p90_ei, red_ratio, p90_red_ratio,
     recommendations = []
 
     # Indicators
-    is_high_erythema = (p90_ei > 22.0 or p90_red_ratio > 18.0)
-    is_moderate_erythema = (p90_ei > 12.0 or p90_red_ratio > 10.0)
-    is_high_roughness = (roughness > 30.0 or p90_roughness > 70.0)
-    is_moderate_roughness = (roughness > 18.0 or p90_roughness > 45.0)
-    is_high_chroma_var = (chroma_std > 32.0)
+    is_high_erythema = (p90_ei > 16.0 or p90_red_ratio > 14.0 or mean_ei > 8.0)
+    is_moderate_erythema = (p90_ei > 8.0 or p90_red_ratio > 7.0 or mean_ei > 3.0)
+    is_high_roughness = (roughness > 24.0 or p90_roughness > 55.0)
+    is_moderate_roughness = (roughness > 14.0 or p90_roughness > 35.0)
+    is_high_chroma_var = (chroma_std > 25.0)
 
     # 1. Infection Indicators: Elevated erythema AND significant surface disruption / potential crusting
     if is_high_erythema and is_high_roughness:
         category = CAT_INFECTION
-        confidence = min(88.0, 58.0 + (p90_ei * 0.6) + (roughness * 0.3))
-        findings.append("Prominent localized erythema (redness) detected alongside elevated surface texture disruption.")
+        confidence = min(89.0, 58.0 + (p90_ei * 0.5) + (roughness * 0.25))
+        findings.append(f"Prominent localized erythema (Erythema Index: {round(mean_ei, 1)}) detected alongside elevated surface texture disruption (Roughness: {round(roughness, 1)}).")
         findings.append("Visual patterns exhibit characteristics commonly seen in active inflammatory wound responses.")
         recommendations = [
             "Keep the affected area clean, dry, and gently protected with a sterile dressing.",
             "Avoid scratching, picking scabs, or applying unprescribed harsh ointments.",
-            "Monitor closely for spreading redness, rising warmth, or drainage, which warrant medical evaluation."
+            "Monitor closely for spreading redness, rising warmth, or drainage, which warrant immediate medical evaluation."
         ]
 
     # 2. Minor Injury: Surface break/roughness prominent, mild to moderate erythema
     elif is_high_roughness and not is_high_erythema:
         category = CAT_INJURY
-        confidence = min(85.0, 60.0 + (roughness * 0.45))
-        findings.append("Elevated edge gradient density consistent with superficial skin barrier disruption or abrasion.")
+        confidence = min(85.0, 60.0 + (roughness * 0.35))
+        findings.append(f"Elevated edge gradient density (Roughness: {round(roughness, 1)}) consistent with superficial skin barrier disruption or abrasion.")
         findings.append("Surrounding erythema levels remain within typical localized healing thresholds.")
         recommendations = [
             "Rinse gently with clean potable water or mild saline solution to remove debris.",
@@ -244,19 +255,19 @@ def classify_visual_patterns(mean_ei, p90_ei, red_ratio, p90_red_ratio,
     # 3. Rash / Irritation: Scattered chromatic variance + moderate erythema without deep laceration edges
     elif is_high_chroma_var and is_moderate_erythema and not is_high_roughness:
         category = CAT_RASH
-        confidence = min(84.0, 55.0 + (chroma_std * 0.5) + (p90_red_ratio * 0.4))
-        findings.append("Dispersed chromatic variance with patchy tonal distribution across the evaluated tissue.")
+        confidence = min(84.0, 55.0 + (chroma_std * 0.4) + (p90_red_ratio * 0.35))
+        findings.append(f"Dispersed chromatic variance (Variance: {round(chroma_std, 1)}) with patchy tonal distribution across evaluated skin.")
         findings.append("Surface contour remains largely intact without sharp laceration margins.")
         recommendations = [
-            "Wash gently with a mild fragrance-free soap; pat dry without rubbing.",
+            "Wash gently with a mild fragrance-free cleanser; pat dry without rubbing.",
             "Consider whether new detergents, cosmetics, soaps, or plants may have contacted the area.",
             "A cool, damp compress may help soothe temporary itching or irritation."
         ]
 
     # 4. Swelling: Diffuse low-texture convexity or moderate erythema with smooth contours
-    elif is_moderate_erythema and roughness < 16.0 and texture_uniformity < 10.0:
+    elif is_moderate_erythema and roughness < 15.0 and texture_uniformity < 12.0:
         category = CAT_SWELLING
-        confidence = min(80.0, 54.0 + (mean_ei * 0.5) + ((20.0 - roughness) * 0.8))
+        confidence = min(82.0, 54.0 + (mean_ei * 0.5) + ((18.0 - roughness) * 0.8))
         findings.append("Smooth localized luminance profile with low high-frequency textural variance.")
         findings.append("Visual appearance may reflect localized fluid buildup, contusion, or tissue puffiness.")
         recommendations = [
@@ -268,8 +279,8 @@ def classify_visual_patterns(mean_ei, p90_ei, red_ratio, p90_red_ratio,
     # 5. Inflammation / Redness: Erythema dominant without structural cuts
     elif is_moderate_erythema or is_high_erythema:
         category = CAT_INFLAMMATION
-        confidence = min(82.0, 56.0 + (p90_red_ratio * 0.7))
-        findings.append("Elevated hemoglobin absorption index / redness noticeable across the region.")
+        confidence = min(83.0, 56.0 + (p90_red_ratio * 0.6))
+        findings.append(f"Elevated hemoglobin absorption index (Erythema Index: {round(mean_ei, 1)}) noticeable across the tissue.")
         findings.append("Skin surface appears relatively uniform with minimal open edge disruptions.")
         recommendations = [
             "Protect the sensitive skin from friction, excessive heat, and direct sunlight.",
@@ -277,11 +288,11 @@ def classify_visual_patterns(mean_ei, p90_ei, red_ratio, p90_red_ratio,
             "Track the border of the redness with a skin marker if you suspect it may be expanding."
         ]
 
-    # 6. Fallback / Mild
+    # 6. Baseline / Minor Irregularity
     else:
         category = CAT_INJURY
-        confidence = 62.0
-        findings.append("Mild localized visual irregularity observed with baseline color metrics.")
+        confidence = min(72.0, 50.0 + roughness * 0.4)
+        findings.append(f"Mild localized visual irregularity observed (Roughness: {round(roughness, 1)}, Erythema: {round(mean_ei, 1)}).")
         recommendations = [
             "Maintain basic wound hygiene and monitor for any changes in color, sensation, or swelling.",
             "Consult a healthcare professional if discomfort persists or worsens."
@@ -299,8 +310,8 @@ def main():
         }))
         sys.exit(1)
 
-    image_path = sys.argv[1]
-    result = compute_vision_metrics(image_path)
+    img_path = sys.argv[1]
+    result = compute_vision_metrics(img_path)
     print(json.dumps(result, indent=2))
 
 

@@ -60,15 +60,41 @@ def render_page(content_html, **kwargs):
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Healthcare - Intelligent Disease Prediction & Health Assistance System</title>
-    <!-- Early theme initializer to prevent FOUC -->
+    <!-- Early theme initializer to prevent FOUC & Bulletproof Theme Engine -->
     <script>
         (function() {
             var saved = localStorage.getItem('ai_healthcare_theme');
             var systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            var theme = saved ? saved : (systemDark ? 'dark' : 'dark');
+            var theme = (saved === 'light' || saved === 'dark') ? saved : (systemDark ? 'dark' : 'dark');
             document.documentElement.setAttribute('data-theme', theme);
+            document.documentElement.setAttribute('data-bs-theme', theme);
         })();
+
+        function toggleSiteTheme() {
+            var current = document.documentElement.getAttribute('data-theme') || 'dark';
+            var next = (current === 'dark') ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            document.documentElement.setAttribute('data-bs-theme', next);
+            localStorage.setItem('ai_healthcare_theme', next);
+
+            var btns = document.querySelectorAll('.theme-toggle-btn');
+            btns.forEach(function(btn) {
+                var darkIcon = btn.querySelector('.theme-icon-dark');
+                var lightIcon = btn.querySelector('.theme-icon-light');
+                var text = btn.querySelector('.theme-text');
+                if (next === 'light') {
+                    if (darkIcon) darkIcon.classList.add('d-none');
+                    if (lightIcon) lightIcon.classList.remove('d-none');
+                    if (text) text.textContent = 'Light';
+                } else {
+                    if (darkIcon) darkIcon.classList.remove('d-none');
+                    if (lightIcon) lightIcon.classList.add('d-none');
+                    if (text) text.textContent = 'Dark';
+                }
+            });
+        }
     </script>
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -442,7 +468,7 @@ def render_page(content_html, **kwargs):
                     
                     <!-- Theme Toggle Button -->
                     <li class="nav-item mx-xl-2">
-                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 theme-toggle-btn d-flex align-items-center gap-1" id="themeToggleBtn">
+                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 theme-toggle-btn d-flex align-items-center gap-1" id="themeToggleBtn" onclick="toggleSiteTheme()">
                             <i class="bi bi-moon-stars-fill theme-icon-dark text-info"></i>
                             <i class="bi bi-sun-fill theme-icon-light text-warning d-none"></i>
                             <span class="theme-text small fw-semibold">Dark</span>
@@ -2083,6 +2109,39 @@ def scanner_page():
         </div>
     </div>
 
+    <!-- Live Camera Modal -->
+    <div class="modal fade" id="cameraModal" tabindex="-1" aria-labelledby="cameraModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content card-custom border-info">
+                <div class="modal-header border-bottom border-subtle">
+                    <h5 class="modal-title fw-bold" id="cameraModalLabel">
+                        <i class="bi bi-camera-fill text-info me-2"></i>Photograph Affected Area
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btnCloseCameraX"></button>
+                </div>
+                <div class="modal-body p-3 text-center">
+                    <div id="cameraStreamContainer" class="position-relative overflow-hidden rounded-3 bg-black" style="min-height: 280px; max-height: 420px;">
+                        <video id="cameraVideo" autoplay playsinline muted class="w-100 h-100" style="object-fit: cover;"></video>
+                        <div class="position-absolute top-50 start-50 translate-middle border border-info border-2 rounded-circle opacity-75 pointer-events-none" style="width: 140px; height: 140px; border-style: dashed !important;"></div>
+                    </div>
+                    <canvas id="cameraCanvas" class="d-none"></canvas>
+                    <div id="cameraAlert" class="alert alert-warning d-none mt-2 py-2 px-3 small text-start"></div>
+                </div>
+                <div class="modal-footer border-top border-subtle d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-3" id="btnFlipCamera">
+                        <i class="bi bi-arrow-repeat me-1"></i> Flip Camera
+                    </button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-danger rounded-pill px-3" data-bs-dismiss="modal" id="btnCancelCamera">Cancel</button>
+                        <button type="button" class="btn btn-info rounded-pill px-4 text-white fw-bold" id="btnSnapPhoto">
+                            <i class="bi bi-circle-fill me-1"></i> Capture
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         var dropZone = document.getElementById('dropZone');
@@ -2098,6 +2157,8 @@ def scanner_page():
         var btnRemoveImage = document.getElementById('btnRemoveImage');
         var btnScanImage = document.getElementById('btnScanImage');
         var scanningState = document.getElementById('scanningState');
+        var scanningStatusText = document.getElementById('scanningStatusText');
+        var scanProgressBar = document.getElementById('scanProgressBar');
         var previewFrame = document.getElementById('previewFrame');
         var idleState = document.getElementById('idleState');
         var resultContent = document.getElementById('resultContent');
@@ -2115,18 +2176,103 @@ def scanner_page():
         var scannerErrorAlert = document.getElementById('scannerErrorAlert');
         var scannerErrorMsg = document.getElementById('scannerErrorMsg');
 
+        // Camera Modal
+        var cameraModalElem = document.getElementById('cameraModal');
+        var cameraModalInstance = null;
+        var cameraVideo = document.getElementById('cameraVideo');
+        var cameraCanvas = document.getElementById('cameraCanvas');
+        var btnSnapPhoto = document.getElementById('btnSnapPhoto');
+        var btnFlipCamera = document.getElementById('btnFlipCamera');
+        var activeCameraStream = null;
+        var currentFacingMode = 'environment';
+
         var currentFile = null;
+        var scanAnimationTimer = null;
 
         function showError(msg) {
-            scannerErrorMsg.textContent = msg;
+            scannerErrorMsg.innerHTML = msg;
             scannerErrorAlert.classList.remove('d-none');
         }
         function clearError() {
             scannerErrorAlert.classList.add('d-none');
+            scannerErrorMsg.textContent = '';
         }
 
         btnBrowseFiles.onclick = function(e) { e.stopPropagation(); imageFileInput.click(); };
-        btnTakePhoto.onclick = function(e) { e.stopPropagation(); cameraFileInput.click(); };
+        
+        btnTakePhoto.onclick = function(e) {
+            e.stopPropagation();
+            clearError();
+            if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
+                startLiveCamera(currentFacingMode);
+            } else {
+                cameraFileInput.click();
+            }
+        };
+
+        function startLiveCamera(facingMode) {
+            if (!cameraModalInstance && typeof bootstrap !== 'undefined') {
+                cameraModalInstance = new bootstrap.Modal(cameraModalElem);
+            }
+            stopActiveCameraStream();
+            var constraints = {
+                video: { facingMode: { ideal: facingMode }, width: { ideal: 1280 }, height: { ideal: 720 } },
+                audio: false
+            };
+            navigator.mediaDevices.getUserMedia(constraints)
+            .then(function(stream) {
+                activeCameraStream = stream;
+                cameraVideo.srcObject = stream;
+                if (cameraModalInstance) cameraModalInstance.show();
+            })
+            .catch(function(err) {
+                console.warn('Camera error:', err);
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    showError('<strong>Camera access denied.</strong> Please allow camera permissions in your browser or use <em>Upload Image</em>.');
+                } else {
+                    cameraFileInput.click();
+                }
+            });
+        }
+
+        function stopActiveCameraStream() {
+            if (activeCameraStream) {
+                activeCameraStream.getTracks().forEach(function(t) { t.stop(); });
+                activeCameraStream = null;
+            }
+            if (cameraVideo) cameraVideo.srcObject = null;
+        }
+
+        if (cameraModalElem) {
+            cameraModalElem.addEventListener('hidden.bs.modal', function() {
+                stopActiveCameraStream();
+            });
+        }
+
+        if (btnFlipCamera) {
+            btnFlipCamera.onclick = function() {
+                currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
+                startLiveCamera(currentFacingMode);
+            };
+        }
+
+        if (btnSnapPhoto) {
+            btnSnapPhoto.onclick = function() {
+                if (!cameraVideo || !cameraVideo.videoWidth) return;
+                cameraCanvas.width = cameraVideo.videoWidth;
+                cameraCanvas.height = cameraVideo.videoHeight;
+                var ctx = cameraCanvas.getContext('2d');
+                ctx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
+                cameraCanvas.toBlob(function(blob) {
+                    if (!blob) return;
+                    var capturedFile = new File([blob], 'camera_photo_' + Date.now() + '.jpg', { type: 'image/jpeg' });
+                    if (cameraModalInstance) cameraModalInstance.hide();
+                    stopActiveCameraStream();
+                    handleFile(capturedFile);
+                }, 'image/jpeg', 0.92);
+            };
+        }
+
         dropZone.onclick = function() { imageFileInput.click(); };
 
         ['dragenter', 'dragover'].forEach(function(ev) {
@@ -2155,6 +2301,8 @@ def scanner_page():
                 previewContainer.classList.remove('d-none');
                 previewActions.classList.remove('d-none');
                 scanningState.classList.add('d-none');
+                resultContent.classList.add('d-none');
+                idleState.classList.remove('d-none');
             };
             reader.readAsDataURL(file);
         }
@@ -2172,15 +2320,39 @@ def scanner_page():
             previewFrame.classList.remove('scanning-active');
             resultContent.classList.add('d-none');
             idleState.classList.remove('d-none');
+            btnScanImage.removeAttribute('disabled');
+            btnScanImage.innerHTML = '<i class="bi bi-cpu me-1"></i> Scan Image';
+            if (scanAnimationTimer) clearInterval(scanAnimationTimer);
             clearError();
         }
 
         btnScanImage.onclick = function() {
             if (!currentFile) { showError('Please select an image first.'); return; }
             clearError();
+            btnScanImage.setAttribute('disabled', 'disabled');
+            btnScanImage.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Processing...';
             previewActions.classList.add('d-none');
             scanningState.classList.remove('d-none');
             previewFrame.classList.add('scanning-active');
+
+            var steps = [
+                "Preparing image for analysis...",
+                "Computing spectrophotometric erythema index...",
+                "Analyzing surface texture & edge roughness...",
+                "Evaluating chromatic dispersion & color variance...",
+                "Generating preliminary assessment..."
+            ];
+            var stepIdx = 0;
+            scanningStatusText.textContent = steps[0];
+            scanProgressBar.style.width = '20%';
+
+            scanAnimationTimer = setInterval(function() {
+                stepIdx++;
+                if (stepIdx < steps.length) {
+                    scanningStatusText.textContent = steps[stepIdx];
+                    scanProgressBar.style.width = Math.min(90, 20 + stepIdx * 18) + '%';
+                }
+            }, 320);
 
             var formData = new FormData();
             formData.append('image', currentFile);
@@ -2188,16 +2360,34 @@ def scanner_page():
             fetch('/api/scan-image', { method: 'POST', body: formData })
             .then(function(r) { return r.json(); })
             .then(function(data) {
-                previewFrame.classList.remove('scanning-active');
-                scanningState.classList.add('d-none');
-                previewActions.classList.remove('d-none');
-                renderResult(data);
+                clearInterval(scanAnimationTimer);
+                scanProgressBar.style.width = '100%';
+                setTimeout(function() {
+                    previewFrame.classList.remove('scanning-active');
+                    scanningState.classList.add('d-none');
+                    previewActions.classList.remove('d-none');
+                    btnScanImage.removeAttribute('disabled');
+                    btnScanImage.innerHTML = '<i class="bi bi-cpu me-1"></i> Scan Image';
+
+                    if (!data || data.success === false) {
+                        showError('<strong>Image analysis could not be completed.</strong><br>Reason: ' + (data.error || 'Image processing service unavailable.'));
+                        resultContent.classList.add('d-none');
+                        idleState.classList.remove('d-none');
+                    } else {
+                        renderResult(data);
+                    }
+                }, 300);
             })
             .catch(function(err) {
+                clearInterval(scanAnimationTimer);
                 previewFrame.classList.remove('scanning-active');
                 scanningState.classList.add('d-none');
                 previewActions.classList.remove('d-none');
-                showError('Error during scan: ' + err.message);
+                btnScanImage.removeAttribute('disabled');
+                btnScanImage.innerHTML = '<i class="bi bi-cpu me-1"></i> Scan Image';
+                showError('<strong>Analysis unavailable:</strong> ' + err.message);
+                resultContent.classList.add('d-none');
+                idleState.classList.remove('d-none');
             });
         };
 
@@ -2215,14 +2405,16 @@ def scanner_page():
             else resultCategoryBadge.classList.add('badge-category-unable');
 
             resultSummaryHeading.textContent = 'Visual indicators may be consistent with ' + cat.toLowerCase();
-            var score = res.confidence_score || 0;
+            var score = (typeof res.confidence_score === 'number') ? res.confidence_score : 0;
             resultScoreText.textContent = score.toFixed(1) + '%';
-            resultScoreBar.style.width = score + '%';
+            resultScoreBar.style.width = Math.min(100, Math.max(0, score)) + '%';
 
             var metrics = res.metrics || {};
-            valErythema.textContent = (metrics.erythema_index !== undefined) ? metrics.erythema_index : '--';
-            valRoughness.textContent = (metrics.surface_roughness !== undefined) ? metrics.surface_roughness : '--';
-            valChroma.textContent = (metrics.chromatic_variance !== undefined) ? metrics.chromatic_variance : '--';
+            valErythema.textContent = (metrics.erythema_index !== undefined) ? metrics.erythema_index : 'Not available';
+            var rVal = (metrics.surface_roughness !== undefined) ? metrics.surface_roughness : ((metrics.roughness_score !== undefined) ? metrics.roughness_score : 'Not available');
+            valRoughness.textContent = rVal;
+            var cVal = (metrics.chromatic_variance !== undefined) ? metrics.chromatic_variance : ((metrics.color_variance !== undefined) ? metrics.color_variance : 'Not available');
+            valChroma.textContent = cVal;
 
             resultFindingsList.innerHTML = '';
             (res.findings || []).forEach(function(f) {

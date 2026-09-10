@@ -5,22 +5,10 @@ function get_python_binary() {
     if (getenv('PYTHON_BIN')) {
         return getenv('PYTHON_BIN');
     }
-    // Check standard commands
-    $candidates = ['python', 'python3', 'py'];
-    foreach ($candidates as $cmd) {
-        $check = shell_exec(PHP_OS_FAMILY === 'Windows' ? "where $cmd 2>nul" : "which $cmd 2>/dev/null");
-        if (!empty(trim($check))) {
-            $lines = explode("\n", trim($check));
-            $found = trim($lines[0]);
-            if (file_exists($found)) {
-                return $found;
-            }
-        }
-    }
-    // Check typical Windows paths if where/which failed
+    // Check known Windows Anaconda/local Python paths first
     $windows_paths = [
-        'C:\\xampp\\python\\python.exe',
         'C:\\Users\\Pearl\\anaconda3\\python.exe',
+        'C:\\xampp\\python\\python.exe',
         'C:\\Python311\\python.exe',
         'C:\\Python310\\python.exe',
         'C:\\Python39\\python.exe'
@@ -28,6 +16,20 @@ function get_python_binary() {
     foreach ($windows_paths as $p) {
         if (file_exists($p)) {
             return $p;
+        }
+    }
+    // Check standard commands, skipping WindowsApps aliases
+    $candidates = ['python', 'python3', 'py'];
+    foreach ($candidates as $cmd) {
+        $check = shell_exec(PHP_OS_FAMILY === 'Windows' ? "where $cmd 2>nul" : "which $cmd 2>/dev/null");
+        if (!empty(trim($check))) {
+            $lines = explode("\n", trim($check));
+            foreach ($lines as $line) {
+                $found = trim($line);
+                if (file_exists($found) && stripos($found, 'WindowsApps') === false) {
+                    return $found;
+                }
+            }
         }
     }
     return 'python';
@@ -280,10 +282,11 @@ function call_image_scanner($image_path) {
         'success' => false,
         'category' => 'Unable to Assess',
         'confidence_score' => 0.0,
-        'assessment_summary' => 'Unable to complete computer vision analysis.',
+        'error' => 'Image processing service unavailable. The computer vision analysis engine could not be reached.',
+        'assessment_summary' => 'Image analysis could not be completed because the backend service is offline.',
         'findings' => ['Computer vision scanning pipeline is currently offline or unreachable.'],
         'recommendations' => [
-            'Please verify server Python dependencies (PIL, numpy, scipy).',
+            'Please verify server Python dependencies (PIL, numpy).',
             'For any actual skin concern, please consult a qualified healthcare professional directly.'
         ],
         'warning_signs' => [

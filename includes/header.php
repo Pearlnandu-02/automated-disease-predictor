@@ -18,14 +18,40 @@ $user = get_logged_in_user();
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Prevent Theme Flash (FOUC) -->
+    <!-- Prevent Theme Flash (FOUC) & Bulletproof Theme Engine -->
     <script>
     (function() {
         var saved = localStorage.getItem('ai_healthcare_theme');
         var theme = (saved === 'light' || saved === 'dark') ? saved : 'dark';
         document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-bs-theme', theme);
     })();
+
+    function toggleSiteTheme() {
+        var current = document.documentElement.getAttribute('data-theme') || 'dark';
+        var next = (current === 'dark') ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        document.documentElement.setAttribute('data-bs-theme', next);
+        localStorage.setItem('ai_healthcare_theme', next);
+
+        var btns = document.querySelectorAll('.theme-toggle-btn');
+        btns.forEach(function(btn) {
+            var darkIcon = btn.querySelector('.theme-icon-dark');
+            var lightIcon = btn.querySelector('.theme-icon-light');
+            var label = btn.querySelector('.theme-text');
+            if (next === 'light') {
+                if (darkIcon) darkIcon.classList.add('d-none');
+                if (lightIcon) lightIcon.classList.remove('d-none');
+                if (label) label.textContent = 'Light';
+            } else {
+                if (darkIcon) darkIcon.classList.remove('d-none');
+                if (lightIcon) lightIcon.classList.add('d-none');
+                if (label) label.textContent = 'Dark';
+            }
+        });
+    }
     </script>
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
@@ -81,7 +107,7 @@ $user = get_logged_in_user();
 
                     <!-- Theme Toggle Button -->
                     <li class="nav-item ms-xl-2 my-1 my-xl-0">
-                        <button id="themeToggleBtn" class="btn btn-sm rounded-pill px-3 py-1 theme-toggle-btn d-inline-flex align-items-center gap-1" title="Toggle Dark/Light Mode" aria-label="Toggle dark/light theme">
+                        <button id="themeToggleBtn" onclick="toggleSiteTheme()" class="btn btn-sm rounded-pill px-3 py-1 theme-toggle-btn d-inline-flex align-items-center gap-1" title="Toggle Dark/Light Mode" aria-label="Toggle dark/light theme">
                             <i class="bi bi-moon-stars-fill theme-icon-dark text-warning"></i>
                             <i class="bi bi-sun-fill theme-icon-light text-warning d-none"></i>
                             <span class="theme-text small fw-semibold">Dark</span>
