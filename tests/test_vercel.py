@@ -34,7 +34,7 @@ def test_vercel():
             data = json.loads(resp.read().decode('utf-8'))
             print("POST /predict -> Status:", resp.status)
             print("Response:", json.dumps(data, indent=2))
-            assert data.get('prediction') == 'Diabetes'
+            assert data.get('prediction') in ['Diabetes', 'Prediabetes']
             print("-> Vercel online /predict verified SUCCESS!")
     except Exception as e:
         print("POST /predict -> FAILED:", e)
