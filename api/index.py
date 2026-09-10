@@ -790,7 +790,7 @@ def render_page(content_html, **kwargs):
                     
                     <!-- Theme Toggle Button -->
                     <li class="nav-item mx-xl-2">
-                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 theme-toggle-btn d-flex align-items-center gap-1" id="themeToggleBtn" title="Toggle Dark/Light Mode" aria-label="Toggle dark/light theme">
+                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 theme-toggle-btn d-flex align-items-center gap-1" id="themeToggleBtn" onclick="toggleSiteTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle dark/light theme">
                             <i class="bi bi-moon-stars-fill theme-icon-dark text-info"></i>
                             <i class="bi bi-sun-fill theme-icon-light text-warning d-none"></i>
                             <span class="theme-text small fw-semibold">Dark</span>
@@ -924,6 +924,8 @@ def render_page(content_html, **kwargs):
                 }
             }
             requestAnimationFrame(step);
+        }
+
         // Symptoms Guide Live Search & Category Filtering
         function initSymptomsGuideSearch() {
             var searchInput = document.getElementById('symptomSearchInput');
