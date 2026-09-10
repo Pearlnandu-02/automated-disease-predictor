@@ -750,26 +750,26 @@ def render_page(content_html, **kwargs):
             border-color: var(--accent-primary) !important;
         }
 
-        /* Light mode contrast safety */
-        [data-theme="light"] h1.text-white,
-        [data-theme="light"] h2.text-white,
-        [data-theme="light"] h3.text-white,
-        [data-theme="light"] h4.text-white,
-        [data-theme="light"] h5.text-white,
-        [data-theme="light"] h6.text-white,
-        [data-theme="light"] .hero-banner h1.text-white,
+        /* Light mode contrast safety (excluding dedicated dark sections like .scanner-hero-banner) */
+        [data-theme="light"] h1.text-white:not(.scanner-hero-banner *),
+        [data-theme="light"] h2.text-white:not(.scanner-hero-banner *),
+        [data-theme="light"] h3.text-white:not(.scanner-hero-banner *),
+        [data-theme="light"] h4.text-white:not(.scanner-hero-banner *),
+        [data-theme="light"] h5.text-white:not(.scanner-hero-banner *),
+        [data-theme="light"] h6.text-white:not(.scanner-hero-banner *),
+        [data-theme="light"] .hero-banner:not(.scanner-hero-banner) h1.text-white,
         [data-theme="light"] .form-label.text-white,
         [data-theme="light"] .form-label.text-light,
-        [data-theme="light"] p.text-white,
-        [data-theme="light"] p.text-light,
-        [data-theme="light"] p.text-white-50,
-        [data-theme="light"] span.text-white:not(.badge):not(.btn *),
-        [data-theme="light"] strong.text-white {
+        [data-theme="light"] p.text-white:not(.scanner-hero-banner *),
+        [data-theme="light"] p.text-light:not(.scanner-hero-banner *),
+        [data-theme="light"] p.text-white-50:not(.scanner-hero-banner *),
+        [data-theme="light"] span.text-white:not(.badge):not(.btn *):not(.scanner-hero-banner *),
+        [data-theme="light"] strong.text-white:not(.scanner-hero-banner *) {
             color: var(--text-primary) !important;
         }
 
-        [data-theme="light"] p.lead.text-white-50,
-        [data-theme="light"] p.lead.text-light {
+        [data-theme="light"] p.lead.text-white-50:not(.scanner-hero-banner *),
+        [data-theme="light"] p.lead.text-light:not(.scanner-hero-banner *) {
             color: var(--text-secondary) !important;
         }
 
@@ -786,6 +786,79 @@ def render_page(content_html, **kwargs):
         .btn-info, .btn-primary, .btn-danger, .btn-success, .btn-primary-custom {
             color: #ffffff !important;
             font-weight: 600;
+        }
+
+        /* Dedicated Scanner Hero Banner (Intentionally dark visual section across all themes) */
+        .scanner-hero-banner,
+        [data-theme="light"] .scanner-hero-banner,
+        [data-theme="dark"] .scanner-hero-banner {
+            background: linear-gradient(135deg, #0b1120 0%, #151f32 50%, #0f766e 100%) !important;
+            border: 1px solid rgba(15, 118, 110, 0.45) !important;
+            border-radius: 24px;
+            box-shadow: 0 16px 38px rgba(11, 17, 32, 0.35);
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .scanner-hero-banner h1,
+        .scanner-hero-banner .hero-heading,
+        [data-theme="light"] .scanner-hero-banner h1,
+        [data-theme="light"] .scanner-hero-banner .hero-heading,
+        [data-theme="dark"] .scanner-hero-banner h1,
+        [data-theme="dark"] .scanner-hero-banner .hero-heading {
+            color: #ffffff !important;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .scanner-hero-banner p,
+        .scanner-hero-banner .hero-lead,
+        [data-theme="light"] .scanner-hero-banner p,
+        [data-theme="light"] .scanner-hero-banner .hero-lead,
+        [data-theme="dark"] .scanner-hero-banner p,
+        [data-theme="dark"] .scanner-hero-banner .hero-lead {
+            color: rgba(255, 255, 255, 0.85) !important;
+        }
+
+        .scanner-hero-banner .hero-badge,
+        [data-theme="light"] .scanner-hero-banner .hero-badge,
+        [data-theme="dark"] .scanner-hero-banner .hero-badge {
+            background: rgba(18, 191, 227, 0.15) !important;
+            color: #38d3f2 !important;
+            border: 1px solid rgba(18, 191, 227, 0.4) !important;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .scanner-hero-banner .scanner-hero-icon,
+        .scanner-hero-banner .bi-shield-check {
+            color: rgba(255, 255, 255, 0.35) !important;
+        }
+
+        @media (max-width: 768px) {
+            .scanner-hero-banner {
+                padding: 1.75rem 1.25rem !important;
+                border-radius: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scanner-hero-banner {
+                padding: 1.5rem 1rem !important;
+                border-radius: 16px;
+            }
+            .scanner-hero-banner h1,
+            .scanner-hero-banner .hero-heading {
+                font-size: 1.65rem !important;
+                line-height: 1.25;
+            }
+            .scanner-hero-banner p,
+            .scanner-hero-banner .hero-lead {
+                font-size: 0.95rem !important;
+                line-height: 1.45;
+            }
         }
 
         /* AI Scanner styles */
@@ -999,16 +1072,40 @@ def render_page(content_html, **kwargs):
         }
 
         .disclaimer-banner {
-            background: rgba(245, 158, 11, 0.12);
-            border-left: 4px solid #f59e0b;
-            color: #d97706;
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(217, 119, 6, 0.25);
+            border-left: 4px solid #d97706;
+            color: #92400e;
             padding: 14px 18px;
             border-radius: 10px;
             font-size: 0.875rem;
         }
 
+        .disclaimer-banner .bi-exclamation-triangle-fill {
+            color: #d97706;
+        }
+
+        .disclaimer-banner strong,
+        .disclaimer-banner .disclaimer-title {
+            color: #78350f;
+            font-weight: 700;
+        }
+
         [data-theme="dark"] .disclaimer-banner {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-left: 4px solid #f59e0b;
+            color: #fde68a;
+        }
+
+        [data-theme="dark"] .disclaimer-banner .bi-exclamation-triangle-fill {
+            color: #f59e0b;
+        }
+
+        [data-theme="dark"] .disclaimer-banner strong,
+        [data-theme="dark"] .disclaimer-banner .disclaimer-title {
             color: #fbbf24;
+            font-weight: 700;
         }
 
         .symptom-grid {
@@ -2977,20 +3074,31 @@ def scanner_page():
     <!-- Page Header & Hero -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card-custom p-4 p-md-5 mb-3" style="background: linear-gradient(135deg, #0b1120 0%, #151f32 50%, #0f766e 100%);">
-                <span class="badge bg-white text-dark fw-bold px-3 py-2 rounded-pill mb-3">
-                    <i class="bi bi-camera-fill text-info me-1"></i> Computer Vision Pipeline
-                </span>
-                <h1 class="display-6 fw-bold text-white mb-2">AI Infection & Injury Scanner</h1>
-                <p class="lead mb-0 text-white-50">
-                    Upload a clear image of a skin injury, wound, rash, swelling, or redness for an AI-assisted preliminary visual assessment.
-                </p>
+            <div class="scanner-hero-banner p-4 p-md-5 mb-3">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <span class="badge hero-badge px-3 py-2 rounded-pill mb-3">
+                            <i class="bi bi-camera-fill me-1"></i> Computer Vision Pipeline
+                        </span>
+                        <h1 class="display-6 fw-bold hero-heading mb-2">AI Infection & Injury Scanner</h1>
+                        <p class="lead mb-0 hero-lead">
+                            Upload a clear image of a skin injury, wound, rash, swelling, or redness for an AI-assisted preliminary visual assessment.
+                        </p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end d-none d-lg-block">
+                        <i class="bi bi-shield-check display-1 scanner-hero-icon opacity-50"></i>
+                    </div>
+                </div>
             </div>
 
             <!-- Mandatory Educational Disclaimer -->
-            <div class="alert alert-warning border-0 p-3 mb-3 shadow-sm" style="background: rgba(245, 158, 11, 0.12); border-left: 4px solid #f59e0b !important;">
-                <i class="bi bi-exclamation-triangle-fill fs-5 me-2"></i>
-                <strong>Important Medical Notice:</strong> This AI scanner provides an <em>educational preliminary visual assessment</em> and is not a medical diagnosis. For concerning, worsening, infected, or serious injuries, consult a qualified healthcare professional.
+            <div class="disclaimer-banner mb-3 shadow-sm">
+                <div class="d-flex align-items-start gap-2">
+                    <i class="bi bi-exclamation-triangle-fill fs-5 mt-1 flex-shrink-0"></i>
+                    <div>
+                        <strong class="disclaimer-title">Important Medical Notice:</strong> This AI scanner provides an <em>educational preliminary visual assessment</em> and is not a medical diagnosis. For concerning, worsening, infected, or serious injuries, consult a qualified healthcare professional.
+                    </div>
+                </div>
             </div>
 
             <!-- Privacy Assurance Banner -->

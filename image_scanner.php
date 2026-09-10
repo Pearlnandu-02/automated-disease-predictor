@@ -73,7 +73,7 @@ require_once __DIR__ . '/includes/header.php';
 <!-- Page Header & Hero -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="hero-banner p-4 p-md-5 mb-3">
+        <div class="scanner-hero-banner p-4 p-md-5 mb-3">
             <div class="row align-items-center">
                 <div class="col-lg-8">
                     <span class="badge hero-badge px-3 py-2 rounded-pill mb-3">
@@ -85,7 +85,7 @@ require_once __DIR__ . '/includes/header.php';
                     </p>
                 </div>
                 <div class="col-lg-4 text-lg-end d-none d-lg-block">
-                    <i class="bi bi-shield-check display-1 opacity-50"></i>
+                    <i class="bi bi-shield-check display-1 scanner-hero-icon opacity-50"></i>
                 </div>
             </div>
         </div>
@@ -95,7 +95,7 @@ require_once __DIR__ . '/includes/header.php';
             <div class="d-flex align-items-start gap-2">
                 <i class="bi bi-exclamation-triangle-fill fs-5 mt-1 flex-shrink-0"></i>
                 <div>
-                    <strong>Important Medical Notice:</strong> This AI scanner provides an <em>educational preliminary visual assessment</em> and is not a medical diagnosis. For concerning, worsening, infected, or serious injuries, consult a qualified healthcare professional.
+                    <strong class="disclaimer-title">Important Medical Notice:</strong> This AI scanner provides an <em>educational preliminary visual assessment</em> and is not a medical diagnosis. For concerning, worsening, infected, or serious injuries, consult a qualified healthcare professional.
                 </div>
             </div>
         </div>
