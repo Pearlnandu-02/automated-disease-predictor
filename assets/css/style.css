@@ -41,6 +41,8 @@
   --bg-surface: #111f30;
   --card-bg: #17283a;
   --card-border: #2b4054;
+  --surface: #17283a;
+  --surface-secondary: #0f1c2b;
 
   --border-color: #2b4054;
   --border-subtle: rgba(255, 255, 255, 0.08);
@@ -130,6 +132,8 @@
   --bg-surface: #ffffff;
   --card-bg: #ffffff;
   --card-border: #d9e2ec;
+  --surface: #ffffff;
+  --surface-secondary: #edf3f8;
 
   --border-color: #d9e2ec;
   --border-subtle: #d9e2ec;
@@ -977,7 +981,7 @@ footer .text-muted {
   color: var(--text-heading);
 }
 
-/* Clean semantic helper */
+/* Clean semantic helpers */
 .bg-surface-custom {
   background-color: var(--bg-surface) !important;
 }
@@ -986,6 +990,89 @@ footer .text-muted {
   background-color: var(--bg-card) !important;
 }
 
-.border-custom {
+.bg-card-subtle {
+  background-color: var(--bg-card-subtle) !important;
+}
+
+.border-custom,
+.border-theme {
   border-color: var(--border-color) !important;
 }
+
+/* ================= Symptom Relation & Card Sub-Elements ================= */
+.symptom-relation-box {
+  background-color: var(--bg-card-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 1rem;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.symptom-relation-title {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.82rem;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.01em;
+}
+
+.symptom-relation-content {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.symptom-condition-tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.symptom-condition-tag:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+.symptom-relation-empty {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.82rem;
+}
+
+.symptom-evaluation-box {
+  background-color: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.symptom-evaluation-title {
+  color: var(--accent-amber);
+  font-weight: 700;
+  font-size: 0.82rem;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.symptom-evaluation-text {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+

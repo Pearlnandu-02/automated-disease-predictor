@@ -177,6 +177,8 @@ def render_page(content_html, **kwargs):
             --bg-surface: #111f30;
             --card-bg: #17283a;
             --card-border: #2b4054;
+            --surface: #17283a;
+            --surface-secondary: #0f1c2b;
 
             --border-color: #2b4054;
             --border-subtle: rgba(255, 255, 255, 0.08);
@@ -244,6 +246,8 @@ def render_page(content_html, **kwargs):
             --bg-surface: #ffffff;
             --card-bg: #ffffff;
             --card-border: #d9e2ec;
+            --surface: #ffffff;
+            --surface-secondary: #edf3f8;
 
             --border-color: #d9e2ec;
             --border-subtle: #d9e2ec;
@@ -499,6 +503,83 @@ def render_page(content_html, **kwargs):
             border-radius: 10px;
             padding: 12px 16px;
             font-size: 0.88rem;
+        }
+
+        .bg-card-subtle {
+            background-color: var(--bg-card-subtle) !important;
+        }
+        .border-theme {
+            border-color: var(--border-color) !important;
+        }
+
+        /* Symptom Relation & Card Sub-Elements */
+        .symptom-relation-box {
+            background-color: var(--bg-card-subtle);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 1rem;
+            transition: background-color 0.25s ease, border-color 0.25s ease;
+        }
+        .symptom-relation-title {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 0.82rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.01em;
+        }
+        .symptom-relation-content {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        .symptom-condition-tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            font-weight: 500;
+            padding: 3px 9px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        .symptom-condition-tag:hover {
+            border-color: var(--accent-primary);
+            color: var(--text-primary);
+        }
+        .symptom-relation-empty {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.82rem;
+        }
+
+        .symptom-evaluation-box {
+            background-color: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            transition: background-color 0.25s ease, border-color 0.25s ease;
+        }
+        .symptom-evaluation-title {
+            color: var(--accent-amber);
+            font-weight: 700;
+            font-size: 0.82rem;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .symptom-evaluation-text {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.5;
         }
 
         [data-theme="dark"] .bg-light {
@@ -843,12 +924,63 @@ def render_page(content_html, **kwargs):
                 }
             }
             requestAnimationFrame(step);
+        // Symptoms Guide Live Search & Category Filtering
+        function initSymptomsGuideSearch() {
+            var searchInput = document.getElementById('symptomSearchInput');
+            var filterPills = document.querySelectorAll('.symptom-filter-pill');
+            var symptomCards = document.querySelectorAll('.symptom-guide-card');
+            if (!symptomCards.length) return;
+
+            function applyFilter() {
+                var query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+                var activePill = document.querySelector('.symptom-filter-pill.active');
+                var selectedCategory = activePill ? activePill.getAttribute('data-category').toLowerCase() : 'all';
+
+                var visibleCount = 0;
+                symptomCards.forEach(function(card) {
+                    var name = card.getAttribute('data-name') || '';
+                    var category = card.getAttribute('data-category') || '';
+                    var desc = card.getAttribute('data-desc') || '';
+
+                    var matchesSearch = query === '' || name.toLowerCase().indexOf(query) !== -1 || desc.toLowerCase().indexOf(query) !== -1;
+                    var matchesCategory = selectedCategory === 'all' || category.toLowerCase() === selectedCategory;
+
+                    if (matchesSearch && matchesCategory) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                var emptyMsg = document.getElementById('symptomsEmptySearch');
+                if (emptyMsg) {
+                    emptyMsg.style.display = visibleCount === 0 ? 'block' : 'none';
+                }
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', applyFilter);
+            }
+
+            filterPills.forEach(function(pill) {
+                pill.addEventListener('click', function() {
+                    filterPills.forEach(function(p) {
+                        p.classList.remove('active', 'btn-info', 'text-white', 'fw-bold');
+                        p.classList.add('btn-outline-secondary');
+                    });
+                    this.classList.remove('btn-outline-secondary');
+                    this.classList.add('active', 'btn-info', 'text-white', 'fw-bold');
+                    applyFilter();
+                });
+            });
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             initTheme();
             initTiles();
             initSliders();
+            initSymptomsGuideSearch();
             var counters = document.querySelectorAll('.animate-counter');
             counters.forEach(function(c) {
                 var tgt = parseFloat(c.getAttribute('data-target'));
@@ -2034,24 +2166,37 @@ def symptoms_guide():
 
     cards_html = ""
     for s in symptoms_list:
+        cond_str = s.get('cond', '').strip()
+        cond_items = [c.strip() for c in cond_str.split(',') if c.strip()]
+        if cond_items:
+            cond_html = "".join([f'<span class="symptom-condition-tag">{c}</span>' for c in cond_items])
+        else:
+            cond_html = '<span class="symptom-relation-empty">No associated conditions listed</span>'
+
         cards_html += f"""
-        <div class="col-md-6 col-lg-4">
-            <div class="card-custom p-4 h-100 d-flex flex-column justify-content-between border border-secondary border-opacity-25">
+        <div class="col-md-6 col-lg-4 symptom-guide-card" data-name="{s['name'].lower()}" data-category="{s['cat'].lower()}" data-desc="{(s['desc'] + ' ' + cond_str).lower()}">
+            <div class="card-custom p-4 h-100 d-flex flex-column justify-content-between">
                 <div>
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div class="p-2 bg-info bg-opacity-10 text-info rounded-circle"><i class="bi {s['icon']} fs-4"></i></div>
-                        <span class="badge bg-secondary bg-opacity-40 text-info border border-info border-opacity-25">{s['cat']}</span>
+                        <span class="badge bg-secondary bg-opacity-25 text-info border border-info border-opacity-25">{s['cat']}</span>
                     </div>
-                    <h5 class="fw-bold text-white mb-2">{s['name']}</h5>
-                    <p class="small text-muted mb-3">{s['desc']}</p>
-                    <div class="p-2 bg-dark bg-opacity-40 rounded small mb-3">
-                        <strong class="text-white d-block mb-1">May occur with:</strong>
-                        <span class="text-muted">{s['cond']}</span>
+                    <h5 class="fw-bold mb-2">{s['name']}</h5>
+                    <p class="small text-muted mb-3" style="line-height: 1.6;">{s['desc']}</p>
+                    <div class="symptom-relation-box mb-3">
+                        <div class="symptom-relation-title">
+                            <i class="bi bi-diagram-3-fill text-info"></i> May occur with:
+                        </div>
+                        <div class="symptom-relation-content d-flex flex-wrap gap-1 mt-2">
+                            {cond_html}
+                        </div>
                     </div>
                 </div>
-                <a href="/prediction?symptom={s['key']}" class="btn btn-outline-info btn-sm rounded-pill w-100 mt-2">
-                    <i class="bi bi-cpu me-1"></i> Use this symptom in AI checker
-                </a>
+                <div class="pt-3 border-top mt-2">
+                    <a href="/prediction?symptom={s['key']}" class="btn btn-outline-info btn-sm rounded-pill w-100 py-2 fw-semibold">
+                        <i class="bi bi-cpu-fill me-1"></i> Use this symptom in AI checker
+                    </a>
+                </div>
             </div>
         </div>
         """
@@ -2060,13 +2205,59 @@ def symptoms_guide():
     <div class="row py-3 text-center">
         <div class="col-12 mb-4">
             <span class="badge bg-info text-dark px-3 py-2 rounded-pill fw-bold mb-2">CLINICAL DIRECTORY</span>
-            <h1 class="display-5 fw-extrabold text-white">Interactive Symptoms Guide & Clinical Index</h1>
+            <h1 class="display-5 fw-extrabold mb-2">Interactive Symptoms Guide & Clinical Index</h1>
             <p class="lead text-muted mx-auto" style="max-width: 780px;">
-                Explore our clinically organized index of symptoms aligned directly with our machine learning classification model.
+                Explore our clinically organized index of symptoms aligned directly with our machine learning classification model across 65 conditions. Search, filter by body system, and seamlessly load symptoms into our AI diagnostic checker.
             </p>
         </div>
     </div>
-    <div class="row g-4">{cards_html}</div>
+
+    <!-- Search and Category Filter Toolbar -->
+    <div class="card-custom p-4 mb-4">
+        <div class="row g-3 align-items-center">
+            <div class="col-lg-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-card-subtle text-info border">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input 
+                        type="text" 
+                        id="symptomSearchInput" 
+                        class="form-control" 
+                        placeholder="Search symptoms by name, description, or condition..."
+                        autocomplete="off"
+                    >
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="d-flex flex-wrap gap-2 justify-content-lg-end" id="categoryFilterContainer">
+                    <button type="button" class="btn btn-sm symptom-filter-pill active btn-info text-white fw-bold" data-category="all">All</button>
+                    <button type="button" class="btn btn-sm symptom-filter-pill btn-outline-secondary" data-category="general">General</button>
+                    <button type="button" class="btn btn-sm symptom-filter-pill btn-outline-secondary" data-category="respiratory">Respiratory</button>
+                    <button type="button" class="btn btn-sm symptom-filter-pill btn-outline-secondary" data-category="cardiovascular">Cardiovascular</button>
+                    <button type="button" class="btn btn-sm symptom-filter-pill btn-outline-secondary" data-category="digestive">Digestive</button>
+                    <button type="button" class="btn btn-sm symptom-filter-pill btn-outline-secondary" data-category="neurological">Neurological</button>
+                    <button type="button" class="btn btn-sm symptom-filter-pill btn-outline-secondary" data-category="endocrine">Endocrine</button>
+                    <button type="button" class="btn btn-sm symptom-filter-pill btn-outline-secondary" data-category="renal">Renal</button>
+                    <button type="button" class="btn btn-sm symptom-filter-pill btn-outline-secondary" data-category="dermatological">Dermatological</button>
+                    <button type="button" class="btn btn-sm symptom-filter-pill btn-outline-secondary" data-category="musculoskeletal">Musculoskeletal</button>
+                    <button type="button" class="btn btn-sm symptom-filter-pill btn-outline-secondary" data-category="psychological">Psychological</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4" id="symptomsGuideGrid">{cards_html}</div>
+
+    <!-- Empty Search Fallback -->
+    <div id="symptomsEmptySearch" class="card-custom p-5 text-center my-4" style="display: none;">
+        <i class="bi bi-search text-muted display-4 mb-3"></i>
+        <h4 class="fw-bold">No Matching Symptoms Found</h4>
+        <p class="text-muted small mb-3">Try adjusting your search terms or select "All" from the body system filters above.</p>
+        <button type="button" class="btn btn-outline-info rounded-pill px-4" onclick="document.getElementById('symptomSearchInput').value=''; document.querySelector('[data-category=all]').click();">
+            Reset Search & Filters
+        </button>
+    </div>
     """
     return render_page(content)
 
@@ -2119,22 +2310,22 @@ def prevention():
         </h4>
         <div class="row g-3 text-muted small">
             <div class="col-md-3">
-                <div class="p-3 bg-dark bg-opacity-50 rounded border border-danger border-opacity-25 h-100">
+                <div class="p-3 bg-card-subtle rounded border border-danger border-opacity-25 h-100">
                     <strong class="text-danger d-block mb-1">Cardiac Symptoms:</strong> Crushing chest pressure, pain radiating to left arm or jaw, sudden cold sweat.
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="p-3 bg-dark bg-opacity-50 rounded border border-danger border-opacity-25 h-100">
+                <div class="p-3 bg-card-subtle rounded border border-danger border-opacity-25 h-100">
                     <strong class="text-danger d-block mb-1">Respiratory Distress:</strong> Inability to speak full sentences, severe shortness of breath, cyanosis (blue lips/fingertips).
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="p-3 bg-dark bg-opacity-50 rounded border border-danger border-opacity-25 h-100">
+                <div class="p-3 bg-card-subtle rounded border border-danger border-opacity-25 h-100">
                     <strong class="text-danger d-block mb-1">Neurological Emergencies:</strong> Sudden facial drooping, arm weakness, slurred speech (FAST stroke signs) or seizure > 5 mins.
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="p-3 bg-dark bg-opacity-50 rounded border border-danger border-opacity-25 h-100">
+                <div class="p-3 bg-card-subtle rounded border border-danger border-opacity-25 h-100">
                     <strong class="text-danger d-block mb-1">Systemic Sepsis:</strong> High fever > 103°F with confusion, drenching rigors, and rapid heart rate.
                 </div>
             </div>

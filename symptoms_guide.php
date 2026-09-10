@@ -616,18 +616,28 @@ $categories = ['All', 'General', 'Respiratory', 'Cardiovascular', 'Digestive', '
                         <?= sanitize($s['explanation']) ?>
                     </p>
 
-                    <div class="mb-3 p-2 bg-card-subtle rounded border small">
-                        <strong class="text-primary-theme d-block mb-1">
-                            <i class="bi bi-diagram-3-fill text-info me-1"></i> May occur with:
-                        </strong>
-                        <span class="text-muted"><?= sanitize($s['conditions']) ?></span>
+                    <div class="symptom-relation-box">
+                        <div class="symptom-relation-title">
+                            <i class="bi bi-diagram-3-fill text-info"></i> May occur with:
+                        </div>
+                        <?php 
+                        $cond_list = array_filter(array_map('trim', explode(',', $s['conditions'] ?? '')));
+                        if (!empty($cond_list)): ?>
+                            <div class="symptom-relation-content d-flex flex-wrap gap-1 mt-2">
+                                <?php foreach ($cond_list as $cond): ?>
+                                    <span class="symptom-condition-tag"><?= sanitize($cond) ?></span>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="symptom-relation-empty">No associated conditions listed</div>
+                        <?php endif; ?>
                     </div>
 
-                    <div class="mb-3 p-2 bg-warning bg-opacity-10 rounded border border-warning border-opacity-25 small">
-                        <strong class="text-warning d-block mb-1">
-                            <i class="bi bi-shield-check me-1"></i> When to Seek Evaluation:
-                        </strong>
-                        <span class="text-muted"><?= sanitize($s['when_to_seek']) ?></span>
+                    <div class="symptom-evaluation-box">
+                        <div class="symptom-evaluation-title">
+                            <i class="bi bi-shield-check"></i> When to Seek Evaluation:
+                        </div>
+                        <div class="symptom-evaluation-text"><?= sanitize($s['when_to_seek']) ?></div>
                     </div>
                 </div>
 
