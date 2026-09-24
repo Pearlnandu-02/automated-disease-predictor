@@ -429,5 +429,94 @@ The repository provides dual-mode deployment:
 
 ---
 
+## Symptom-Based Disease Prediction Feature Documentation
+
+### 1. Feature Purpose
+The **Symptom-Based Disease Prediction** module in MediSense AI provides educational clinical decision support by evaluating user-reported symptoms across 73 condition profiles. It is designed to demonstrate transparent, explainable health informatics without making claims of confirmed diagnostic certainty.
+
+### 2. Dataset Structure
+Clinical data is organized into structured JSON and relational MySQL schemas:
+- **`data/symptoms.json`**: Contains 58 symptoms across 8 body systems (General, Respiratory, Cardiovascular, Gastrointestinal, Neurological, Dermatological, Endocrine, Musculoskeletal). Each record contains `key`, `name`, `category`, `severity`, and an extensive `synonyms` dictionary for NLP query normalization.
+- **`data/diseases.json`**: Contains 73 medical conditions linked with:
+  - `commonSymptoms`: Characteristic/pathognomonic signs (weight: 3.0)
+  - `lessCommonSymptoms`: Secondary/constitutional signs (weight: 1.5)
+  - `riskFactors`: Predisposing clinical conditions
+  - `prevention`: Primary and secondary preventative guidance
+  - `redFlags`: Warning signs requiring emergency care
+  - `differentiatingFeatures`: Clinical discriminators distinguishing overlapping illnesses
+  - `whenToSeekCare`: Specific consultation thresholds
+  - `source`: CDC, WHO, and Harrison's Principles of Internal Medicine citations
+
+### 3. Prediction & Matching Logic
+Rather than outputting opaque black-box probabilities, the engine utilizes a deterministic, weighted $F_{0.8}$ balanced similarity metric:
+$$\text{Recall} = \frac{\sum w_{\text{matched}}}{\sum w_{\text{expected}}}, \quad \text{Precision} = \frac{\sum w_{\text{matched}}}{\sum w_{\text{selected}} + \text{penalty}}$$
+$$F_{0.8} = \frac{(1 + 0.8^2) \times \text{Precision} \times \text{Recall}}{0.8^2 \times \text{Precision} + \text{Recall}}$$
+- Characteristic symptoms carry a 3.0 weight multiplier.
+- Secondary symptoms carry a 1.5 weight multiplier.
+- Mismatched selected symptoms apply a 2.0 penalty.
+- Conditions scoring under 20 are pruned to eliminate low-affinity noise.
+- Top 3–5 possibilities are returned to represent clinical differential diagnosis.
+
+### 4. Symptom Normalization (NLP)
+Free-text user inputs (e.g., "head ache", "belly pain", "puking") are mapped to standardized keys (`headache`, `abdominal_pain`, `vomiting`) through a 3-tier algorithm:
+1. Exact key match
+2. Exact case-insensitive synonym match
+3. Substring / partial token match
+
+### 5. Result Interpretation
+- **Match Score**: Displayed as `Symptom Match Score: X/100 (Educational match score based on clinical symptom overlap, NOT medical probability of disease)`.
+- **Badges**: High Match ($\ge 70$), Moderate Match ($40-69$), Limited Match ($20-39$).
+- **Breakdown**: Each card displays matched symptoms (green checkmarks) alongside other typical symptoms not currently selected, plus distinguishing clinical features.
+
+### 6. Safety Limitations & Red Flags
+- The system never claims diagnostic certainty ("You have...").
+- Prominent disclaimers remind users that clinical evaluation requires licensed medical professionals.
+- If any top differential condition presents life-threatening signs, an **Emergency Warning Banner** immediately alerts the user with specific emergency warning signs and instructions to call emergency services.
+
+### 7. How to Add a New Disease
+1. Open `data/diseases.json`.
+2. Add a new object following the schema:
+   ```json
+   {
+     "id": 74,
+     "name": "Condition Name",
+     "category": "Body System",
+     "symptoms": ["symptom_key_1", "symptom_key_2"],
+     "commonSymptoms": ["symptom_key_1"],
+     "lessCommonSymptoms": ["symptom_key_2"],
+     "description": "Clinical overview...",
+     "riskFactors": ["Risk 1", "Risk 2"],
+     "prevention": ["Prevention 1"],
+     "redFlags": ["Emergency sign 1"],
+     "differentiatingFeatures": "Distinguishing features...",
+     "whenToSeekCare": "Care advice...",
+     "source": "Medical Reference Citation"
+   }
+   ```
+3. Run `tests/test_symptom_prediction.py` to ensure schema validity.
+
+### 8. How to Add a New Symptom
+1. Open `data/symptoms.json`.
+2. Add the symptom entry:
+   ```json
+   {
+     "key": "new_symptom_key",
+     "name": "Clinical Symptom Name",
+     "category": "Category",
+     "severity": "Mild/Moderate/Severe",
+     "synonyms": ["common term 1", "slang term 2", "alternate spelling"]
+   }
+   ```
+3. Link the symptom key in applicable disease profiles in `data/diseases.json`.
+
+### 9. How to Test the Feature
+Run the automated test suite locally:
+```bash
+python tests/test_symptom_prediction.py
+```
+This script executes all 8 clinical presentation test cases (Respiratory, Neurological, Gastrointestinal, Upper Respiratory, Endocrine, Dermatological, NLP Normalization, and Insufficient Input Gate).
+
+---
+
 ## License & Attribution
 Developed as an Academic Engineering College Project in Artificial Intelligence & Healthcare Informatics. All predictions are strictly educational.
