@@ -1407,6 +1407,242 @@ footer .text-muted {
   color: var(--text-heading);
 }
 
+/* ================= Advanced Scanner Component Styles ================= */
+.scanner-severity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+.scanner-runnerup-box {
+  background: rgba(6, 182, 212, 0.06);
+  border: 1px dashed rgba(6, 182, 212, 0.35);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.scanner-quality-card {
+  background: rgba(245, 158, 11, 0.06);
+  border: 1px solid rgba(245, 158, 11, 0.28);
+  border-left: 4px solid #f59e0b;
+  border-radius: 12px;
+}
+
+.scanner-scope-card {
+  background: rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-left: 4px solid #94a3b8;
+  border-radius: 12px;
+}
+
+.scanner-obs-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.scanner-obs-bullet {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  margin-top: 7px;
+  flex-shrink: 0;
+}
+
+.scanner-care-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 7px;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.scanner-care-point i {
+  color: #10b981;
+  font-size: 0.95rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.scanner-warning-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 7px;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.scanner-warning-item i {
+  color: #ef4444;
+  font-size: 0.95rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* Camera Live Viewfinder & Freeze Preview */
+.camera-viewfinder {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #000;
+  min-height: 320px;
+  max-height: 440px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+}
+
+.camera-preview-frozen {
+  width: 100%;
+  height: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  display: block;
+}
+
+.camera-reticle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 180px;
+  border: 2px dashed rgba(6, 182, 212, 0.75);
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+}
+
+.camera-reticle-corners {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 220px;
+  height: 220px;
+  pointer-events: none;
+}
+
+.camera-reticle-corners::before,
+.camera-reticle-corners::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-color: rgba(6, 182, 212, 0.9);
+  border-style: solid;
+}
+
+.camera-reticle-corners::before {
+  top: 0;
+  left: 0;
+  border-width: 3px 0 0 3px;
+}
+
+.camera-reticle-corners::after {
+  bottom: 0;
+  right: 0;
+  border-width: 0 3px 3px 0;
+}
+
+.camera-corner-tr {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  border-top: 3px solid rgba(6, 182, 212, 0.9);
+  border-right: 3px solid rgba(6, 182, 212, 0.9);
+}
+
+.camera-corner-bl {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  border-bottom: 3px solid rgba(6, 182, 212, 0.9);
+  border-left: 3px solid rgba(6, 182, 212, 0.9);
+}
+
+.camera-guide-text {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.78rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+.camera-badge-mode {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  color: #22d3ee;
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  z-index: 5;
+}
+
+/* Light mode high-contrast guards for camera and scanner components */
+[data-theme="light"] .scanner-severity-badge {
+  background: rgba(100, 116, 139, 0.08);
+  color: #334155;
+  border-color: rgba(100, 116, 139, 0.25);
+}
+
+[data-theme="light"] .scanner-runnerup-box {
+  background: rgba(8, 145, 178, 0.05);
+  border-color: rgba(8, 145, 178, 0.3);
+  color: #0f172a;
+}
+
+[data-theme="light"] .scanner-quality-card {
+  background: rgba(245, 158, 11, 0.06);
+  border-color: rgba(245, 158, 11, 0.35);
+  color: #1e293b;
+}
+
+[data-theme="light"] .scanner-scope-card {
+  background: rgba(241, 245, 249, 0.95);
+  border-color: rgba(148, 163, 184, 0.4);
+  color: #1e293b;
+}
+
+@media (max-width: 576px) {
+  .camera-viewfinder {
+    min-height: 260px;
+    max-height: 340px;
+  }
+  .camera-reticle {
+    width: 140px;
+    height: 140px;
+  }
+  .camera-reticle-corners {
+    width: 170px;
+    height: 170px;
+  }
+}
+
+
 /* Clean semantic helpers */
 .bg-surface-custom {
   background-color: var(--bg-surface) !important;

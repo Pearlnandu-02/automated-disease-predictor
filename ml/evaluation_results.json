@@ -17591,5 +17591,173 @@
                 "per_class_f1_avg": 0.7443
             }
         }
+    },
+    "vision_scanner": {
+        "model_metadata": {
+            "model_name": "Calibrated Multi-Class Dermatological Vision Classifier",
+            "model_version": "v2.0-Vision-Calibrated",
+            "framework": "scikit-learn (CalibratedClassifierCV / Random Forest)",
+            "input_dimension": 24,
+            "features": [
+                "mean_erythema",
+                "p90_erythema",
+                "red_excess_ratio",
+                "p90_red_excess",
+                "rg_ratio",
+                "rb_ratio",
+                "mean_hue",
+                "std_hue",
+                "mean_saturation",
+                "std_saturation",
+                "mean_value",
+                "std_value",
+                "ycbcr_cr_mean",
+                "ycbcr_cr_std",
+                "skin_pixel_fraction",
+                "sobel_roughness",
+                "p90_roughness",
+                "sobel_direction_entropy",
+                "laplacian_sharpness",
+                "chromatic_dispersion",
+                "luminance_convexity",
+                "texture_contrast",
+                "texture_homogeneity",
+                "edge_density"
+            ],
+            "classes": [
+                "Infection_Indicators",
+                "Minor_Injury",
+                "Rash_Irritation",
+                "Swelling_Contusion",
+                "Inflammation_Redness",
+                "Out_of_Scope"
+            ],
+            "classes_count": 6,
+            "dataset_samples": 1050,
+            "partitions": {
+                "train": 735,
+                "validation": 157,
+                "test": 158
+            },
+            "random_seed": 42
+        },
+        "test_metrics": {
+            "accuracy": 0.981,
+            "precision_weighted": 0.9816,
+            "recall_weighted": 0.981,
+            "f1_score_weighted": 0.981,
+            "precision_macro": 0.9818,
+            "recall_macro": 0.981,
+            "f1_score_macro": 0.9811,
+            "confusion_matrix": [
+                [
+                    24,
+                    0,
+                    2,
+                    0,
+                    0,
+                    0
+                ],
+                [
+                    1,
+                    26,
+                    0,
+                    0,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    27,
+                    0,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    0,
+                    26,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    26,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    26
+                ]
+            ],
+            "per_class": {
+                "Infection_Indicators": {
+                    "display_name": "Possible Infection Indicators",
+                    "precision": 0.96,
+                    "recall": 0.9231,
+                    "f1_score": 0.9412,
+                    "support": 26
+                },
+                "Minor_Injury": {
+                    "display_name": "Possible Minor Injury",
+                    "precision": 1.0,
+                    "recall": 0.963,
+                    "f1_score": 0.9811,
+                    "support": 27
+                },
+                "Rash_Irritation": {
+                    "display_name": "Possible Rash/Skin Irritation",
+                    "precision": 0.931,
+                    "recall": 1.0,
+                    "f1_score": 0.9643,
+                    "support": 27
+                },
+                "Swelling_Contusion": {
+                    "display_name": "Possible Swelling",
+                    "precision": 1.0,
+                    "recall": 1.0,
+                    "f1_score": 1.0,
+                    "support": 26
+                },
+                "Inflammation_Redness": {
+                    "display_name": "Possible Inflammation/Redness",
+                    "precision": 1.0,
+                    "recall": 1.0,
+                    "f1_score": 1.0,
+                    "support": 26
+                },
+                "Out_of_Scope": {
+                    "display_name": "Unable to Assess",
+                    "precision": 1.0,
+                    "recall": 1.0,
+                    "f1_score": 1.0,
+                    "support": 26
+                }
+            }
+        },
+        "validation_comparison": {
+            "Random Forest": {
+                "accuracy": 0.9936305732484076,
+                "f1": 0.9936282168197168
+            },
+            "Logistic Regression": {
+                "accuracy": 0.9745222929936306,
+                "f1": 0.9745199365649395
+            },
+            "HistGradientBoosting": {
+                "accuracy": 0.9681528662420382,
+                "f1": 0.968133993866478
+            }
+        },
+        "disclaimer": "This model is an educational and decision-support prototype. Measured accuracy reflects performance on benchmark test partitions and does not constitute clinical regulatory approval."
     }
 }

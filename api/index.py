@@ -3631,6 +3631,7 @@ def scanner_page():
     return render_page(content)
 
 @app.route('/api/scan-image', methods=['POST'])
+@app.route('/scan-image', methods=['POST'])
 def api_scan_image():
     temp_path = None
     try:

@@ -49,7 +49,8 @@ function call_ml_prediction($disease, $input_data_array) {
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 4);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 3);
 
         $response = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -110,7 +111,8 @@ function call_symptom_prediction($symptoms_array) {
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 4);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 3);
 
         $response = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -300,7 +302,8 @@ function call_image_scanner($image_path) {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 6);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 4);
 
         $response = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -326,6 +329,17 @@ function call_image_scanner($image_path) {
         $result = json_decode($output, true);
         if ($result && !empty($result['category'])) {
             return $result;
+        }
+
+        // Substring extract JSON object between first { and last } if leading text exists
+        $start = strpos($output, '{');
+        $end = strrpos($output, '}');
+        if ($start !== false && $end !== false && $end > $start) {
+            $json_str = substr($output, $start, $end - $start + 1);
+            $result = json_decode($json_str, true);
+            if ($result && !empty($result['category'])) {
+                return $result;
+            }
         }
     }
 

@@ -1,5 +1,5 @@
 <?php
-// image_scanner.php - AI Infection & Injury Image Scanner
+// image_scanner.php - AI Infection & Injury Image Scanner (Upgraded)
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/ml_bridge.php';
@@ -13,45 +13,49 @@ $error_message = null;
 
 // Handle POST request (Both AJAX and regular form submission)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $is_ajax = isset($_GET['action']) && $_GET['action'] === 'scan' || 
+    $is_ajax = (isset($_GET['action']) && $_GET['action'] === 'scan') || 
                (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
 
     if (!isset($_FILES['image']) || $_FILES['image']['error'] === UPLOAD_ERR_NO_FILE) {
-        $error_message = "Please select or capture an image of the affected area to scan.";
+        $error_message = "Please select or photograph an affected skin area to scan.";
     } elseif ($_FILES['image']['error'] !== UPLOAD_ERR_OK) {
-        $error_message = "Error uploading file (Code: " . $_FILES['image']['error'] . "). Please try again.";
+        $error_message = "Upload failed with code " . $_FILES['image']['error'] . ". Please choose or take another photo.";
     } elseif ($_FILES['image']['size'] > $max_file_size) {
-        $error_message = "Image size exceeds the 8 MB limit. Please upload a smaller or compressed photo.";
+        $file_mb = round($_FILES['image']['size'] / (1024 * 1024), 1);
+        $error_message = "Image size ({$file_mb} MB) exceeds the 8 MB limit. Please select a smaller photo.";
     } else {
         $file_tmp = $_FILES['image']['tmp_name'];
         $orig_name = basename($_FILES['image']['name']);
         $ext = strtolower(pathinfo($orig_name, PATHINFO_EXTENSION));
 
-        // MIME validation
+        // MIME validation via finfo
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mime_type = finfo_file($finfo, $file_tmp);
         finfo_close($finfo);
 
-        if (!in_array($ext, $allowed_exts) || !in_array($mime_type, $allowed_mimes)) {
-            $error_message = "Unsupported file type ({$mime_type}). Only JPG, JPEG, PNG, and WEBP images are accepted.";
+        // Verification of image validity via getimagesize
+        $img_info = @getimagesize($file_tmp);
+
+        if (!in_array($ext, $allowed_exts) || !in_array($mime_type, $allowed_mimes) || $img_info === false) {
+            $error_message = "Invalid or unsupported image file. Only genuine JPG, JPEG, PNG, and WebP images are accepted.";
         } else {
-            // Ephemeral temporary processing
+            // Ephemeral temporary processing in system temp dir
             $temp_scan_path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'scan_' . bin2hex(random_bytes(8)) . '.' . $ext;
             
             if (move_uploaded_file($file_tmp, $temp_scan_path)) {
                 try {
-                    // Call Python Computer Vision microservice / bridge
+                    // Call Python Computer Vision & ML bridge
                     $scan_result = call_image_scanner($temp_scan_path);
                 } catch (Exception $e) {
-                    $error_message = "Computer vision processing error: " . $e->getMessage();
+                    $error_message = "Computer vision service error: " . $e->getMessage();
                 } finally {
-                    // STRICT PRIVACY: Immediately delete temporary uploaded image
+                    // STRICT PRIVACY: Immediately delete temporary uploaded image file
                     if (file_exists($temp_scan_path)) {
                         @unlink($temp_scan_path);
                     }
                 }
             } else {
-                $error_message = "Failed to store temporary upload for processing. Please try again.";
+                $error_message = "Failed to allocate temporary storage for image processing. Please try again.";
             }
         }
     }
@@ -67,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$page_title = 'MediSense AI | Injury Scanner';
+$page_title = 'MediSense AI | Injury & Infection Scanner';
 require_once __DIR__ . '/includes/header.php';
 ?>
 
@@ -78,12 +82,15 @@ require_once __DIR__ . '/includes/header.php';
             <div class="row align-items-center">
                 <div class="col-lg-8">
                     <span class="badge hero-badge px-3 py-2 rounded-pill mb-3">
-                        <i class="bi bi-camera-fill me-1"></i> Computer Vision Pipeline
+                        <i class="bi bi-cpu-fill me-1"></i> Computer Vision & Machine Learning Pipeline
                     </span>
                     <h1 class="display-6 fw-bold hero-heading mb-2">AI Infection & Injury Scanner</h1>
                     <p class="lead mb-0 hero-lead">
-                        Upload a clear image of a skin injury, wound, rash, swelling, or redness for an AI-assisted preliminary visual assessment.
+                        Upload or photograph a skin injury, wound, rash, swelling, or redness for an AI-assisted preliminary visual assessment.
                     </p>
+                    <div class="mt-2 text-white-50 small">
+                        <i class="bi bi-stars me-1 text-info"></i> MediSense AI &bull; <em>“Smarter Insights. Better Health.”</em>
+                    </div>
                 </div>
                 <div class="col-lg-4 text-lg-end d-none d-lg-block">
                     <i class="bi bi-shield-check display-1 scanner-hero-icon opacity-50"></i>
@@ -94,18 +101,18 @@ require_once __DIR__ . '/includes/header.php';
         <!-- Mandatory Educational Disclaimer -->
         <div class="disclaimer-banner mb-3 shadow-sm">
             <div class="d-flex align-items-start gap-2">
-                <i class="bi bi-exclamation-triangle-fill fs-5 mt-1 flex-shrink-0"></i>
+                <i class="bi bi-exclamation-triangle-fill fs-5 mt-1 flex-shrink-0 text-warning"></i>
                 <div>
-                    <strong class="disclaimer-title">Important Medical Notice:</strong> This AI scanner provides an <em>educational preliminary visual assessment</em> and is not a medical diagnosis. For concerning, worsening, infected, or serious injuries, consult a qualified healthcare professional.
+                    <strong class="disclaimer-title">Important Medical Notice:</strong> This AI-assisted scanner provides an <em>educational preliminary visual assessment</em> and is NOT a medical diagnosis. It does not replace professional clinical evaluation. For worsening, painful, infected, deep, or concerning wounds, please consult a qualified healthcare professional immediately.
                 </div>
             </div>
         </div>
 
         <!-- Privacy Assurance Banner -->
         <div class="alert alert-secondary py-2 px-3 small border d-flex align-items-center gap-2 mb-4 bg-card-custom text-secondary-theme">
-            <i class="bi bi-shield-lock-fill text-success fs-5"></i>
+            <i class="bi bi-shield-lock-fill text-success fs-5 flex-shrink-0"></i>
             <div>
-                <strong>Privacy Assurance:</strong> Uploaded images are processed ephemerally in memory and permanently deleted immediately after visual metric extraction. Photos are <strong>never stored</strong> in our database. <em>Do not upload identifying personal documents or faces.</em>
+                <strong>Privacy Assurance:</strong> Uploaded images are processed ephemerally in memory and permanently deleted immediately after metric extraction. Photos are <strong>never stored</strong> in our database or logged to disk. <em>Do not upload identifying personal documents or faces.</em>
             </div>
         </div>
     </div>
@@ -113,7 +120,7 @@ require_once __DIR__ . '/includes/header.php';
 
 <!-- Main Scanner Layout -->
 <div class="row g-4 mb-5">
-    <!-- Left Column: Upload & Live Preview -->
+    <!-- Left Column: Upload, Camera & Live Preview -->
     <div class="col-lg-6">
         <div class="card card-custom h-100 p-4">
             <h4 class="fw-bold mb-1 d-flex align-items-center gap-2">
@@ -123,25 +130,28 @@ require_once __DIR__ . '/includes/header.php';
                 Upload a clear, well-lit image of the affected skin area for preliminary analysis.
             </p>
 
-            <!-- Error Feedback -->
+            <!-- Error Feedback Alert -->
             <div id="scannerErrorAlert" class="alert alert-danger d-none mb-3 py-2 px-3 small" role="alert">
-                <i class="bi bi-exclamation-circle-fill me-1"></i> <span id="scannerErrorMsg"></span>
+                <div class="d-flex align-items-start gap-2">
+                    <i class="bi bi-exclamation-circle-fill fs-6 mt-1 flex-shrink-0"></i>
+                    <div id="scannerErrorMsg"></div>
+                </div>
             </div>
 
             <!-- Upload Area / Drag & Drop -->
-            <div id="dropZone" class="scanner-dropzone mb-3">
+            <div id="dropZone" class="scanner-dropzone mb-3" tabindex="0" role="button" aria-label="Drop image here or click upload image">
                 <div class="scanner-icon-circle">
                     <i class="bi bi-image"></i>
                 </div>
-                <h5 class="fw-bold mb-1">Drag & Drop Image Here</h5>
-                <p class="text-muted small mb-3">or click a button below to choose from your device</p>
+                <h5 class="fw-bold mb-1">Drag &amp; Drop Image Here</h5>
+                <p class="text-muted small mb-3">or choose an option below to select from your device</p>
                 
                 <div class="d-flex flex-wrap justify-content-center gap-2">
-                    <button type="button" class="btn btn-outline-info rounded-pill px-3 py-2 btn-sm" id="btnBrowseFiles">
+                    <button type="button" class="btn btn-outline-info rounded-pill px-3 py-2 btn-sm fw-semibold" id="btnBrowseFiles">
                         <i class="bi bi-folder2-open me-1"></i> Upload Image
                     </button>
-                    <button type="button" class="btn btn-outline-info rounded-pill px-3 py-2 btn-sm" id="btnTakePhoto">
-                        <i class="bi bi-camera me-1"></i> Take Photo
+                    <button type="button" class="btn btn-info rounded-pill px-3 py-2 btn-sm text-white fw-semibold" id="btnTakePhoto">
+                        <i class="bi bi-camera-fill me-1"></i> Take Photo
                     </button>
                 </div>
 
@@ -163,7 +173,7 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="scanner-preview-wrapper mb-3" id="previewFrame">
                     <img id="previewImage" class="scanner-preview-img" alt="Selected Skin Image Preview">
                     <!-- Laser Scanning Effect Beam -->
-                    <div class="scanner-laser-beam">
+                    <div class="scanner-laser-beam" aria-hidden="true">
                         <div class="scanner-laser-glow"></div>
                     </div>
                 </div>
@@ -177,12 +187,15 @@ require_once __DIR__ . '/includes/header.php';
                     <span id="previewFilesize" class="badge bg-secondary rounded-pill">0 KB</span>
                 </div>
 
-                <!-- Action Controls (User must confirm before scan begins) -->
+                <!-- Action Controls (User confirms before scan begins) -->
                 <div class="d-flex gap-2" id="previewActions">
-                    <button type="button" class="btn btn-outline-danger flex-fill py-2 rounded-3" id="btnRemoveImage">
+                    <button type="button" class="btn btn-outline-danger flex-fill py-2 rounded-3 fw-semibold" id="btnRemoveImage">
                         <i class="bi bi-trash3 me-1"></i> Remove Image
                     </button>
-                    <button type="button" class="btn btn-primary-custom flex-fill py-2" id="btnScanImage">
+                    <button type="button" class="btn btn-outline-secondary flex-fill py-2 rounded-3 fw-semibold" id="btnRetakeOption">
+                        <i class="bi bi-camera me-1"></i> Retake / Replace
+                    </button>
+                    <button type="button" class="btn btn-primary-custom flex-fill py-2 fw-bold" id="btnScanImage">
                         <i class="bi bi-cpu me-1"></i> Scan Image
                     </button>
                 </div>
@@ -191,14 +204,17 @@ require_once __DIR__ . '/includes/header.php';
                 <div id="scanningState" class="d-none text-center py-3">
                     <div class="d-inline-flex align-items-center gap-2 mb-2">
                         <span class="scanner-status-pulse"></span>
-                        <strong class="text-info fs-5">Analyzing image...</strong>
+                        <strong class="text-info fs-5" id="scanningTitle">Analyzing image...</strong>
                     </div>
                     <p id="scanningStatusText" class="text-muted small mb-2">
-                        Analyzing visual characteristics...
+                        Initializing computer vision pipeline...
                     </p>
-                    <div class="progress" style="height: 6px;">
-                        <div id="scanProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-info" style="width: 45%;"></div>
+                    <div class="progress mb-2" style="height: 8px;">
+                        <div id="scanProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-info" style="width: 15%;"></div>
                     </div>
+                    <small class="text-muted" style="font-size: 0.76rem;">
+                        Extracting spectrophotometric erythema, Sobel gradients, and calibrated patterns...
+                    </small>
                 </div>
             </div>
         </div>
@@ -213,58 +229,121 @@ require_once __DIR__ . '/includes/header.php';
                     <i class="bi bi-activity"></i>
                 </div>
                 <h4 class="fw-bold mb-2">Preliminary Assessment Output</h4>
-                <p class="text-muted small max-w-sm mx-auto mb-4" style="max-width: 380px;">
-                    Select or photograph an affected skin area and click <strong>"Scan Image"</strong>. The computer vision analyzer will calculate erythema indices, edge disruption, and color dispersion.
+                <p class="text-muted small max-w-sm mx-auto mb-4" style="max-width: 400px;">
+                    Select or photograph an affected skin area and click <strong>"Scan Image"</strong>. The AI analyzer will evaluate erythema indices, edge disruption, chromatic dispersion, and pattern correlation.
                 </p>
                 <div class="p-3 bg-card-subtle rounded-3 border text-start small">
-                    <h6 class="fw-bold mb-2 text-info"><i class="bi bi-info-circle me-1"></i> How this tool works:</h6>
+                    <h6 class="fw-bold mb-2 text-info"><i class="bi bi-info-circle me-1"></i> How this module works:</h6>
                     <ul class="mb-0 text-muted ps-3">
-                        <li class="mb-1"><strong>Erythema Index:</strong> Measures capillary dilation and redness spectroscopy.</li>
-                        <li class="mb-1"><strong>Edge Roughness:</strong> Computes high-frequency Sobel gradient changes (abrasions, lacerations).</li>
-                        <li><strong>Quality Gate:</strong> Filters out blurry or poorly lit images to prevent false observations.</li>
+                        <li class="mb-1"><strong>Erythema Index:</strong> Measures localized hemoglobin absorption and capillary dilation.</li>
+                        <li class="mb-1"><strong>Edge Roughness:</strong> Computes high-frequency Sobel gradient changes for abrasions and cuts.</li>
+                        <li class="mb-1"><strong>Quality &amp; Scope Gate:</strong> Filters out blurry, dark, or non-skin photos to prevent misleading inferences.</li>
+                        <li><strong>Calibrated Model:</strong> Outputs probabilistic confidence calibrated against benchmarked dermatological distributions.</li>
                     </ul>
                 </div>
             </div>
 
-            <!-- Active Assessment Result View (Revealed after scan completes) -->
+            <!-- Quality Failure Rejection View (blurry, dark, low-res) -->
+            <div id="qualityFailContent" class="d-none">
+                <div class="scanner-quality-card p-4 mb-3">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-exclamation-triangle-fill text-warning fs-4"></i>
+                        <h5 class="fw-bold mb-0 text-warning">Image quality is too low for reliable analysis</h5>
+                    </div>
+                    <p class="text-muted small mb-3" id="qualityFailReason">
+                        The uploaded photo does not meet the minimum clarity thresholds required for computer vision feature extraction.
+                    </p>
+                    <h6 class="fw-bold small text-uppercase text-muted mb-2">Recommended Instructions:</h6>
+                    <ul class="small text-muted ps-3 mb-3">
+                        <li class="mb-1"><strong>Use good, even lighting:</strong> Avoid harsh flash glare or deep shadows.</li>
+                        <li class="mb-1"><strong>Keep the affected area in focus:</strong> Hold the camera steady and tap to focus.</li>
+                        <li class="mb-1"><strong>Avoid excessive distance:</strong> Frame the skin lesion closely while including a little surrounding normal skin.</li>
+                        <li><strong>Keep the area visible:</strong> Remove bandages, clothing, or hair obstructing the view.</li>
+                    </ul>
+                    <button type="button" class="btn btn-outline-warning w-100 rounded-3 py-2 fw-semibold" id="btnQualityRetake">
+                        <i class="bi bi-camera me-1"></i> Retake / Upload Another Image
+                    </button>
+                </div>
+            </div>
+
+            <!-- Out-of-Scope / Non-Skin / Uncertain Rejection View -->
+            <div id="outOfScopeContent" class="d-none">
+                <div class="scanner-scope-card p-4 mb-3">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-question-circle-fill text-secondary fs-4"></i>
+                        <h5 class="fw-bold mb-0">Unable to Confidently Assess This Image</h5>
+                    </div>
+                    <p class="text-muted small mb-3" id="outOfScopeReason">
+                        Visual features did not meet the statistical confidence threshold for supported skin categories. The image appears to be outside supported clinical categories or non-skin subject matter.
+                    </p>
+                    <div class="p-3 bg-card-subtle rounded-3 border mb-3 small">
+                        <strong>Supported Categories:</strong>
+                        <div class="d-flex flex-wrap gap-1 mt-2">
+                            <span class="badge bg-secondary-subtle text-secondary">Infection Indicators</span>
+                            <span class="badge bg-secondary-subtle text-secondary">Minor Injury</span>
+                            <span class="badge bg-secondary-subtle text-secondary">Rash / Skin Irritation</span>
+                            <span class="badge bg-secondary-subtle text-secondary">Swelling / Contusion</span>
+                            <span class="badge bg-secondary-subtle text-secondary">Inflammation / Redness</span>
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-3">
+                        Please upload a clearer, well-lit photo of the affected skin area, or seek direct in-person medical evaluation from a healthcare provider.
+                    </p>
+                    <button type="button" class="btn btn-outline-info w-100 rounded-3 py-2 fw-semibold" id="btnScopeRetake">
+                        <i class="bi bi-arrow-repeat me-1"></i> Try Different Image
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Assessment Result View (Revealed when valid result returned) -->
             <div id="resultContent" class="d-none">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <span class="text-muted small fw-bold text-uppercase tracking-wider">
-                        <i class="bi bi-clipboard2-pulse me-1"></i> Visual Assessment
+                        <i class="bi bi-clipboard2-pulse me-1 text-info"></i> SCAN RESULT
                     </span>
                     <span id="resultTimestamp" class="small text-muted">Just now</span>
                 </div>
 
                 <!-- Category Badge -->
-                <div class="mb-3">
+                <div class="mb-3 d-flex flex-wrap align-items-center gap-2">
                     <span id="resultCategoryBadge" class="badge-category badge-category-injury">
                         <i class="bi bi-search"></i> <span id="resultCategoryText">Evaluating...</span>
                     </span>
+                    <!-- Severity Status (Honest, un-fabricated clinical limitation) -->
+                    <span class="scanner-severity-badge" id="resultSeverityBadge" title="Severity classification requires in-person medical palpation">
+                        <i class="bi bi-info-circle"></i> Severity cannot be reliably determined from this scan
+                    </span>
                 </div>
 
-                <!-- Wording Requirement: "Visual indicators may be consistent with..." -->
+                <!-- Summary Heading -->
                 <div class="p-3 bg-card-subtle rounded-3 border mb-3">
                     <h5 class="fw-bold mb-1" id="resultSummaryHeading">Visual indicators may be consistent with...</h5>
-                    <p class="text-muted small mb-0" id="resultSummaryDesc">
-                        Assessment generated via spectrophotometric color analysis and surface edge gradient measurement.
+                    <p class="text-muted small mb-0" id="resultWhatDetected">
+                        Analysis generated via calibrated spectrophotometric and textural computer vision model.
                     </p>
+                </div>
+
+                <!-- Runner-Up Pattern Container (If confidence was shared) -->
+                <div id="resultRunnerUpContainer" class="d-none mb-3 scanner-runnerup-box small">
+                    <i class="bi bi-signpost-split me-1 text-info"></i>
+                    <strong>Secondary Observation:</strong> <span id="resultRunnerUpText">None</span>
                 </div>
 
                 <!-- Confidence / Assessment Metric Score -->
                 <div class="mb-3 p-3 bg-card-subtle rounded-3 border">
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="small fw-semibold">Visual Metric Correlation Score:</span>
+                        <span class="small fw-semibold">Model Statistical Confidence:</span>
                         <span id="resultScoreText" class="fw-bold text-info">0.0%</span>
                     </div>
-                    <div class="progress" style="height: 8px;">
+                    <div class="progress mb-1" style="height: 8px;">
                         <div id="resultScoreBar" class="progress-bar bg-info" style="width: 0%;"></div>
                     </div>
                     <small class="text-muted" style="font-size: 0.76rem;">
-                        Reflects quantitative alignment with benchmarked dermatological visual features. Not a diagnostic certainty.
+                        Reflects calibrated statistical correlation with benchmarked patterns in our vision model. <strong>Not a medical diagnostic certainty.</strong>
                     </small>
                 </div>
 
-                <!-- Computer Vision Metrics Grid -->
+                <!-- Quantitative Image Metrics Grid -->
                 <h6 class="fw-bold small text-uppercase text-muted mb-2">Quantitative Image Metrics</h6>
                 <div class="row g-2 mb-3">
                     <div class="col-4">
@@ -287,24 +366,52 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
                 </div>
 
-                <!-- Key Visual Observations -->
+                <!-- Observed Characteristics -->
                 <div class="mb-3">
-                    <h6 class="fw-bold small text-uppercase text-muted mb-2">Visual Observations</h6>
-                    <ul id="resultFindingsList" class="small text-muted ps-3 mb-0">
+                    <h6 class="fw-bold small text-uppercase text-muted mb-2">Observed Visual Characteristics</h6>
+                    <div id="resultObsList">
                         <!-- Populated dynamically -->
-                    </ul>
+                    </div>
                 </div>
 
-                <!-- Recommended Educational Care Guidance -->
+                <!-- General Information -->
+                <div class="mb-3 p-3 bg-card-subtle rounded-3 border small">
+                    <h6 class="fw-bold text-info mb-1"><i class="bi bi-book me-1"></i> General Information:</h6>
+                    <p class="text-muted mb-0" id="resultGeneralInfo">
+                        Educational context regarding observed visual patterns.
+                    </p>
+                </div>
+
+                <!-- General Educational Care Guidance -->
                 <div class="mb-3">
-                    <h6 class="fw-bold small text-uppercase text-muted mb-2">General Educational First-Aid Points</h6>
-                    <ul id="resultRecsList" class="small text-muted ps-3 mb-0">
+                    <h6 class="fw-bold small text-uppercase text-muted mb-2">What You Can Do (General First-Aid Points)</h6>
+                    <div id="resultCareList">
                         <!-- Populated dynamically -->
-                    </ul>
+                    </div>
+                </div>
+
+                <!-- Concerning Warning Signs -->
+                <div class="mb-3 p-3 rounded-3 border border-danger-subtle bg-card-subtle small">
+                    <h6 class="fw-bold text-danger mb-2">
+                        <i class="bi bi-exclamation-octagon-fill me-1"></i> Warning Signs to Monitor:
+                    </h6>
+                    <div id="resultWarningList">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- When to Seek Medical Attention -->
+                <div class="mb-3 p-3 rounded-3 border border-warning-subtle bg-card-subtle small">
+                    <h6 class="fw-bold text-warning mb-2">
+                        <i class="bi bi-hospital me-1"></i> When to Seek Medical Attention:
+                    </h6>
+                    <div id="resultWhenCareList">
+                        <!-- Populated dynamically -->
+                    </div>
                 </div>
 
                 <!-- Reset Button -->
-                <button type="button" class="btn btn-outline-info w-100 rounded-3 py-2" id="btnScanAnother">
+                <button type="button" class="btn btn-outline-info w-100 rounded-3 py-2 fw-semibold" id="btnScanAnother">
                     <i class="bi bi-arrow-repeat me-1"></i> Scan Another Image
                 </button>
             </div>
@@ -312,7 +419,7 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 </div>
 
-<!-- "When to Seek Immediate Medical Attention" Safety Section -->
+<!-- "When to Seek Immediate Medical Attention" Global Safety Section -->
 <div class="row mb-5">
     <div class="col-12">
         <div class="card card-custom p-4 border-danger-subtle">
@@ -384,8 +491,9 @@ require_once __DIR__ . '/includes/header.php';
             </div>
         </div>
     </div>
+</div>
 
-<!-- Live Camera Modal -->
+<!-- Upgraded Live Camera Modal (Complete 7-Step Experience) -->
 <div class="modal fade" id="cameraModal" tabindex="-1" aria-labelledby="cameraModalLabel" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content card-custom border-info">
@@ -395,25 +503,58 @@ require_once __DIR__ . '/includes/header.php';
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="btnCloseCameraX"></button>
             </div>
+            
             <div class="modal-body p-3 text-center">
-                <div id="cameraStreamContainer" class="position-relative overflow-hidden rounded-3 bg-black" style="min-height: 280px; max-height: 420px;">
+                <!-- Viewfinder Container -->
+                <div id="cameraStreamContainer" class="camera-viewfinder position-relative">
+                    <!-- Live Stream Video -->
                     <video id="cameraVideo" autoplay playsinline muted class="w-100 h-100" style="object-fit: cover;"></video>
-                    <!-- Visual focus reticle -->
-                    <div class="position-absolute top-50 start-50 translate-middle border border-info border-2 rounded-circle opacity-75 pointer-events-none" style="width: 140px; height: 140px; border-style: dashed !important;"></div>
+                    
+                    <!-- Frozen Captured Snapshot Preview -->
+                    <img id="cameraPreviewImg" class="camera-preview-frozen d-none" alt="Captured Photo Preview">
+
+                    <!-- Reticle and Framing Guides (Active in Live Video Mode) -->
+                    <div id="cameraLiveOverlay">
+                        <span class="camera-badge-mode" id="cameraModeBadge">Live Camera</span>
+                        <div class="camera-reticle"></div>
+                        <div class="camera-reticle-corners">
+                            <div class="camera-corner-tr"></div>
+                            <div class="camera-corner-bl"></div>
+                        </div>
+                        <div class="camera-guide-text">Center affected skin area within reticle</div>
+                    </div>
                 </div>
+
+                <!-- Hidden canvas for snapping -->
                 <canvas id="cameraCanvas" class="d-none"></canvas>
-                <div id="cameraAlert" class="alert alert-warning d-none mt-2 py-2 px-3 small text-start"></div>
+
+                <!-- Feedback alert inside modal -->
+                <div id="cameraAlert" class="alert alert-warning d-none mt-2 py-2 px-3 small text-start" role="alert"></div>
             </div>
+
             <div class="modal-footer border-top border-subtle d-flex justify-content-between">
-                <button type="button" class="btn btn-outline-secondary rounded-pill px-3" id="btnFlipCamera">
-                    <i class="bi bi-arrow-repeat me-1"></i> Flip Camera
-                </button>
-                <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-outline-danger rounded-pill px-3" data-bs-dismiss="modal" id="btnCancelCamera">
+                <!-- Left Action: Flip Camera (in live mode) OR Cancel -->
+                <div id="cameraLeftActions">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-3 btn-sm" id="btnFlipCamera" title="Switch front/rear camera">
+                        <i class="bi bi-arrow-repeat me-1"></i> Flip Camera
+                    </button>
+                    <button type="button" class="btn btn-outline-info rounded-pill px-3 btn-sm d-none" id="btnRetakePhoto">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Retake Photo
+                    </button>
+                </div>
+
+                <!-- Right Actions: Cancel / Capture / Confirm -->
+                <div class="d-flex gap-2" id="cameraRightActions">
+                    <button type="button" class="btn btn-outline-danger rounded-pill px-3 btn-sm" data-bs-dismiss="modal" id="btnCancelCamera">
                         Cancel
                     </button>
-                    <button type="button" class="btn btn-info rounded-pill px-4 text-white fw-bold" id="btnSnapPhoto">
-                        <i class="bi bi-circle-fill me-1"></i> Capture
+                    <!-- Snap button in Live Mode -->
+                    <button type="button" class="btn btn-info rounded-pill px-4 btn-sm text-white fw-bold" id="btnSnapPhoto">
+                        <i class="bi bi-circle-fill me-1"></i> Capture Photo
+                    </button>
+                    <!-- Confirm button in Review Mode -->
+                    <button type="button" class="btn btn-success rounded-pill px-4 btn-sm text-white fw-bold d-none" id="btnConfirmPhoto">
+                        <i class="bi bi-check-circle-fill me-1"></i> Confirm &amp; Use Photo
                     </button>
                 </div>
             </div>
@@ -424,6 +565,7 @@ require_once __DIR__ . '/includes/header.php';
 <!-- Interactive Scanner Client Script -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // DOM Elements
     const dropZone = document.getElementById('dropZone');
     const imageFileInput = document.getElementById('imageFileInput');
     const cameraFileInput = document.getElementById('cameraFileInput');
@@ -435,24 +577,40 @@ document.addEventListener('DOMContentLoaded', function() {
     const previewFilesize = document.getElementById('previewFilesize');
     const previewActions = document.getElementById('previewActions');
     const btnRemoveImage = document.getElementById('btnRemoveImage');
+    const btnRetakeOption = document.getElementById('btnRetakeOption');
     const btnScanImage = document.getElementById('btnScanImage');
     const scanningState = document.getElementById('scanningState');
     const scanningStatusText = document.getElementById('scanningStatusText');
     const scanProgressBar = document.getElementById('scanProgressBar');
     const previewFrame = document.getElementById('previewFrame');
 
+    // Result Column States
     const idleState = document.getElementById('idleState');
+    const qualityFailContent = document.getElementById('qualityFailContent');
+    const qualityFailReason = document.getElementById('qualityFailReason');
+    const btnQualityRetake = document.getElementById('btnQualityRetake');
+    
+    const outOfScopeContent = document.getElementById('outOfScopeContent');
+    const outOfScopeReason = document.getElementById('outOfScopeReason');
+    const btnScopeRetake = document.getElementById('btnScopeRetake');
+
     const resultContent = document.getElementById('resultContent');
     const resultCategoryBadge = document.getElementById('resultCategoryBadge');
     const resultCategoryText = document.getElementById('resultCategoryText');
     const resultSummaryHeading = document.getElementById('resultSummaryHeading');
+    const resultWhatDetected = document.getElementById('resultWhatDetected');
     const resultScoreText = document.getElementById('resultScoreText');
     const resultScoreBar = document.getElementById('resultScoreBar');
+    const resultRunnerUpContainer = document.getElementById('resultRunnerUpContainer');
+    const resultRunnerUpText = document.getElementById('resultRunnerUpText');
     const valErythema = document.getElementById('valErythema');
     const valRoughness = document.getElementById('valRoughness');
     const valChroma = document.getElementById('valChroma');
-    const resultFindingsList = document.getElementById('resultFindingsList');
-    const resultRecsList = document.getElementById('resultRecsList');
+    const resultObsList = document.getElementById('resultObsList');
+    const resultGeneralInfo = document.getElementById('resultGeneralInfo');
+    const resultCareList = document.getElementById('resultCareList');
+    const resultWarningList = document.getElementById('resultWarningList');
+    const resultWhenCareList = document.getElementById('resultWhenCareList');
     const btnScanAnother = document.getElementById('btnScanAnother');
 
     const scannerErrorAlert = document.getElementById('scannerErrorAlert');
@@ -462,13 +620,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const cameraModalElem = document.getElementById('cameraModal');
     let cameraModalInstance = null;
     const cameraVideo = document.getElementById('cameraVideo');
+    const cameraPreviewImg = document.getElementById('cameraPreviewImg');
+    const cameraLiveOverlay = document.getElementById('cameraLiveOverlay');
+    const cameraModeBadge = document.getElementById('cameraModeBadge');
     const cameraCanvas = document.getElementById('cameraCanvas');
     const cameraAlert = document.getElementById('cameraAlert');
     const btnSnapPhoto = document.getElementById('btnSnapPhoto');
+    const btnRetakePhoto = document.getElementById('btnRetakePhoto');
+    const btnConfirmPhoto = document.getElementById('btnConfirmPhoto');
     const btnFlipCamera = document.getElementById('btnFlipCamera');
-    let activeCameraStream = null;
-    let currentFacingMode = 'environment'; // default rear camera for wounds/injuries
 
+    let activeCameraStream = null;
+    let currentFacingMode = 'environment'; // default rear camera for skin lesion
+    let temporaryCapturedBlob = null;
     let currentSelectedFile = null;
     let scanAnimationTimer = null;
 
@@ -488,7 +652,14 @@ document.addEventListener('DOMContentLoaded', function() {
         imageFileInput.click();
     });
 
-    // Trigger Camera capture
+    btnRetakeOption.addEventListener('click', (e) => {
+        e.stopPropagation();
+        btnTakePhoto.click();
+    });
+
+    // -------------------------------------------------------------
+    // Camera Implementation (7-Step Complete Flow)
+    // -------------------------------------------------------------
     btnTakePhoto.addEventListener('click', (e) => {
         e.stopPropagation();
         clearError();
@@ -497,10 +668,23 @@ document.addEventListener('DOMContentLoaded', function() {
         if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
             startLiveCamera(currentFacingMode);
         } else {
-            // Native fallback for mobile browsers without getUserMedia or non-HTTPS
-            cameraFileInput.click();
+            // Fallback for browsers or non-HTTPS contexts without getUserMedia
+            showCameraDeniedFallback("Direct browser camera access is unavailable in this environment. You can upload an image or capture using your device camera instead.");
         }
     });
+
+    function showCameraDeniedFallback(msg) {
+        showError('<strong>Camera access notification:</strong> ' + msg + '<br><button type="button" class="btn btn-sm btn-outline-info rounded-pill mt-2" id="btnFallbackUpload"><i class="bi bi-upload me-1"></i> Upload Image / Device Capture</button>');
+        
+        setTimeout(() => {
+            const btnFallback = document.getElementById('btnFallbackUpload');
+            if (btnFallback) {
+                btnFallback.addEventListener('click', () => {
+                    cameraFileInput.click();
+                });
+            }
+        }, 100);
+    }
 
     function startLiveCamera(facingMode) {
         if (!cameraModalInstance && typeof bootstrap !== 'undefined') {
@@ -508,6 +692,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         stopActiveCameraStream();
+        setCameraModalState('live');
         cameraAlert.classList.add('d-none');
         cameraAlert.textContent = '';
 
@@ -530,11 +715,14 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(err => {
             console.warn("Camera getUserMedia error:", err);
-            // Handle permission denial or unavailable camera gracefully
+            if (cameraModalInstance) {
+                cameraModalInstance.hide();
+            }
+            // Exact requirement message: “Camera access was denied. You can upload an image from your device instead.”
             if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                showError('<strong>Camera access denied.</strong> Please allow camera access in your browser settings, or use the <em>Upload Image</em> button.');
+                showCameraDeniedFallback("Camera access was denied. You can upload an image from your device instead.");
             } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-                showError('<strong>No camera device detected.</strong> Please use the <em>Upload Image</em> button to select an image from your device.');
+                showCameraDeniedFallback("No camera device was detected on your system. You can upload an image from your device instead.");
             } else {
                 // Fallback to native capture input
                 cameraFileInput.click();
@@ -555,7 +743,38 @@ document.addEventListener('DOMContentLoaded', function() {
     if (cameraModalElem) {
         cameraModalElem.addEventListener('hidden.bs.modal', function() {
             stopActiveCameraStream();
+            setCameraModalState('live');
+            temporaryCapturedBlob = null;
         });
+    }
+
+    // Switch camera mode between Live Viewfinder and Captured Preview
+    function setCameraModalState(state) {
+        if (state === 'live') {
+            cameraVideo.classList.remove('d-none');
+            cameraPreviewImg.classList.add('d-none');
+            cameraPreviewImg.src = '';
+            cameraLiveOverlay.classList.remove('d-none');
+            cameraModeBadge.textContent = 'Live Camera';
+            cameraModeBadge.classList.replace('text-success', 'text-info');
+            
+            // Buttons
+            btnFlipCamera.classList.remove('d-none');
+            btnRetakePhoto.classList.add('d-none');
+            btnSnapPhoto.classList.remove('d-none');
+            btnConfirmPhoto.classList.add('d-none');
+        } else if (state === 'preview') {
+            cameraVideo.classList.add('d-none');
+            cameraPreviewImg.classList.remove('d-none');
+            cameraLiveOverlay.classList.add('d-none');
+            cameraModeBadge.textContent = 'Preview Captured Photo';
+            
+            // Buttons
+            btnFlipCamera.classList.add('d-none');
+            btnRetakePhoto.classList.remove('d-none');
+            btnSnapPhoto.classList.add('d-none');
+            btnConfirmPhoto.classList.remove('d-none');
+        }
     }
 
     // Flip Camera button
@@ -564,7 +783,7 @@ document.addEventListener('DOMContentLoaded', function() {
         startLiveCamera(currentFacingMode);
     });
 
-    // Snap Photo from camera stream
+    // Step 3 & 4: Snap Photo and switch to Preview Mode
     btnSnapPhoto.addEventListener('click', () => {
         if (!cameraVideo || !cameraVideo.videoWidth) return;
 
@@ -575,18 +794,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
         cameraCanvas.toBlob(blob => {
             if (!blob) return;
-            const capturedFile = new File([blob], 'camera_photo_' + Date.now() + '.jpg', { type: 'image/jpeg' });
-            if (cameraModalInstance) {
-                cameraModalInstance.hide();
+            temporaryCapturedBlob = blob;
+            const previewUrl = URL.createObjectURL(blob);
+            cameraPreviewImg.src = previewUrl;
+            setCameraModalState('preview');
+            // Pause video tracks to save power
+            if (activeCameraStream) {
+                activeCameraStream.getVideoTracks().forEach(t => t.enabled = false);
             }
-            stopActiveCameraStream();
-            handleFileSelect(capturedFile);
-        }, 'image/jpeg', 0.92);
+        }, 'image/jpeg', 0.94);
     });
 
-    // Drag and Drop
+    // Step 5: Retake Photo (resumes live stream)
+    btnRetakePhoto.addEventListener('click', () => {
+        temporaryCapturedBlob = null;
+        if (activeCameraStream) {
+            activeCameraStream.getVideoTracks().forEach(t => t.enabled = true);
+        }
+        setCameraModalState('live');
+    });
+
+    // Step 6: Confirm & Use Photo
+    btnConfirmPhoto.addEventListener('click', () => {
+        if (!temporaryCapturedBlob) return;
+        const capturedFile = new File([temporaryCapturedBlob], 'camera_photo_' + Date.now() + '.jpg', { type: 'image/jpeg' });
+        
+        if (cameraModalInstance) {
+            cameraModalInstance.hide();
+        }
+        stopActiveCameraStream();
+        handleFileSelect(capturedFile);
+    });
+
+    // -------------------------------------------------------------
+    // Drag and Drop & File Upload
+    // -------------------------------------------------------------
     dropZone.addEventListener('click', () => {
         imageFileInput.click();
+    });
+
+    // Keyboard accessibility for dropzone
+    dropZone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            imageFileInput.click();
+        }
     });
 
     ['dragenter', 'dragover'].forEach(eventName => {
@@ -628,7 +880,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const maxSize = 8 * 1024 * 1024; // 8 MB
 
         if (!allowedTypes.includes(file.type.toLowerCase()) && !file.name.match(/\.(jpg|jpeg|png|webp)$/i)) {
-            showError('<strong>Unsupported file type.</strong> Please upload a JPG, JPEG, PNG, or WEBP image.');
+            showError('<strong>Unsupported file format.</strong> Please upload a JPG, JPEG, PNG, or WebP image.');
             return;
         }
 
@@ -651,11 +903,18 @@ document.addEventListener('DOMContentLoaded', function() {
             previewActions.classList.remove('d-none');
             scanningState.classList.add('d-none');
 
-            // Reset result panel when new image loaded
-            resultContent.classList.add('d-none');
-            idleState.classList.remove('d-none');
+            // Reset result panels
+            resetResultViews();
         };
         reader.readAsDataURL(file);
+    }
+
+    // Reset all result view containers to idle
+    function resetResultViews() {
+        resultContent.classList.add('d-none');
+        qualityFailContent.classList.add('d-none');
+        outOfScopeContent.classList.add('d-none');
+        idleState.classList.remove('d-none');
     }
 
     // Remove selected image
@@ -664,6 +923,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     btnScanAnother.addEventListener('click', () => {
+        resetScannerState();
+    });
+
+    btnQualityRetake.addEventListener('click', () => {
+        resetScannerState();
+    });
+
+    btnScopeRetake.addEventListener('click', () => {
         resetScannerState();
     });
 
@@ -684,15 +951,15 @@ document.addEventListener('DOMContentLoaded', function() {
         scanningState.classList.add('d-none');
         if (scanAnimationTimer) clearInterval(scanAnimationTimer);
 
-        // Reset Results view
-        resultContent.classList.add('d-none');
-        idleState.classList.remove('d-none');
+        resetResultViews();
     }
 
-    // Execute scan
+    // -------------------------------------------------------------
+    // Step 7: Execute Scan Image
+    // -------------------------------------------------------------
     btnScanImage.addEventListener('click', function() {
         if (!currentSelectedFile) {
-            showError('Please choose or photograph an image first.');
+            showError('Please choose or photograph an affected skin area first.');
             return;
         }
 
@@ -705,14 +972,15 @@ document.addEventListener('DOMContentLoaded', function() {
         scanningState.classList.remove('d-none');
         previewFrame.classList.add('scanning-active');
 
-        // Progress text animation with real sequential progression
+        // Progressive sequential stage animation
         const steps = [
-            "Preparing image for analysis...",
-            "Computing spectrophotometric erythema index...",
-            "Analyzing surface texture & edge roughness...",
-            "Evaluating chromatic dispersion & color variance...",
-            "Checking focus sharpness and exposure balance...",
-            "Generating preliminary assessment..."
+            "Analyzing image format & dimensions...",
+            "Verifying illumination, exposure & focus...",
+            "Extracting spectrophotometric erythema & capillary indices...",
+            "Measuring Sobel edge gradients & surface roughness...",
+            "Evaluating chromatic dispersion & tissue convexity...",
+            "Executing calibrated AI classifier...",
+            "Synthesizing clinical observation report..."
         ];
         let stepIdx = 0;
         scanningStatusText.textContent = steps[0];
@@ -722,9 +990,9 @@ document.addEventListener('DOMContentLoaded', function() {
             stepIdx++;
             if (stepIdx < steps.length) {
                 scanningStatusText.textContent = steps[stepIdx];
-                scanProgressBar.style.width = Math.min(90, 15 + stepIdx * 15) + '%';
+                scanProgressBar.style.width = Math.min(92, 15 + stepIdx * 13) + '%';
             }
-        }, 300);
+        }, 280);
 
         // Prepare multipart form data
         const formData = new FormData();
@@ -754,15 +1022,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 btnScanImage.removeAttribute('disabled');
                 btnScanImage.innerHTML = '<i class="bi bi-cpu me-1"></i> Scan Image';
 
-                // Check for real failure (do not display empty fake result)
                 if (!data || data.success === false) {
-                    showError('<strong>Image analysis could not be completed.</strong><br>Reason: ' + (data.error || 'Image processing service unavailable. Please ensure the backend is running.'));
-                    resultContent.classList.add('d-none');
-                    idleState.classList.remove('d-none');
+                    showError('<strong>Image analysis unavailable:</strong> ' + (data.error || 'The analysis service encountered an error.'));
+                    resetResultViews();
+                } else if (data.is_quality_failure) {
+                    displayQualityFailure(data);
+                } else if (data.is_out_of_scope || data.category === 'Unable to Assess') {
+                    displayOutOfScope(data);
                 } else {
                     displayResult(data);
                 }
-            }, 350);
+            }, 300);
         })
         .catch(err => {
             clearInterval(scanAnimationTimer);
@@ -771,20 +1041,54 @@ document.addEventListener('DOMContentLoaded', function() {
             previewActions.classList.remove('d-none');
             btnScanImage.removeAttribute('disabled');
             btnScanImage.innerHTML = '<i class="bi bi-cpu me-1"></i> Scan Image';
-            showError('<strong>Analysis unavailable:</strong> Unable to connect to the image analysis service. ' + err.message);
-            resultContent.classList.add('d-none');
-            idleState.classList.remove('d-none');
+            showError('<strong>Connection error:</strong> Unable to communicate with the analysis service. ' + err.message);
+            resetResultViews();
         });
     });
 
+    // Display Quality Failure Card (Requirement 4)
+    function displayQualityFailure(res) {
+        idleState.classList.add('d-none');
+        resultContent.classList.add('d-none');
+        outOfScopeContent.classList.add('d-none');
+        qualityFailContent.classList.remove('d-none');
+
+        const reason = (res.findings && res.findings.length) ? res.findings[0] : 'Image quality is too low for reliable analysis.';
+        qualityFailReason.textContent = reason;
+
+        if (window.innerWidth < 992) {
+            document.getElementById('resultCardContainer').scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    // Display Out of Scope / Uncertain Card (Requirement 8)
+    function displayOutOfScope(res) {
+        idleState.classList.add('d-none');
+        resultContent.classList.add('d-none');
+        qualityFailContent.classList.add('d-none');
+        outOfScopeContent.classList.remove('d-none');
+
+        const reason = (res.findings && res.findings.length) 
+            ? res.findings.join(' ') 
+            : 'Visual features did not meet the statistical confidence threshold for supported skin categories.';
+        outOfScopeReason.textContent = reason;
+
+        if (window.innerWidth < 992) {
+            document.getElementById('resultCardContainer').scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    // Display Valid Result Card (Requirements 13 & 14)
     function displayResult(res) {
         idleState.classList.add('d-none');
+        qualityFailContent.classList.add('d-none');
+        outOfScopeContent.classList.add('d-none');
         resultContent.classList.remove('d-none');
 
         const category = res.category || 'Unable to Assess';
         resultCategoryText.textContent = category;
 
-        // Reset badge classes
+        // Category Badge Colors
         resultCategoryBadge.className = 'badge-category';
         if (category.includes('Infection')) {
             resultCategoryBadge.classList.add('badge-category-infection');
@@ -800,52 +1104,79 @@ document.addEventListener('DOMContentLoaded', function() {
             resultCategoryBadge.classList.add('badge-category-unable');
         }
 
-        // Mandatory educational cautious phrasing
+        // Summary Heading
         resultSummaryHeading.textContent = "Visual indicators may be consistent with " + category.toLowerCase();
+        resultWhatDetected.textContent = res.what_detected || (res.findings ? res.findings[0] : 'Optical features analyzed via calibrated vision model.');
 
-        // Metrics: Use calculated values or display "Not available"
+        // Runner Up Pattern
+        if (res.runner_ups && res.runner_ups.length > 0) {
+            const ru = res.runner_ups[0];
+            resultRunnerUpText.textContent = ru.category + ' (' + ru.probability + '% probability)';
+            resultRunnerUpContainer.classList.remove('d-none');
+        } else {
+            resultRunnerUpContainer.classList.add('d-none');
+        }
+
+        // Quantitative Metrics
         const metrics = res.metrics || {};
-        valErythema.textContent = (metrics.erythema_index !== undefined) ? metrics.erythema_index : 'Not available';
-        
-        const roughnessVal = (metrics.surface_roughness !== undefined) 
-            ? metrics.surface_roughness 
-            : ((metrics.roughness_score !== undefined) ? metrics.roughness_score : 'Not available');
-        valRoughness.textContent = roughnessVal;
+        valErythema.textContent = (metrics.erythema_index !== undefined) ? metrics.erythema_index : '--';
+        valRoughness.textContent = (metrics.surface_roughness !== undefined) ? metrics.surface_roughness : '--';
+        valChroma.textContent = (metrics.chromatic_variance !== undefined) ? metrics.chromatic_variance : '--';
 
-        const chromaVal = (metrics.chromatic_variance !== undefined) 
-            ? metrics.chromatic_variance 
-            : ((metrics.color_variance !== undefined) ? metrics.color_variance : 'Not available');
-        valChroma.textContent = chromaVal;
-
-        // Correlation Score Counter
+        // Confidence Score Bar (Calibrated Model Confidence)
         const score = (typeof res.confidence_score === 'number') ? res.confidence_score : 0;
         resultScoreText.textContent = score.toFixed(1) + '%';
         resultScoreBar.style.width = Math.min(100, Math.max(0, score)) + '%';
 
-        // Observations List
-        resultFindingsList.innerHTML = '';
-        if (res.findings && res.findings.length) {
-            res.findings.forEach(f => {
-                const li = document.createElement('li');
-                li.className = 'mb-1';
-                li.innerHTML = f;
-                resultFindingsList.appendChild(li);
+        // Observed Characteristics List
+        resultObsList.innerHTML = '';
+        const obs = res.observable_characteristics || res.findings || [];
+        if (obs.length) {
+            obs.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'scanner-obs-item';
+                div.innerHTML = '<span class="scanner-obs-bullet"></span><span>' + item + '</span>';
+                resultObsList.appendChild(div);
             });
-        } else {
-            resultFindingsList.innerHTML = '<li>Visual observation metrics recorded within standard baseline range.</li>';
         }
 
-        // Recommendations List
-        resultRecsList.innerHTML = '';
-        if (res.recommendations && res.recommendations.length) {
-            res.recommendations.forEach(r => {
-                const li = document.createElement('li');
-                li.className = 'mb-1';
-                li.innerHTML = r;
-                resultRecsList.appendChild(li);
+        // General Information
+        resultGeneralInfo.textContent = res.general_information || 'No general information available for this category.';
+
+        // General Care Guidance
+        resultCareList.innerHTML = '';
+        const care = res.general_care || res.recommendations || [];
+        if (care.length) {
+            care.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'scanner-care-point';
+                div.innerHTML = '<i class="bi bi-check-circle-fill"></i><span>' + item + '</span>';
+                resultCareList.appendChild(div);
             });
-        } else {
-            resultRecsList.innerHTML = '<li>Maintain standard hygiene and monitor for worsening symptoms.</li>';
+        }
+
+        // Warning Signs
+        resultWarningList.innerHTML = '';
+        const warnings = res.warning_signs || [];
+        if (warnings.length) {
+            warnings.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'scanner-warning-item';
+                div.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i><span>' + item + '</span>';
+                resultWarningList.appendChild(div);
+            });
+        }
+
+        // When to Seek Care
+        resultWhenCareList.innerHTML = '';
+        const whenCare = res.when_to_seek_care || [];
+        if (whenCare.length) {
+            whenCare.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'scanner-care-point';
+                div.innerHTML = '<i class="bi bi-arrow-right-circle-fill text-warning"></i><span>' + item + '</span>';
+                resultWhenCareList.appendChild(div);
+            });
         }
 
         // Scroll result into view on mobile

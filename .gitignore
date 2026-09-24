@@ -19,3 +19,11 @@ scratch/
 .env
 *.tmp
 *.bak
+
+# Non-scanner untracked files
+admin/
+assets/css/admin.css
+database/admin_migration.php
+tests/test_admin_suite.py
+*.docx
+*.pptx

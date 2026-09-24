@@ -45,6 +45,7 @@ def predict():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/scan-image', methods=['POST'])
+@app.route('/api/scan-image', methods=['POST'])
 def scan_image():
     temp_path = None
     try:
