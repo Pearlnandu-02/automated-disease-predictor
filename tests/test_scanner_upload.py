@@ -34,7 +34,7 @@ def run_tests():
     arr_wound = np.full((160, 160, 3), [220, 60, 60], dtype=np.uint8)
     arr_wound[40:80, 40:80] = [80, 20, 20]
     res1 = upload_synthetic_image(arr_wound, "wound.jpg")
-    print(f"  Category: {res1.get('category')} | Score: {res1.get('confidence_score')}%")
+    print(f"  Category: {res1.get('category')} | Model Conf: {res1.get('model_confidence')}")
     assert res1.get('success') is True
     assert res1.get('category') != 'Unable to Assess'
 
@@ -57,7 +57,7 @@ def run_tests():
     # Add sharp cut line
     arr_cut[20:140, 78:82] = [30, 10, 10]
     res4 = upload_synthetic_image(arr_cut, "cut.jpg")
-    print(f"  Category: {res4.get('category')} | Score: {res4.get('confidence_score')}%")
+    print(f"  Category: {res4.get('category')} | Model Conf: {res4.get('model_confidence')}")
     assert res4.get('success') is True
 
     print("\nTest 5: Testing 4 distinct image fixtures for dynamic metrics...")
@@ -74,10 +74,10 @@ def run_tests():
         res = upload_synthetic_image(arr, fix.split('/')[-1])
         cat = res.get('category')
         seen_categories.add(cat)
-        print(f"  Fixture {fix.split('/')[-1]}: {cat} | Score: {res.get('confidence_score')}% | EI: {res.get('metrics', {}).get('erythema_index')} | Roughness: {res.get('metrics', {}).get('surface_roughness')}")
+        print(f"  Fixture {fix.split('/')[-1]}: {cat} | Conf: {res.get('model_confidence')} | EI: {res.get('metrics', {}).get('erythema_index')} | Roughness: {res.get('metrics', {}).get('surface_roughness')}")
         assert res.get('success') is True
         assert cat != 'Unable to Assess'
-        assert res.get('confidence_score') > 0
+        assert res.get('model_confidence') is not None
         assert res.get('metrics', {}).get('surface_roughness') is not None
         assert res.get('metrics', {}).get('erythema_index') is not None
 

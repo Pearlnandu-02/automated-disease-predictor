@@ -1,10 +1,10 @@
 """
 MediSense AI - Computer Vision Feature Extraction Engine
 =============================================================================
-Computes dermatological, spectrophotometric, and textural image features:
+Computes computer-vision color and textural image features:
   - Exposure, focus, and illumination quality gating
   - Human skin chrominance locus detection (Fitzpatrick I-VI skin tone invariant)
-  - Spectrophotometric Erythema Index (EI = 100 * [log10(R) - log10(G)])
+  - Optical Erythema Index (EI = 100 * [log10(R) - log10(G)])
   - Hemoglobin & melanin proxy chrominance (YCbCr Cr & Cb channels, HSV color space)
   - Surface gradient roughness (Sobel horizontal & vertical filter)
   - Micro-cluster chromatic dispersion (rashes, irritation patchiness)
@@ -161,7 +161,7 @@ def extract_features_from_array(rgb_arr):
     B = rgb_arr[:, :, 2]
     total_intensity = R + G + B + 1e-6
 
-    # 1. Spectrophotometric Erythema Index (EI = 100 * [log10(R) - log10(G)])
+    # 1. Optical Color Erythema Index (EI = 100 * [log10(R) - log10(G)])
     safe_R = np.clip(R, 1.0, 255.0)
     safe_G = np.clip(G, 1.0, 255.0)
     erythema_map = 100.0 * (np.log10(safe_R) - np.log10(safe_G))

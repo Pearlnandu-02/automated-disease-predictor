@@ -3293,65 +3293,52 @@ def scanner_page():
                         <span class="text-muted small fw-bold text-uppercase"><i class="bi bi-clipboard2-pulse me-1 text-info"></i> AI-ASSISTED VISUAL ASSESSMENT</span>
                         <span class="small text-muted">Just now</span>
                     </div>
-                    <div class="mb-3 d-flex flex-wrap align-items-center gap-2">
-                        <span id="resultCategoryBadge" class="badge-category badge-category-injury">
-                            <span id="resultCategoryText">Evaluating...</span>
-                        </span>
-                        <span class="badge bg-secondary-subtle text-secondary small py-2 px-3 rounded-pill border">
-                            <i class="bi bi-info-circle me-1"></i> Severity cannot be reliably determined from scan
-                        </span>
-                    </div>
-                    <div class="p-3 rounded-3 border mb-3" style="background: var(--bg-secondary);">
-                        <h5 class="fw-bold mb-1" id="resultSummaryHeading">Visual indicators may be consistent with...</h5>
-                        <p class="text-muted small mb-0" id="resultSummaryDesc">Assessment generated via spectrophotometric color analysis and surface edge gradient measurement.</p>
-                    </div>
-                    <!-- Model Statistical Confidence -->
+
+                    <!-- Prediction & Category (Step 14) -->
                     <div class="mb-3 p-3 rounded-3 border" style="background: var(--bg-secondary);">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="small fw-semibold">Model Statistical Confidence:</span>
-                            <span id="resultScoreText" class="fw-bold text-info">0.0%</span>
+                        <div class="text-muted small text-uppercase fw-semibold mb-1">Prediction:</div>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                            <span id="resultCategoryBadge" class="badge-category badge-category-injury">
+                                <span id="resultCategoryText">Evaluating...</span>
+                            </span>
+                            <span class="badge bg-secondary-subtle text-secondary small py-2 px-3 rounded-pill border">
+                                <i class="bi bi-info-circle me-1"></i> Severity cannot be reliably determined from scan
+                            </span>
                         </div>
-                        <div class="progress mb-1" style="height: 8px;">
-                            <div id="resultScoreBar" class="progress-bar bg-info" style="width: 0%;"></div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <span class="small fw-semibold text-muted">Model Confidence:</span>
+                            <span id="resultScoreText" class="badge bg-secondary-subtle text-secondary border fw-semibold">Not Applicable (Rule-Based Heuristic Prototype)</span>
                         </div>
-                        <small class="text-muted d-block" style="font-size: 0.76rem;">
-                            Statistical alignment score reflecting pattern correlation with benchmarked vision training distributions. <strong>Model confidence is not the same as medical certainty.</strong>
+                        <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                            Current scanner is rule-based and does not contain a validated disease classification model. Diagnostic percentage scores are not generated.
                         </small>
                     </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-4">
-                            <div class="metric-pill-card">
-                                <div class="metric-pill-val" id="valErythema">--</div>
-                                <div class="metric-pill-lbl">Erythema</div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="metric-pill-card">
-                                <div class="metric-pill-val" id="valRoughness">--</div>
-                                <div class="metric-pill-lbl">Roughness</div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="metric-pill-card">
-                                <div class="metric-pill-val" id="valChroma">--</div>
-                                <div class="metric-pill-lbl">Variance</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <h6 class="fw-bold small text-uppercase text-muted mb-2">Visual Observations</h6>
+
+                    <!-- Observed Visual Features (Step 14) -->
+                    <div class="mb-3 p-3 rounded-3 border" style="background: var(--bg-secondary);">
+                        <h6 class="fw-bold small text-uppercase text-muted mb-2"><i class="bi bi-eye me-1 text-info"></i> Observed Visual Features:</h6>
                         <ul id="resultFindingsList" class="small text-muted ps-3 mb-0"></ul>
                     </div>
-                    <!-- Technical Image Features (Section 4 & 13) -->
+
+                    <!-- Technical Image Metrics (Step 14 & 16) -->
                     <div class="mb-3 p-3 rounded-3 border small" style="background: var(--bg-secondary);">
-                        <h6 class="fw-bold small text-uppercase mb-2 text-info"><i class="bi bi-sliders me-1"></i> Technical Image Features:</h6>
-                        <div id="resultTechFeaturesList"></div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold small text-uppercase mb-0 text-info"><i class="bi bi-sliders me-1"></i> Technical Image Metrics:</h6>
+                            <span class="badge bg-secondary-subtle text-secondary" style="font-size: 0.7rem;">Pixel Measurements Only</span>
+                        </div>
+                        <div id="resultTechFeaturesList" class="mb-2"></div>
+                        <div class="text-muted p-2 rounded-2" style="font-size: 0.75rem; background: var(--bg-primary);">
+                            <i class="bi bi-info-circle me-1 text-secondary"></i>
+                            <em>Note: These are technical computer-vision pixel measurements (color ratios and edge gradients), not medical or clinical diagnostic measurements.</em>
+                        </div>
                     </div>
-                    <!-- What This Result Means (Section 13) -->
+
+                    <!-- Interpretation (Step 14) -->
                     <div class="mb-3 p-3 rounded-3 border small" style="background: var(--bg-secondary);">
-                        <h6 class="fw-bold text-info mb-1"><i class="bi bi-chat-left-text me-1"></i> What This Result Means:</h6>
+                        <h6 class="fw-bold text-info mb-1"><i class="bi bi-chat-left-text me-1"></i> Interpretation:</h6>
                         <p class="text-muted mb-0" id="resultWhatMeansText">Educational context regarding observed visual patterns.</p>
                     </div>
+
                     <!-- Recommended Next Step (Section 13) -->
                     <div class="mb-3 p-3 rounded-3 border small border-start border-4 border-info" style="background: var(--bg-secondary);">
                         <strong class="text-info d-block mb-1"><i class="bi bi-arrow-right-circle-fill me-1"></i> Recommended Next Step:</strong>
@@ -3639,10 +3626,10 @@ def scanner_page():
             var steps = [
                 "Preparing image for analysis...",
                 "Evaluating lesion morphology against supported acute domain...",
-                "Computing spectrophotometric erythema index...",
+                "Extracting optical erythema & color indices...",
                 "Analyzing surface texture & edge roughness...",
                 "Evaluating chromatic dispersion & color variance...",
-                "Executing calibrated vision model..."
+                "Evaluating visual characteristics via computer vision..."
             ];
             var stepIdx = 0;
             scanningStatusText.textContent = steps[0];
@@ -3710,7 +3697,7 @@ def scanner_page():
             }
             if (lesionTechFeaturesList) {
                 lesionTechFeaturesList.innerHTML = '';
-                var techFeats = res.technical_image_features || [];
+                var techFeats = res.technical_image_metrics || res.technical_image_features || [];
                 techFeats.forEach(function(tf) {
                     var div = document.createElement('div');
                     div.className = 'd-flex align-items-center mb-1 text-muted';
@@ -3737,7 +3724,7 @@ def scanner_page():
             if (unsupportedLesionContent) unsupportedLesionContent.classList.add('d-none');
             resultContent.classList.remove('d-none');
 
-            var cat = res.category || 'Unable to Assess';
+            var cat = res.prediction || res.category || 'Unable to Assess';
             resultCategoryText.textContent = cat;
             resultCategoryBadge.className = 'badge-category';
             if (cat.includes('Infection')) resultCategoryBadge.classList.add('badge-category-infection');
@@ -3747,20 +3734,13 @@ def scanner_page():
             else if (cat.includes('Swelling')) resultCategoryBadge.classList.add('badge-category-swelling');
             else resultCategoryBadge.classList.add('badge-category-unable');
 
-            resultSummaryHeading.textContent = 'Visual indicators may be consistent with ' + cat.toLowerCase();
-            var score = (typeof res.confidence_score === 'number') ? res.confidence_score : 0;
-            resultScoreText.textContent = score.toFixed(1) + '%';
-            resultScoreBar.style.width = Math.min(100, Math.max(0, score)) + '%';
-
-            var metrics = res.metrics || {};
-            valErythema.textContent = (metrics.erythema_index !== undefined) ? metrics.erythema_index : 'Not available';
-            var rVal = (metrics.surface_roughness !== undefined) ? metrics.surface_roughness : ((metrics.roughness_score !== undefined) ? metrics.roughness_score : 'Not available');
-            valRoughness.textContent = rVal;
-            var cVal = (metrics.chromatic_variance !== undefined) ? metrics.chromatic_variance : ((metrics.color_variance !== undefined) ? metrics.color_variance : 'Not available');
-            valChroma.textContent = cVal;
+            if (resultScoreText) {
+                resultScoreText.textContent = res.model_confidence || 'Not Applicable (Rule-Based Heuristic Prototype)';
+            }
 
             resultFindingsList.innerHTML = '';
-            (res.findings || []).forEach(function(f) {
+            var obs = res.observed_visual_features || res.observable_characteristics || res.findings || [];
+            obs.forEach(function(f) {
                 var li = document.createElement('li');
                 li.className = 'mb-1';
                 li.textContent = f;
@@ -3769,17 +3749,24 @@ def scanner_page():
 
             if (resultTechFeaturesList) {
                 resultTechFeaturesList.innerHTML = '';
-                var techFeats = res.technical_image_features || [];
-                techFeats.forEach(function(tf) {
+                var techFeats = res.technical_image_metrics || res.technical_image_features || [];
+                if (techFeats.length) {
+                    techFeats.forEach(function(tf) {
+                        var div = document.createElement('div');
+                        div.className = 'd-flex align-items-center mb-1 text-muted';
+                        div.innerHTML = '<i class="bi bi-gear-fill me-2 text-info" style="font-size: 0.75rem;"></i><span>' + tf + '</span>';
+                        resultTechFeaturesList.appendChild(div);
+                    });
+                } else {
                     var div = document.createElement('div');
-                    div.className = 'd-flex align-items-center mb-1 text-muted';
-                    div.innerHTML = '<i class="bi bi-gear-fill me-2 text-info" style="font-size: 0.75rem;"></i><span>' + tf + '</span>';
+                    div.className = 'text-muted small';
+                    div.textContent = 'Optical Erythema Index: ' + (metrics.erythema_index ?? '--') + ' | Surface Roughness: ' + (metrics.surface_roughness ?? '--') + ' | Color Variance: ' + (metrics.chromatic_variance ?? '--');
                     resultTechFeaturesList.appendChild(div);
-                });
+                }
             }
 
             if (resultWhatMeansText) {
-                resultWhatMeansText.textContent = res.what_this_result_means || res.general_information || 'Educational context regarding observed visual patterns.';
+                resultWhatMeansText.textContent = res.interpretation || res.what_means || res.what_this_result_means || res.general_information || 'Educational context regarding observed visual patterns.';
             }
 
             if (resultNextStepText) {

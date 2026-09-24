@@ -213,7 +213,7 @@ require_once __DIR__ . '/includes/header.php';
                         <div id="scanProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-info" style="width: 15%;"></div>
                     </div>
                     <small class="text-muted" style="font-size: 0.76rem;">
-                        Extracting spectrophotometric erythema, Sobel gradients, and calibrated patterns...
+                        Extracting optical erythema index, Sobel edge gradients, and visual patterns...
                     </small>
                 </div>
             </div>
@@ -363,28 +363,23 @@ require_once __DIR__ . '/includes/header.php';
                     <span id="resultTimestamp" class="small text-muted">Just now</span>
                 </div>
 
-                <!-- Category Badge -->
-                <div class="mb-3 d-flex flex-wrap align-items-center gap-2">
-                    <span id="resultCategoryBadge" class="badge-category badge-category-injury">
-                        <i class="bi bi-search"></i> <span id="resultCategoryText">Evaluating...</span>
-                    </span>
-                    <!-- Severity Status (Honest, un-fabricated clinical limitation) -->
-                    <span class="scanner-severity-badge" id="resultSeverityBadge" title="Severity classification requires in-person medical palpation">
-                        <i class="bi bi-info-circle"></i> Severity cannot be reliably determined from this scan
-                    </span>
-                </div>
-
-                <!-- Model Statistical Confidence Score -->
+                <!-- AI-Assisted Assessment Header & Prediction (Step 14) -->
                 <div class="mb-3 p-3 bg-card-subtle rounded-3 border">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="small fw-semibold">Model Statistical Confidence:</span>
-                        <span id="resultScoreText" class="fw-bold text-info">0.0%</span>
+                    <div class="text-muted small text-uppercase fw-semibold mb-1">Prediction:</div>
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                        <span id="resultCategoryBadge" class="badge-category badge-category-injury">
+                            <i class="bi bi-search"></i> <span id="resultCategoryText">Evaluating...</span>
+                        </span>
+                        <span class="scanner-severity-badge" id="resultSeverityBadge" title="Severity classification requires in-person medical palpation">
+                            <i class="bi bi-info-circle"></i> Severity cannot be reliably determined from this scan
+                        </span>
                     </div>
-                    <div class="progress mb-1" style="height: 8px;">
-                        <div id="resultScoreBar" class="progress-bar bg-info" style="width: 0%;"></div>
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                        <span class="small fw-semibold text-muted">Model Confidence:</span>
+                        <span id="resultScoreText" class="badge bg-secondary-subtle text-secondary border fw-semibold">Not Applicable (Rule-Based Heuristic Prototype)</span>
                     </div>
-                    <small class="text-muted d-block" style="font-size: 0.76rem;">
-                        Statistical alignment score reflecting pattern correlation with benchmarked vision training distributions. <strong>Model confidence is not the same as medical certainty.</strong>
+                    <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                        Current scanner is rule-based and does not contain a validated disease classification model. Diagnostic percentage scores are not generated.
                     </small>
                 </div>
 
@@ -394,33 +389,32 @@ require_once __DIR__ . '/includes/header.php';
                     <strong>Secondary Observation:</strong> <span id="resultRunnerUpText">None</span>
                 </div>
 
-                <!-- What the Model Detected -->
-                <div class="p-3 bg-card-subtle rounded-3 border mb-3">
-                    <h6 class="fw-bold small text-uppercase text-muted mb-1"><i class="bi bi-eye me-1 text-info"></i> What the Model Detected:</h6>
-                    <p class="text-muted small mb-0" id="resultWhatDetected">
-                        Analysis generated via calibrated spectrophotometric and textural computer vision model.
-                    </p>
-                </div>
-
-                <!-- Observed Visual Characteristics -->
-                <div class="mb-3">
-                    <h6 class="fw-bold small text-uppercase text-muted mb-2">Observed Visual Characteristics:</h6>
+                <!-- Observed Visual Features (Step 14) -->
+                <div class="mb-3 p-3 bg-card-subtle rounded-3 border">
+                    <h6 class="fw-bold small text-uppercase text-muted mb-2"><i class="bi bi-eye me-1 text-info"></i> Observed Visual Features:</h6>
                     <div id="resultObsList">
                         <!-- Populated dynamically -->
                     </div>
                 </div>
 
-                <!-- Technical Image Features (Section 4 & 13) -->
+                <!-- Technical Image Metrics (Step 14 & 16) -->
                 <div class="mb-3 p-3 bg-card-subtle rounded-3 border small">
-                    <h6 class="fw-bold text-heading small text-uppercase mb-2"><i class="bi bi-sliders me-1 text-info"></i> Technical Image Features:</h6>
-                    <div id="resultTechFeaturesList">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-bold text-heading small text-uppercase mb-0"><i class="bi bi-sliders me-1 text-info"></i> Technical Image Metrics:</h6>
+                        <span class="badge bg-secondary-subtle text-secondary" style="font-size: 0.7rem;">Pixel Measurements Only</span>
+                    </div>
+                    <div id="resultTechFeaturesList" class="mb-2">
                         <!-- Populated dynamically -->
+                    </div>
+                    <div class="text-muted p-2 rounded-2 bg-body-tertiary" style="font-size: 0.75rem;">
+                        <i class="bi bi-info-circle me-1 text-secondary"></i>
+                        <em>Note: These are technical computer-vision pixel measurements (color ratios and edge gradients), not medical or clinical diagnostic measurements.</em>
                     </div>
                 </div>
 
-                <!-- What This Result Means (Section 13) -->
+                <!-- Interpretation (Step 14) -->
                 <div class="mb-3 p-3 bg-card-subtle rounded-3 border small">
-                    <h6 class="fw-bold text-info mb-1"><i class="bi bi-chat-left-text me-1"></i> What This Result Means:</h6>
+                    <h6 class="fw-bold text-info mb-1"><i class="bi bi-chat-left-text me-1"></i> Interpretation:</h6>
                     <p class="text-muted mb-0" id="resultWhatMeansText">
                         Educational context regarding observed visual patterns.
                     </p>
@@ -1051,11 +1045,11 @@ document.addEventListener('DOMContentLoaded', function() {
             "Analyzing image format & dimensions...",
             "Verifying illumination, exposure & focus...",
             "Checking lesion morphology against supported acute domain...",
-            "Extracting spectrophotometric erythema & capillary indices...",
+            "Extracting optical erythema & color indices...",
             "Measuring Sobel edge gradients & surface roughness...",
-            "Evaluating chromatic dispersion & tissue convexity...",
-            "Executing calibrated AI classifier...",
-            "Synthesizing clinical observation report..."
+            "Evaluating chromatic dispersion & color variance...",
+            "Evaluating visual characteristics via computer vision...",
+            "Synthesizing preliminary observation report..."
         ];
         let stepIdx = 0;
         scanningStatusText.textContent = steps[0];
@@ -1187,7 +1181,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const metrics = res.metrics || {};
                 const div = document.createElement('div');
                 div.className = 'text-muted small';
-                div.textContent = 'Spectrophotometric Erythema: ' + (metrics.erythema_index ?? 'N/A') + ' | Surface Roughness: ' + (metrics.surface_roughness ?? 'N/A') + ' | Chromatic Dispersion: ' + (metrics.chromatic_variance ?? 'N/A');
+                div.textContent = 'Optical Erythema Index: ' + (metrics.erythema_index ?? 'N/A') + ' | Surface Roughness: ' + (metrics.surface_roughness ?? 'N/A') + ' | Color Variance: ' + (metrics.chromatic_variance ?? 'N/A');
                 lesionTechFeaturesList.appendChild(div);
             }
         }
@@ -1205,7 +1199,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (unsupportedLesionContent) unsupportedLesionContent.classList.add('d-none');
         resultContent.classList.remove('d-none');
 
-        const category = res.category || 'Unable to Assess';
+        const category = res.prediction || res.category || 'Unable to Assess';
         resultCategoryText.textContent = category;
 
         // Category Badge Colors
@@ -1224,10 +1218,6 @@ document.addEventListener('DOMContentLoaded', function() {
             resultCategoryBadge.classList.add('badge-category-unable');
         }
 
-        // Summary Heading
-        resultSummaryHeading.textContent = "Visual indicators may be consistent with " + category.toLowerCase();
-        resultWhatDetected.textContent = res.what_detected || (res.findings ? res.findings[0] : 'Optical features analyzed via calibrated vision model.');
-
         // Runner Up Pattern
         if (res.runner_ups && res.runner_ups.length > 0) {
             const ru = res.runner_ups[0];
@@ -1239,18 +1229,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Quantitative Metrics
         const metrics = res.metrics || {};
-        valErythema.textContent = (metrics.erythema_index !== undefined) ? metrics.erythema_index : '--';
-        valRoughness.textContent = (metrics.surface_roughness !== undefined) ? metrics.surface_roughness : '--';
-        valChroma.textContent = (metrics.chromatic_variance !== undefined) ? metrics.chromatic_variance : '--';
+        if (valErythema) valErythema.textContent = (metrics.erythema_index !== undefined) ? metrics.erythema_index : '--';
+        if (valRoughness) valRoughness.textContent = (metrics.surface_roughness !== undefined) ? metrics.surface_roughness : '--';
+        if (valChroma) valChroma.textContent = (metrics.chromatic_variance !== undefined) ? metrics.chromatic_variance : '--';
 
-        // Confidence Score Bar (Calibrated Model Confidence)
-        const score = (typeof res.confidence_score === 'number') ? res.confidence_score : 0;
-        resultScoreText.textContent = score.toFixed(1) + '%';
-        resultScoreBar.style.width = Math.min(100, Math.max(0, score)) + '%';
+        // Model Confidence Label (Honest rule-based prototype designation)
+        if (resultScoreText) {
+            resultScoreText.textContent = res.model_confidence || 'Not Applicable (Rule-Based Heuristic Prototype)';
+        }
+        if (resultScoreBar) {
+            resultScoreBar.style.display = 'none';
+        }
 
-        // Observed Characteristics List
+        // Observed Visual Features (Step 14)
         resultObsList.innerHTML = '';
-        const obs = res.observable_characteristics || res.findings || [];
+        const obs = res.observed_visual_features || res.observable_characteristics || res.findings || [];
         if (obs.length) {
             obs.forEach(item => {
                 const div = document.createElement('div');
@@ -1260,10 +1253,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Technical Image Features (Section 4 & 13)
+        // Technical Image Metrics (Section 14 & 16)
         if (resultTechFeaturesList) {
             resultTechFeaturesList.innerHTML = '';
-            const techFeats = res.technical_image_features || [];
+            const techFeats = res.technical_image_metrics || res.technical_image_features || [];
             if (techFeats.length) {
                 techFeats.forEach(tf => {
                     const div = document.createElement('div');
@@ -1274,14 +1267,14 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 const div = document.createElement('div');
                 div.className = 'text-muted small';
-                div.textContent = 'Erythema Index: ' + (metrics.erythema_index ?? '--') + ' | Surface Roughness: ' + (metrics.surface_roughness ?? '--') + ' | Chromatic Variance: ' + (metrics.chromatic_variance ?? '--');
+                div.textContent = 'Optical Erythema Index: ' + (metrics.erythema_index ?? '--') + ' | Surface Roughness: ' + (metrics.surface_roughness ?? '--') + ' | Color Variance: ' + (metrics.chromatic_variance ?? '--');
                 resultTechFeaturesList.appendChild(div);
             }
         }
 
-        // What This Result Means (Section 13)
+        // Interpretation (Step 14)
         if (resultWhatMeansText) {
-            resultWhatMeansText.textContent = res.what_this_result_means || res.general_information || 'Educational context regarding observed visual patterns.';
+            resultWhatMeansText.textContent = res.interpretation || res.what_means || res.what_this_result_means || res.general_information || 'Educational context regarding observed visual patterns.';
         }
 
         // Recommended Next Step (Section 13)

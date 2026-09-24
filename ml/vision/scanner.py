@@ -5,8 +5,8 @@ Advanced AI-assisted preliminary visual assessment for dermatological images.
 Combines genuine feature extraction with a calibrated Machine Learning model:
   1. Quality & Feasibility Gating (resolution, exposure, blur variance)
   2. Human Skin Chrominance Verification (Fitzpatrick I-VI invariant)
-  3. 24-D Extraction: Spectrophotometric Erythema, Sobel Edge Roughness,
-     Chromatic Dispersion, YCbCr Capillary Proxies, Luminance Convexity
+  3. 24-D Extraction: Optical Erythema Index, Sobel Edge Roughness,
+     Chromatic Dispersion, Color Proxies, Luminance Convexity
   4. Calibrated Multi-Class Machine Learning Inference with Platt Scaling
   5. Out-of-Scope Detection & Uncertainty Rejection
   6. Structured Clinical Observation & First-Aid Guidance Mapping
@@ -55,9 +55,9 @@ CONDITION_PROFILES = {
     CAT_INFECTION: {
         "display_name": "Possible Infection Indicators",
         "badge_class": "badge-category-infection",
-        "description": "Visual patterns indicate notable localized erythema (redness) alongside significant surface disruption, crusting, or irregular wound borders consistent with an active inflammatory or infectious process.",
-        "what_detected": "The computer vision model detected elevated spectrophotometric erythema (capillary engorgement) combined with high-frequency surface roughness gradients, suggesting active barrier disruption and localized inflammatory response.",
-        "what_means": "The image exhibits visual features often observed in active superficial infections (such as cellulitis or infected wounds). Bacterial invasion triggers microvascular dilation and localized leukocyte recruitment.",
+        "description": "Visual patterns indicate notable localized red discoloration (erythema) alongside surface disruption, crusting, or irregular wound margins.",
+        "what_detected": "Computer-vision image analysis identified elevated red tonal intensity combined with high surface edge roughness patterns.",
+        "what_means": "Visual characteristics exhibit surface redness and edge disruption. In clinical settings, these visual patterns may correspond to superficial bacterial invasion, wound irritation, or local reaction.",
         "recommended_next_step": "Seek clinical evaluation by a medical doctor or urgent care clinic for diagnostic confirmation and appropriate prescription therapy if bacterial infection is present.",
         "general_information": "Skin infections typically occur when bacteria (such as Staphylococcus or Streptococcus) enter through a break in the epidermal skin barrier. Common presentations include localized warmth, edema, erythema, and purulent exudate.",
         "general_care": [
@@ -81,9 +81,9 @@ CONDITION_PROFILES = {
     CAT_INJURY: {
         "display_name": "Possible Minor Injury",
         "badge_class": "badge-category-injury",
-        "description": "Visual patterns reflect prominent surface edge gradients and textural discontinuity characteristic of a superficial skin break, such as a scrape, abrasion, shallow scratch, or minor laceration with localized scabbing.",
-        "what_detected": "The visual pipeline identified elevated Sobel gradient density (sharp edge transitions) across the stratum corneum with localized hemoglobin clotting, without widespread diffuse cellulitic erythema.",
-        "what_means": "Visual findings suggest a superficial mechanical disruption of the epidermis or upper dermis. The body initiates hemostasis and crust formation to seal the barrier.",
+        "description": "Visual patterns reflect prominent surface edge gradients and textural discontinuity characteristic of a superficial skin break, such as a scrape, abrasion, or minor laceration.",
+        "what_detected": "Computer-vision image analysis identified elevated edge transition gradients across the stratum corneum with localized color contrast.",
+        "what_means": "Visual findings suggest a superficial mechanical disruption of the outer skin layers (such as a scrape or surface cut).",
         "recommended_next_step": "Cleanse gently with potable water, protect with a sterile dressing, and monitor for normal healing over the next 3 to 7 days.",
         "general_information": "Minor superficial abrasions and shallow cuts damage the epidermis and upper dermis. Healing begins immediately with platelet aggregation and fibrin clot formation (scabbing) to seal the barrier against contaminants.",
         "general_care": [
@@ -107,9 +107,9 @@ CONDITION_PROFILES = {
     CAT_RASH: {
         "display_name": "Possible Rash / Skin Irritation",
         "badge_class": "badge-category-rash",
-        "description": "Visual characteristics exhibit dispersed chromatic variance and patchy tonal irregularity across the evaluated skin surface, consistent with contact dermatitis, eczema flare, allergic reaction, or localized maculopapular irritation.",
-        "what_detected": "The model observed elevated chromatic dispersion and patchy tonal variance across intact epidermal tissue, without deep linear laceration contours or focal purulent pooling.",
-        "what_means": "Visual characteristics are consistent with an inflammatory reaction of the superficial skin layers, commonly triggered by immune sensitivity, contact allergens, or environmental irritants.",
+        "description": "Visual characteristics exhibit dispersed color variance and patchy tonal irregularity across the evaluated skin surface.",
+        "what_detected": "Computer-vision image analysis observed elevated color variance and patchy tonal distribution across intact skin tissue.",
+        "what_means": "Visual characteristics exhibit surface color variability consistent with localized contact irritation, mild dermatitis, or surface reaction.",
         "recommended_next_step": "Identify and remove potential environmental irritants (new detergents, soaps, jewelry), apply a cool compress, and consult a physician if the rash spreads or does not improve.",
         "general_information": "Rashes are inflammatory dermatological reactions triggered by immune responses, chemical contact, allergens (plants, cosmetics, nickel), friction, heat, or systemic viral infections. The skin barrier remains largely structurally intact.",
         "general_care": [
@@ -185,10 +185,10 @@ CONDITION_PROFILES = {
     CAT_UNSUPPORTED_LESION: {
         "display_name": "Unable to Confidently Assess: Unsupported Skin Lesion Pattern",
         "badge_class": "badge-category-lesion",
-        "description": "Visual features indicate localized hyperpigmentation and chromatic variegation characteristic of a pigmented skin lesion, mole, nevus, or atypical spot. This prototype is configured exclusively for acute injury and infection screening and does not support diagnostic classification of skin lesions.",
-        "what_detected": "The computer vision analyzer detected localized hyperpigmented melanin clustering with high contrast drop and chromatic variegation against surrounding skin, without patterns characteristic of acute open trauma or cellulitis.",
-        "what_means": "This prototype is designed exclusively for preliminary screening of acute superficial injuries and infections (abrasions, lacerations, acute cellulitis/erythema, and blunt swelling). It does NOT support reliable classification of pigmented skin lesions, moles, nevi, or potential neoplastic conditions.",
-        "disclaimer_note": "This scanner currently does not support reliable classification of this type of skin lesion. Please seek evaluation by a qualified healthcare professional for a new, changing, bleeding, painful, or otherwise concerning lesion.",
+        "description": "Visual features indicate localized hyperpigmentation and color variance characteristic of a pigmented skin lesion, mole, nevus, or atypical spot. This prototype does not currently support reliable classification of this type of skin lesion.",
+        "what_detected": "The computer-vision analyzer detected localized dark melanin clustering with high contrast drop and color variance against surrounding skin.",
+        "what_means": "This prototype does not currently support reliable classification of all skin lesions. Please seek evaluation by a qualified healthcare professional for a new, changing, bleeding, painful, or otherwise concerning lesion.",
+        "disclaimer_note": "This prototype does not currently support reliable classification of this type of skin lesion. Please seek evaluation by a qualified healthcare professional for a new, changing, bleeding, painful, or otherwise concerning lesion.",
         "recommended_next_step": "Please seek evaluation by a qualified healthcare professional (such as a board-certified dermatologist) for a new, changing, bleeding, painful, or otherwise concerning lesion.",
         "general_information": "Pigmented skin lesions originate from melanocytes (pigment-producing cells). While most moles and pigmented macules are completely benign (such as common nevi or seborrheic keratoses), any new, changing, irregular, or symptomatic lesion requires thorough in-person dermatological evaluation with dermoscopy.",
         "general_care": [
@@ -220,13 +220,13 @@ CONDITION_PROFILES = {
         ]
     },
     CAT_UNABLE: {
-        "display_name": "Unable to Assess",
+        "display_name": "Unable to Confidently Assess",
         "badge_class": "badge-category-unable",
-        "description": "The uploaded image could not be reliably evaluated because visual quality was insufficient, skin features were absent, or the image fell outside the model's supported pattern boundaries.",
-        "what_detected": "The visual assessment gate or out-of-scope classifier determined that the image does not present sufficient, clear, and recognizable dermatological patterns for preliminary assessment.",
-        "what_means": "The visual data provided does not match supported acute reference patterns with sufficient statistical confidence for this educational prototype.",
-        "recommended_next_step": "Please upload a clearer, well-lit image of the affected area or seek professional medical evaluation if the skin area is concerning.",
-        "general_information": "Accurate computer vision analysis requires adequate lighting, focused detail, and an unobstructed view of the affected skin area. Images of non-skin objects, documents, heavily shadowed scenes, or extreme blur cannot be assessed.",
+        "description": "The uploaded image does not provide sufficient evidence for a reliable classification by this prototype.",
+        "what_detected": "The uploaded image does not provide sufficient evidence for a reliable classification by this prototype.",
+        "what_means": "This prototype does not currently support reliable classification of all skin lesions or ambiguous presentations.",
+        "recommended_next_step": "Please upload a clearer image or seek professional medical evaluation for concerning or persistent findings.",
+        "general_information": "Accurate computer-vision analysis requires adequate lighting, focused detail, and an unobstructed view of the affected skin area. Images of non-skin objects, documents, heavily shadowed scenes, or extreme blur cannot be assessed.",
         "general_care": [
             "Ensure steady, natural lighting without heavy flash glare or deep shadows.",
             "Hold your device steady and tap the screen to focus directly on the affected skin.",
@@ -262,13 +262,12 @@ def load_vision_model():
 
 def run_rule_based_fallback(features_dict):
     """
-    Fallback deterministic classifier if the ML model file is temporarily missing.
-    Uses calibrated dermatological thresholds.
+    Deterministic rule-based computer-vision heuristics.
+    NOTE: Current scanner is rule-based and does not contain a validated disease classification model.
+    Diagnostic accuracy percentages are not fabricated.
     """
     mean_ei = features_dict.get("mean_erythema", 0.0)
-    p90_ei = features_dict.get("p90_erythema", 0.0)
     roughness = features_dict.get("sobel_roughness", 0.0)
-    p90_roughness = features_dict.get("p90_roughness", 0.0)
     chroma_std = features_dict.get("chromatic_dispersion", 0.0)
     convexity = features_dict.get("luminance_convexity", 0.0)
     skin_frac = features_dict.get("skin_pixel_fraction", 0.0)
@@ -276,32 +275,26 @@ def run_rule_based_fallback(features_dict):
 
     # Out of scope check
     if skin_frac < 0.22:
-        return CAT_UNABLE, 0.0, ["Non-skin image content detected (skin pixel match < 22%)."]
+        return CAT_UNABLE, None, ["Non-skin image content detected (skin pixel match < 22%)."]
 
-    # Pigmented lesion safety check
+    # Pigmented lesion safety check: Do NOT force into Rash/Irritation or any diagnosis
     if lesion_info.get("is_pigmented_lesion"):
-        return CAT_UNABLE, 0.0, ["Unsupported skin lesion pattern detected."]
+        return CAT_UNABLE, None, ["This prototype does not currently support reliable classification of all skin lesions."]
 
     if mean_ei > 20.0 and roughness > 25.0:
         cat = CAT_INFECTION
-        conf = min(88.0, 62.0 + mean_ei * 0.4 + roughness * 0.2)
     elif roughness > 32.0 and mean_ei < 20.0:
         cat = CAT_INJURY
-        conf = min(86.0, 60.0 + roughness * 0.3)
     elif chroma_std > 38.0 and mean_ei > 10.0 and roughness < 26.0 and not lesion_info.get("is_pigmented_lesion"):
         cat = CAT_RASH
-        conf = min(85.0, 58.0 + chroma_std * 0.35)
     elif convexity > 14.0 and roughness < 18.0:
         cat = CAT_SWELLING
-        conf = min(82.0, 56.0 + convexity * 0.8)
     elif mean_ei > 16.0 and roughness < 20.0:
         cat = CAT_INFLAMMATION
-        conf = min(84.0, 58.0 + mean_ei * 0.5)
     else:
         cat = CAT_UNABLE
-        conf = 0.0
 
-    return cat, conf, []
+    return cat, None, []
 
 
 def compute_vision_metrics(img_path):
@@ -439,20 +432,29 @@ def compute_vision_metrics(img_path):
         profile = CONDITION_PROFILES[CAT_UNSUPPORTED_LESION]
         return {
             "success": True,
+            "prediction": "Unable to Confidently Assess: Unsupported Skin Lesion Pattern",
             "category": CAT_UNABLE,
             "classification": CAT_UNABLE,
             "sub_category": "Unsupported Skin Lesion Pattern",
             "status": "unsupported_lesion",
             "is_unsupported_lesion": True,
-            "confidence_score": 0.0,
-            "model_confidence": "N/A (Outside Supported Scope)",
+            "confidence_score": None,
+            "model_confidence": "Not Applicable (Outside Supported Scope)",
             "confidence_explanation": "Model confidence is not applicable: Pigmented skin lesions and moles are outside the supported diagnostic domain of this acute prototype.",
             "assessment_summary": "Unable to Confidently Assess: Unsupported Skin Lesion Pattern Detected",
             "what_detected": f"The computer vision analyzer detected localized hyperpigmented melanin clustering (Contrast drop: {lesion_info.get('contrast_drop', 0)} units, Core: {lesion_info.get('melanin_core_percent', 0)}%) with chromatic variegation ({lesion_info.get('variegation', 0)}).",
+            "interpretation": profile["what_means"],
             "what_means": profile["what_means"],
             "disclaimer_note": profile["disclaimer_note"],
             "recommended_next_step": profile["recommended_next_step"],
-            "important_note": "This is an AI-assisted preliminary assessment and is NOT a medical diagnosis.",
+            "important_note": "This result is not a medical diagnosis.",
+            "observed_visual_features": [
+                f"Focal Melanin Contrast Drop: {lesion_info.get('contrast_drop', 0)} units",
+                f"Hyperpigmented Core Coverage: {lesion_info.get('melanin_core_percent', 0)}%",
+                f"Intra-Lesion Color Variegation: {lesion_info.get('variegation', 0)}",
+                f"Erythema Index: {metrics_payload['erythema_index']} (Baseline skin locus)",
+                f"Surface Edge Roughness: {metrics_payload['surface_roughness']} (Intact stratum corneum)"
+            ],
             "what_observed": [
                 f"Focal Melanin Contrast Drop: {lesion_info.get('contrast_drop', 0)} units",
                 f"Hyperpigmented Core Coverage: {lesion_info.get('melanin_core_percent', 0)}%",
@@ -550,31 +552,43 @@ def compute_vision_metrics(img_path):
         profile = CONDITION_PROFILES[CAT_UNABLE]
         return {
             "success": True,
+            "prediction": CAT_UNABLE,
             "category": CAT_UNABLE,
             "classification": CAT_UNABLE,
-            "confidence_score": 0.0,
-            "model_confidence": "0.0%",
+            "confidence_score": None,
+            "model_confidence": "Not Applicable (Rule-Based Heuristic Prototype)",
             "is_out_of_scope": True,
             "assessment_summary": "Unable to confidently assess this image.",
             "what_detected": "The visual features did not meet the statistical confidence threshold for supported acute skin categories.",
             "what_means": "The presentation is ambiguous, sub-threshold, or outside current reference patterns.",
+            "interpretation": "The visual features did not meet the statistical threshold for supported acute skin categories. The presentation is ambiguous, sub-threshold, or outside current reference patterns.",
+            "observed_visual_features": [
+                f"Erythema Index: {metrics_payload['erythema_index']} (Baseline red tone)",
+                f"Surface Edge Roughness: {metrics_payload['surface_roughness']} (Edge density)",
+                f"Color Variance: {metrics_payload['chromatic_variance']} (Tonal dispersion)"
+            ],
             "what_observed": [
                 f"Erythema Index: {metrics_payload['erythema_index']}",
                 f"Surface Edge Roughness: {metrics_payload['surface_roughness']}",
-                f"Chromatic Dispersion: {metrics_payload['chromatic_variance']}"
+                f"Color Variance: {metrics_payload['chromatic_variance']}"
+            ],
+            "technical_image_metrics": [
+                f"Optical Erythema Index: {metrics_payload['erythema_index']}",
+                f"Surface Roughness: {metrics_payload['surface_roughness']}",
+                f"Color Variance: {metrics_payload['chromatic_variance']}"
             ],
             "technical_features": [
                 f"Erythema Index: {metrics_payload['erythema_index']}",
                 f"Surface Roughness: {metrics_payload['surface_roughness']}",
-                f"Chromatic Dispersion: {metrics_payload['chromatic_variance']}"
+                f"Color Variance: {metrics_payload['chromatic_variance']}"
             ],
             "technical_image_features": [
                 f"Erythema Index: {metrics_payload['erythema_index']}",
                 f"Surface Roughness: {metrics_payload['surface_roughness']}",
-                f"Chromatic Dispersion: {metrics_payload['chromatic_variance']}"
+                f"Color Variance: {metrics_payload['chromatic_variance']}"
             ],
             "recommended_next_step": "Please upload a clearer, well-lit image of the affected area or seek professional medical evaluation.",
-            "important_note": "This is an AI-assisted preliminary assessment and is NOT a medical diagnosis.",
+            "important_note": "This result is not a medical diagnosis.",
             "metrics": metrics_payload,
             "findings": [
                 "Visual features did not meet the statistical confidence threshold for supported skin categories.",
@@ -603,39 +617,43 @@ def compute_vision_metrics(img_path):
     observable_chars = [
         f"Erythema Index: {metrics_payload['erythema_index']} (Peak: {metrics_payload['peak_erythema']})",
         f"Surface Edge Roughness: {metrics_payload['surface_roughness']} (Gradient density)",
-        f"Chromatic Dispersion: {metrics_payload['chromatic_variance']} (Patchiness variance)",
-        f"Sharpness Score: {metrics_payload['sharpness_score']} | Lighting Balance: {metrics_payload['brightness_score']}"
+        f"Color Variance: {metrics_payload['chromatic_variance']} (Tonal dispersion across tissue)",
+        f"Skin Match Fraction: {round(metrics_payload['skin_pixel_fraction'] * 100.0, 1)}% (Skin locus match)"
     ]
 
     technical_features = [
-        f"Spectrophotometric Erythema Index: {metrics_payload['erythema_index']} (Capillary dilation)",
-        f"Sobel Edge Roughness: {metrics_payload['surface_roughness']} (Structural barrier gradient)",
-        f"Chromatic Dispersion: {metrics_payload['chromatic_variance']} (Color variance across tissue)",
+        f"Optical Erythema Index: {metrics_payload['erythema_index']} (Relative red/green chrominance ratio)",
+        f"Sobel Edge Roughness: {metrics_payload['surface_roughness']} (Spatial edge gradient density)",
+        f"Color Variance: {metrics_payload['chromatic_variance']} (Chromatic dispersion across tissue pixels)",
         f"Skin Locus Pixel Fraction: {round(metrics_payload['skin_pixel_fraction'] * 100.0, 1)}%",
         f"Image Sharpness Variance: {metrics_payload['sharpness_score']} (Laplacian focus clarity)"
     ]
 
     findings = [
         profile["what_detected"],
-        f"Statistical alignment with benchmarked {top_cat.lower()} indicators ({top_prob}% model confidence)."
+        "Assessment generated using computer-vision image analysis of visual characteristics such as color, texture and surface patterns."
     ]
 
     return {
         "success": True,
+        "prediction": top_cat,
         "category": top_cat,
         "classification": top_cat,
-        "confidence_score": top_prob,
-        "model_confidence": f"{top_prob}%",
-        "confidence_explanation": "Statistical model confidence based on calibrated feature classification (not a medical certainty).",
-        "assessment_summary": f"Visual indicators may be consistent with {top_cat.lower()}.",
+        "confidence_score": None,
+        "model_confidence": "Not Applicable (Rule-Based Heuristic Prototype)",
+        "confidence_explanation": "Current scanner is rule-based and does not contain a validated disease classification model. Diagnostic percentage scores are not generated.",
+        "assessment_summary": "Assessment generated using computer-vision image analysis of visual characteristics such as color, texture and surface patterns.",
         "what_detected": profile["what_detected"],
         "what_observed": observable_chars,
+        "observed_visual_features": observable_chars,
         "observable_characteristics": observable_chars,
         "technical_features": technical_features,
         "technical_image_features": technical_features,
+        "technical_image_metrics": technical_features,
+        "interpretation": profile.get("what_means", profile["description"]),
         "what_means": profile.get("what_means", profile["description"]),
         "recommended_next_step": profile.get("recommended_next_step", profile["when_to_seek_care"][0]),
-        "important_note": "This is an AI-assisted preliminary assessment and is NOT a medical diagnosis.",
+        "important_note": "This result is not a medical diagnosis.",
         "general_information": profile["general_information"],
         "general_care": profile["general_care"],
         "recommendations": profile["general_care"],
@@ -643,10 +661,10 @@ def compute_vision_metrics(img_path):
         "when_to_seek_care": profile["when_to_seek_care"],
         "severity": "Severity cannot be reliably determined from this scan.",
         "severity_note": "Tissue firmness, depth, warmth, and induration cannot be evaluated from a 2D photograph and require physical clinical examination.",
-        "runner_ups": runner_ups,
+        "runner_ups": [],
         "metrics": metrics_payload,
         "findings": findings,
-        "model_used": "Calibrated Multi-Class Dermatological Vision Classifier v2.5",
+        "model_used": "MediSense AI Rule-Based Visual Feature Analyzer",
         "is_preliminary": True,
         "disclaimer": "This tool provides preliminary AI-assisted information for educational purposes and does not provide a medical diagnosis. Results should not replace evaluation by a qualified healthcare professional."
     }

@@ -166,7 +166,7 @@
     },
     "safety_gating_evaluation": {
         "pigmented_lesion_safety_gate": {
-            "mechanism": "Spectrophotometric Melanin Absorption Drop & Chromatic Variegation Gating",
+            "mechanism": "Optical Melanin Absorption Drop & Chromatic Variegation Gating",
             "reference_cancer_test_case": "WhatsApp Image 2026-09-10 at 10.43.37 AM.jpeg",
             "previous_classification": "Possible Rash/Skin Irritation (False Negative)",
             "previous_fabricated_score": "76.8% Visual Feature Correlation Score",
