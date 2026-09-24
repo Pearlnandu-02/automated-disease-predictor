@@ -120,16 +120,25 @@ def run_interactive_scanner_test():
         print(f"Scanning UI: LaserBeam={has_laser}, ProgressBar={has_progress}")
         assert has_laser and has_progress
 
-        # Test 6: Verify result card elements
+        # Test 6: Verify result card elements & Section 13 additions
         result_content = evaluate("!!document.getElementById('resultContent')")
         severity_badge = evaluate("!!document.getElementById('resultSeverityBadge')")
         quality_fail = evaluate("!!document.getElementById('qualityFailContent')")
         out_of_scope = evaluate("!!document.getElementById('outOfScopeContent')")
+        unsupported_lesion = evaluate("!!document.getElementById('unsupportedLesionContent')")
+        lesion_tech_feats = evaluate("!!document.getElementById('lesionTechFeaturesList')")
+        lesion_next_step = evaluate("!!document.getElementById('lesionNextStepText')")
+        result_tech_feats = evaluate("!!document.getElementById('resultTechFeaturesList')")
+        result_what_means = evaluate("!!document.getElementById('resultWhatMeansText')")
+        result_next_step = evaluate("!!document.getElementById('resultNextStepText')")
         obs_list = evaluate("!!document.getElementById('resultObsList')")
         care_list = evaluate("!!document.getElementById('resultCareList')")
         warning_list = evaluate("!!document.getElementById('resultWarningList')")
-        print(f"Result Elements: ResultContent={result_content}, SeverityBadge={severity_badge}, QualityFailCard={quality_fail}, OutOfScopeCard={out_of_scope}, ObsList={obs_list}, CareList={care_list}, WarningList={warning_list}")
-        assert result_content and severity_badge and quality_fail and out_of_scope and obs_list and care_list and warning_list
+        print(f"Result Elements: ResultContent={result_content}, SeverityBadge={severity_badge}, QualityFailCard={quality_fail}, OutOfScopeCard={out_of_scope}, UnsupportedLesionCard={unsupported_lesion}")
+        print(f"Section 13 UI Fields: LesionTechFeats={lesion_tech_feats}, LesionNextStep={lesion_next_step}, ResultTechFeats={result_tech_feats}, WhatMeans={result_what_means}, NextStep={result_next_step}")
+        assert result_content and severity_badge and quality_fail and out_of_scope and unsupported_lesion
+        assert lesion_tech_feats and lesion_next_step and result_tech_feats and result_what_means and result_next_step
+        assert obs_list and care_list and warning_list
 
         # Test 7: Verify Light and Dark theme toggles
         evaluate("applyTheme('light')")
@@ -141,8 +150,22 @@ def run_interactive_scanner_test():
         print(f"Theme Check: Light Body BG={light_bg} | Dark Body BG={dark_bg}")
         assert light_bg != dark_bg
 
+        # Test 8: Mobile responsiveness checks (375px, 390px, 768px, 1024px, 1366px, 1440px)
+        viewports = [(375, 667), (390, 844), (768, 1024), (1024, 768), (1366, 768), (1440, 900)]
+        for w, h in viewports:
+            send_cdp("Emulation.setDeviceMetricsOverride", {
+                "width": w,
+                "height": h,
+                "deviceScaleFactor": 1,
+                "mobile": (w < 768)
+            })
+            time.sleep(0.15)
+            doc_w = evaluate("document.documentElement.clientWidth")
+            print(f"Viewport Test {w}x{h}: clientWidth={doc_w}")
+            assert abs(doc_w - w) <= 25, f"Viewport mismatch for {w}x{h}"
+
         ws.close()
-        print("\nALL INTERACTIVE SCANNER E2E TESTS PASSED SUCCESSFULLY!")
+        print("\nALL INTERACTIVE SCANNER E2E TESTS (INCLUDING SECTION 13 & MOBILE VIEWPORTS) PASSED SUCCESSFULLY!")
 
     finally:
         try:

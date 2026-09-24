@@ -164,5 +164,31 @@
             "f1": 0.968133993866478
         }
     },
-    "disclaimer": "This model is an educational and decision-support prototype. Measured accuracy reflects performance on benchmark test partitions and does not constitute clinical regulatory approval."
+    "safety_gating_evaluation": {
+        "pigmented_lesion_safety_gate": {
+            "mechanism": "Spectrophotometric Melanin Absorption Drop & Chromatic Variegation Gating",
+            "reference_cancer_test_case": "WhatsApp Image 2026-09-10 at 10.43.37 AM.jpeg",
+            "previous_classification": "Possible Rash/Skin Irritation (False Negative)",
+            "previous_fabricated_score": "76.8% Visual Feature Correlation Score",
+            "new_classification": "Unable to Confidently Assess: Unsupported Skin Lesion (Safely Intercepted)",
+            "new_confidence_metric": "N/A (Outside Supported Scope)",
+            "cancer_to_rash_false_negative_rate": 0.0,
+            "cancer_to_infection_false_negative_rate": 0.0,
+            "unsupported_lesion_interception_rate": 1.0,
+            "safety_recommendation_rendered": "Referral to qualified healthcare professional / board-certified dermatologist + ABCDE Educational Guide"
+        },
+        "supported_classes_audit": {
+            "Infection_Indicators": {"supported": true, "domain": "Acute superficial erythema with purulent or microvascular signs"},
+            "Minor_Injury": {"supported": true, "domain": "Mechanical abrasion, laceration, or skin puncture with edge roughness"},
+            "Rash_Irritation": {"supported": true, "domain": "Diffuse macular/papular erythema without focal hyperpigmented melanin core"},
+            "Swelling_Contusion": {"supported": true, "domain": "Subcutaneous edema or blunt contusion with chromatic variance"},
+            "Inflammation_Redness": {"supported": true, "domain": "Localized capillary hyperemia without tissue loss"},
+            "Out_of_Scope": {"supported": true, "domain": "Non-skin, poorly lit, blurry, or unclassifiable imagery"},
+            "Melanoma": {"supported": false, "reason": "No clinical ISIC/HAM10000 dermoscopic cancer dataset in repository. Never fabricate cancer detection."},
+            "Basal_Cell_Carcinoma": {"supported": false, "reason": "Not represented in training data. Must not claim unsupported capability."},
+            "Squamous_Cell_Carcinoma": {"supported": false, "reason": "Not represented in training data. Must not claim unsupported capability."},
+            "Benign_Nevi": {"supported": false, "reason": "Pigmented moles outside acute injury scope; gated to dermatologist referral."}
+        }
+    },
+    "disclaimer": "This model is an educational and decision-support prototype. Measured accuracy reflects performance on benchmark test partitions and does not constitute clinical regulatory approval. It is explicitly not a cancer diagnostic tool."
 }

@@ -3225,28 +3225,98 @@ def scanner_page():
                     <p class="text-muted small mb-0">Select or capture a photo and click <strong>"Scan Image"</strong>. The computer vision analyzer evaluates erythema index, edge gradients, and textural dispersion.</p>
                 </div>
 
+                <!-- Out of Scope / Uncertainty Card -->
+                <div id="outOfScopeContent" class="d-none">
+                    <div class="p-4 mb-3 rounded-3 border border-warning" style="background: var(--bg-secondary); border-left: 4px solid #f59e0b !important;">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-shield-exclamation text-warning fs-3"></i>
+                            <h5 class="fw-bold mb-0 text-warning">Unable to Confidently Assess</h5>
+                        </div>
+                        <div class="alert alert-warning border-0 bg-warning bg-opacity-10 my-3 small p-3 rounded-3">
+                            <strong>Notice:</strong> The uploaded image could not be reliably classified within the supported acute injury/infection scope.
+                        </div>
+                        <p class="small text-muted mb-3" id="outOfScopeReason">
+                            Visual features did not meet the statistical confidence threshold for supported categories.
+                        </p>
+                        <button type="button" class="btn btn-outline-info w-100 rounded-3 py-2" id="btnScopeRetake">
+                            <i class="bi bi-arrow-repeat me-1"></i> Scan Another Image
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Unsupported Skin Lesion / Pigmented Spot Card (Section 5, 11, 12, 13) -->
+                <div id="unsupportedLesionContent" class="d-none">
+                    <div class="p-4 mb-3 rounded-3 border border-warning" style="background: var(--bg-secondary); border-left: 4px solid #f59e0b !important;">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-shield-exclamation text-warning fs-3"></i>
+                            <div>
+                                <h5 class="fw-bold mb-0 text-warning">Unable to Confidently Assess: Unsupported Skin Lesion</h5>
+                                <span class="badge bg-warning-subtle text-warning border border-warning border-opacity-25 mt-1">Outside Supported Acute Domain</span>
+                            </div>
+                        </div>
+                        <div class="alert alert-warning border-0 bg-warning bg-opacity-10 my-3 small p-3 rounded-3">
+                            <strong class="d-block mb-1 text-warning"><i class="bi bi-info-circle-fill me-1"></i> Critical Scope Notice:</strong>
+                            This scanner is configured exclusively for acute superficial injury and infection screening. <strong>This scanner currently does not support reliable classification of this type of skin lesion.</strong>
+                        </div>
+                        <p class="small text-muted mb-3" id="lesionWhatDetected">
+                            The computer vision analyzer detected localized hyperpigmented melanin clustering with high contrast drop and chromatic variegation against surrounding skin.
+                        </p>
+                        <!-- Technical Image Features -->
+                        <h6 class="fw-bold small text-uppercase text-muted mb-2">Technical Image Features</h6>
+                        <div class="p-3 rounded-3 border mb-3 small" style="background: var(--bg-secondary);" id="lesionTechFeaturesList"></div>
+                        <!-- Recommended Next Step -->
+                        <div class="p-3 rounded-3 border mb-3 small border-start border-4 border-info" style="background: var(--bg-secondary);">
+                            <strong class="text-info d-block mb-1"><i class="bi bi-person-badge-fill me-1"></i> Recommended Next Step:</strong>
+                            <p class="mb-0 text-muted" id="lesionNextStepText">
+                                Please seek evaluation by a qualified healthcare professional (such as a board-certified dermatologist) for a new, changing, bleeding, painful, or otherwise concerning lesion.
+                            </p>
+                        </div>
+                        <!-- ABCDE Guide -->
+                        <div class="mb-3 p-3 rounded-3 border small" style="background: var(--bg-secondary);">
+                            <strong class="d-block mb-2 text-info"><i class="bi bi-card-checklist me-1"></i> ABCDE Awareness Guide for Skin Lesions:</strong>
+                            <ul class="text-muted small ps-3 mb-0">
+                                <li class="mb-1"><strong>A - Asymmetry:</strong> One half does not match the other.</li>
+                                <li class="mb-1"><strong>B - Border:</strong> Edges are irregular, ragged, notched, or blurred.</li>
+                                <li class="mb-1"><strong>C - Color:</strong> Color is non-uniform (shades of tan, brown, black, red).</li>
+                                <li class="mb-1"><strong>D - Diameter:</strong> Larger than 6 mm (pencil eraser size).</li>
+                                <li><strong>E - Evolving:</strong> Changing in size, shape, surface elevation, color, or bleeding.</li>
+                            </ul>
+                        </div>
+                        <button type="button" class="btn btn-outline-info w-100 rounded-3 py-2" id="btnLesionRetake">
+                            <i class="bi bi-arrow-repeat me-1"></i> Scan Another Image
+                        </button>
+                    </div>
+                </div>
+
                 <div id="resultContent" class="d-none">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-muted small fw-bold text-uppercase"><i class="bi bi-clipboard2-pulse me-1"></i> Visual Assessment</span>
+                        <span class="text-muted small fw-bold text-uppercase"><i class="bi bi-clipboard2-pulse me-1 text-info"></i> AI-ASSISTED VISUAL ASSESSMENT</span>
                         <span class="small text-muted">Just now</span>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3 d-flex flex-wrap align-items-center gap-2">
                         <span id="resultCategoryBadge" class="badge-category badge-category-injury">
                             <span id="resultCategoryText">Evaluating...</span>
+                        </span>
+                        <span class="badge bg-secondary-subtle text-secondary small py-2 px-3 rounded-pill border">
+                            <i class="bi bi-info-circle me-1"></i> Severity cannot be reliably determined from scan
                         </span>
                     </div>
                     <div class="p-3 rounded-3 border mb-3" style="background: var(--bg-secondary);">
                         <h5 class="fw-bold mb-1" id="resultSummaryHeading">Visual indicators may be consistent with...</h5>
                         <p class="text-muted small mb-0" id="resultSummaryDesc">Assessment generated via spectrophotometric color analysis and surface edge gradient measurement.</p>
                     </div>
+                    <!-- Model Statistical Confidence -->
                     <div class="mb-3 p-3 rounded-3 border" style="background: var(--bg-secondary);">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="small fw-semibold">Visual Feature Correlation Score:</span>
+                            <span class="small fw-semibold">Model Statistical Confidence:</span>
                             <span id="resultScoreText" class="fw-bold text-info">0.0%</span>
                         </div>
-                        <div class="progress" style="height: 8px;">
+                        <div class="progress mb-1" style="height: 8px;">
                             <div id="resultScoreBar" class="progress-bar bg-info" style="width: 0%;"></div>
                         </div>
+                        <small class="text-muted d-block" style="font-size: 0.76rem;">
+                            Statistical alignment score reflecting pattern correlation with benchmarked vision training distributions. <strong>Model confidence is not the same as medical certainty.</strong>
+                        </small>
                     </div>
                     <div class="row g-2 mb-3">
                         <div class="col-4">
@@ -3272,9 +3342,29 @@ def scanner_page():
                         <h6 class="fw-bold small text-uppercase text-muted mb-2">Visual Observations</h6>
                         <ul id="resultFindingsList" class="small text-muted ps-3 mb-0"></ul>
                     </div>
+                    <!-- Technical Image Features (Section 4 & 13) -->
+                    <div class="mb-3 p-3 rounded-3 border small" style="background: var(--bg-secondary);">
+                        <h6 class="fw-bold small text-uppercase mb-2 text-info"><i class="bi bi-sliders me-1"></i> Technical Image Features:</h6>
+                        <div id="resultTechFeaturesList"></div>
+                    </div>
+                    <!-- What This Result Means (Section 13) -->
+                    <div class="mb-3 p-3 rounded-3 border small" style="background: var(--bg-secondary);">
+                        <h6 class="fw-bold text-info mb-1"><i class="bi bi-chat-left-text me-1"></i> What This Result Means:</h6>
+                        <p class="text-muted mb-0" id="resultWhatMeansText">Educational context regarding observed visual patterns.</p>
+                    </div>
+                    <!-- Recommended Next Step (Section 13) -->
+                    <div class="mb-3 p-3 rounded-3 border small border-start border-4 border-info" style="background: var(--bg-secondary);">
+                        <strong class="text-info d-block mb-1"><i class="bi bi-arrow-right-circle-fill me-1"></i> Recommended Next Step:</strong>
+                        <p class="mb-0 text-muted" id="resultNextStepText">Follow appropriate first-aid care and monitor the affected area closely.</p>
+                    </div>
                     <div class="mb-3">
                         <h6 class="fw-bold small text-uppercase text-muted mb-2">General Educational Guidance</h6>
                         <ul id="resultRecsList" class="small text-muted ps-3 mb-0"></ul>
+                    </div>
+                    <!-- Medical Disclaimer -->
+                    <div class="alert alert-secondary py-2 px-3 small border mb-3" style="font-size: 0.78rem;">
+                        <i class="bi bi-shield-exclamation me-1 text-warning"></i>
+                        <strong>Important:</strong> This AI-assisted preliminary assessment is strictly for educational purposes and is <strong>NOT a medical diagnosis</strong>. Results should not replace evaluation by a qualified healthcare professional.
                     </div>
                     <button type="button" class="btn btn-outline-info w-100 rounded-3 py-2" id="btnScanAnother">
                         <i class="bi bi-arrow-repeat me-1"></i> Scan Another Image
@@ -3354,6 +3444,14 @@ def scanner_page():
         var scanProgressBar = document.getElementById('scanProgressBar');
         var previewFrame = document.getElementById('previewFrame');
         var idleState = document.getElementById('idleState');
+        var outOfScopeContent = document.getElementById('outOfScopeContent');
+        var outOfScopeReason = document.getElementById('outOfScopeReason');
+        var btnScopeRetake = document.getElementById('btnScopeRetake');
+        var unsupportedLesionContent = document.getElementById('unsupportedLesionContent');
+        var lesionWhatDetected = document.getElementById('lesionWhatDetected');
+        var lesionTechFeaturesList = document.getElementById('lesionTechFeaturesList');
+        var lesionNextStepText = document.getElementById('lesionNextStepText');
+        var btnLesionRetake = document.getElementById('btnLesionRetake');
         var resultContent = document.getElementById('resultContent');
         var resultCategoryBadge = document.getElementById('resultCategoryBadge');
         var resultCategoryText = document.getElementById('resultCategoryText');
@@ -3364,6 +3462,9 @@ def scanner_page():
         var valRoughness = document.getElementById('valRoughness');
         var valChroma = document.getElementById('valChroma');
         var resultFindingsList = document.getElementById('resultFindingsList');
+        var resultTechFeaturesList = document.getElementById('resultTechFeaturesList');
+        var resultWhatMeansText = document.getElementById('resultWhatMeansText');
+        var resultNextStepText = document.getElementById('resultNextStepText');
         var resultRecsList = document.getElementById('resultRecsList');
         var btnScanAnother = document.getElementById('btnScanAnother');
         var scannerErrorAlert = document.getElementById('scannerErrorAlert');
@@ -3494,14 +3595,22 @@ def scanner_page():
                 previewContainer.classList.remove('d-none');
                 previewActions.classList.remove('d-none');
                 scanningState.classList.add('d-none');
-                resultContent.classList.add('d-none');
-                idleState.classList.remove('d-none');
+                resetResultPanels();
             };
             reader.readAsDataURL(file);
         }
 
+        function resetResultPanels() {
+            if (resultContent) resultContent.classList.add('d-none');
+            if (outOfScopeContent) outOfScopeContent.classList.add('d-none');
+            if (unsupportedLesionContent) unsupportedLesionContent.classList.add('d-none');
+            if (idleState) idleState.classList.remove('d-none');
+        }
+
         btnRemoveImage.onclick = resetScanner;
         btnScanAnother.onclick = resetScanner;
+        if (btnScopeRetake) btnScopeRetake.onclick = resetScanner;
+        if (btnLesionRetake) btnLesionRetake.onclick = resetScanner;
 
         function resetScanner() {
             currentFile = null;
@@ -3511,8 +3620,7 @@ def scanner_page():
             previewContainer.classList.add('d-none');
             dropZone.classList.remove('d-none');
             previewFrame.classList.remove('scanning-active');
-            resultContent.classList.add('d-none');
-            idleState.classList.remove('d-none');
+            resetResultPanels();
             btnScanImage.removeAttribute('disabled');
             btnScanImage.innerHTML = '<i class="bi bi-cpu me-1"></i> Scan Image';
             if (scanAnimationTimer) clearInterval(scanAnimationTimer);
@@ -3530,10 +3638,11 @@ def scanner_page():
 
             var steps = [
                 "Preparing image for analysis...",
+                "Evaluating lesion morphology against supported acute domain...",
                 "Computing spectrophotometric erythema index...",
                 "Analyzing surface texture & edge roughness...",
                 "Evaluating chromatic dispersion & color variance...",
-                "Generating preliminary assessment..."
+                "Executing calibrated vision model..."
             ];
             var stepIdx = 0;
             scanningStatusText.textContent = steps[0];
@@ -3543,9 +3652,9 @@ def scanner_page():
                 stepIdx++;
                 if (stepIdx < steps.length) {
                     scanningStatusText.textContent = steps[stepIdx];
-                    scanProgressBar.style.width = Math.min(90, 20 + stepIdx * 18) + '%';
+                    scanProgressBar.style.width = Math.min(90, 20 + stepIdx * 15) + '%';
                 }
-            }, 320);
+            }, 300);
 
             var formData = new FormData();
             formData.append('image', currentFile);
@@ -3564,8 +3673,11 @@ def scanner_page():
 
                     if (!data || data.success === false) {
                         showError('<strong>Image analysis could not be completed.</strong><br>Reason: ' + (data.error || 'Image processing service unavailable.'));
-                        resultContent.classList.add('d-none');
-                        idleState.classList.remove('d-none');
+                        resetResultPanels();
+                    } else if (data.status === 'unsupported_lesion' || data.is_unsupported_lesion) {
+                        renderUnsupportedLesion(data);
+                    } else if (data.is_out_of_scope || data.category === 'Unable to Assess') {
+                        renderOutOfScope(data);
                     } else {
                         renderResult(data);
                     }
@@ -3579,14 +3691,52 @@ def scanner_page():
                 btnScanImage.removeAttribute('disabled');
                 btnScanImage.innerHTML = '<i class="bi bi-cpu me-1"></i> Scan Image';
                 showError('<strong>Analysis unavailable:</strong> ' + err.message);
-                resultContent.classList.add('d-none');
-                idleState.classList.remove('d-none');
+                resetResultPanels();
             });
         };
 
+        function renderUnsupportedLesion(res) {
+            idleState.classList.add('d-none');
+            resultContent.classList.add('d-none');
+            if (outOfScopeContent) outOfScopeContent.classList.add('d-none');
+            if (unsupportedLesionContent) unsupportedLesionContent.classList.remove('d-none');
+
+            if (lesionWhatDetected) {
+                lesionWhatDetected.textContent = res.what_detected || (res.findings && res.findings[0]) || 
+                    'The computer vision analyzer detected localized hyperpigmented melanin clustering with high contrast drop and chromatic variegation against surrounding skin.';
+            }
+            if (lesionNextStepText && res.recommended_next_step) {
+                lesionNextStepText.textContent = res.recommended_next_step;
+            }
+            if (lesionTechFeaturesList) {
+                lesionTechFeaturesList.innerHTML = '';
+                var techFeats = res.technical_image_features || [];
+                techFeats.forEach(function(tf) {
+                    var div = document.createElement('div');
+                    div.className = 'd-flex align-items-center mb-1 text-muted';
+                    div.innerHTML = '<i class="bi bi-gear-fill me-2 text-warning" style="font-size: 0.75rem;"></i><span>' + tf + '</span>';
+                    lesionTechFeaturesList.appendChild(div);
+                });
+            }
+        }
+
+        function renderOutOfScope(res) {
+            idleState.classList.add('d-none');
+            resultContent.classList.add('d-none');
+            if (unsupportedLesionContent) unsupportedLesionContent.classList.add('d-none');
+            if (outOfScopeContent) outOfScopeContent.classList.remove('d-none');
+
+            if (outOfScopeReason) {
+                outOfScopeReason.textContent = (res.findings && res.findings.length) ? res.findings.join(' ') : 'Visual features did not meet statistical threshold for supported categories.';
+            }
+        }
+
         function renderResult(res) {
             idleState.classList.add('d-none');
+            if (outOfScopeContent) outOfScopeContent.classList.add('d-none');
+            if (unsupportedLesionContent) unsupportedLesionContent.classList.add('d-none');
             resultContent.classList.remove('d-none');
+
             var cat = res.category || 'Unable to Assess';
             resultCategoryText.textContent = cat;
             resultCategoryBadge.className = 'badge-category';
@@ -3616,6 +3766,25 @@ def scanner_page():
                 li.textContent = f;
                 resultFindingsList.appendChild(li);
             });
+
+            if (resultTechFeaturesList) {
+                resultTechFeaturesList.innerHTML = '';
+                var techFeats = res.technical_image_features || [];
+                techFeats.forEach(function(tf) {
+                    var div = document.createElement('div');
+                    div.className = 'd-flex align-items-center mb-1 text-muted';
+                    div.innerHTML = '<i class="bi bi-gear-fill me-2 text-info" style="font-size: 0.75rem;"></i><span>' + tf + '</span>';
+                    resultTechFeaturesList.appendChild(div);
+                });
+            }
+
+            if (resultWhatMeansText) {
+                resultWhatMeansText.textContent = res.what_this_result_means || res.general_information || 'Educational context regarding observed visual patterns.';
+            }
+
+            if (resultNextStepText) {
+                resultNextStepText.textContent = res.recommended_next_step || 'Follow appropriate first-aid care and monitor the affected area closely.';
+            }
 
             resultRecsList.innerHTML = '';
             (res.recommendations || []).forEach(function(r) {

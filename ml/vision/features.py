@@ -306,6 +306,75 @@ def extract_features_from_array(rgb_arr):
     return features, features_dict
 
 
+def detect_pigmented_lesion(rgb_arr, skin_mask=None, gray_arr=None):
+    """
+    Evaluates whether the image exhibits optical patterns characteristic of a focal
+    pigmented skin lesion (mole, nevus, melanocytic lesion, or pigmented neoplasm),
+    distinguishing it from diffuse rashes, inflammatory redness, or open mechanical wounds.
+    """
+    if skin_mask is None:
+        skin_mask, _ = detect_skin_pixels(rgb_arr)
+
+    R = rgb_arr[:, :, 0]
+    G = rgb_arr[:, :, 1]
+    B = rgb_arr[:, :, 2]
+    lum = 0.299 * R + 0.587 * G + 0.114 * B
+
+    skin_pixels = lum[skin_mask] if np.sum(skin_mask) > 100 else lum.flatten()
+    median_skin_lum = float(np.median(skin_pixels))
+    p5_lum = float(np.percentile(skin_pixels, 5))
+    lum_drop = float(max(0.0, median_skin_lum - p5_lum))
+
+    # Focal hyperpigmented melanin core
+    focal_melanin_core = (lum < 108.0) & (lum < (median_skin_lum - 32.0)) & (R < 140.0) & skin_mask
+    total_pixels = float(rgb_arr.shape[0] * rgb_arr.shape[1])
+    melanin_core_frac = float(np.sum(focal_melanin_core) / total_pixels)
+
+    # Variegation
+    if np.sum(focal_melanin_core) > 40:
+        dark_R = R[focal_melanin_core]
+        dark_G = G[focal_melanin_core]
+        dark_B = B[focal_melanin_core]
+        variegation = float(np.std(dark_R - dark_G) + np.std(dark_R - dark_B))
+    else:
+        variegation = 0.0
+
+    # Surrounding Erythema
+    safe_R = np.clip(R, 1.0, 255.0)
+    safe_G = np.clip(G, 1.0, 255.0)
+    mean_ei = float(np.mean(100.0 * (np.log10(safe_R) - np.log10(safe_G))))
+
+    # Roughness
+    if gray_arr is None:
+        gray_arr = lum
+    pad = np.pad(gray_arr, 1, mode='edge')
+    sobel_h = (-1.0*pad[:-2, :-2] + 1.0*pad[:-2, 2:] + -2.0*pad[1:-1, :-2] + 2.0*pad[1:-1, 2:] + -1.0*pad[2:, :-2] + 1.0*pad[2:, 2:])
+    sobel_v = (-1.0*pad[:-2, :-2] - 2.0*pad[:-2, 1:-1] - 1.0*pad[:-2, 2:] + 1.0*pad[2:, :-2] + 2.0*pad[2:, 1:-1] + 1.0*pad[2:, 2:])
+    roughness = float(np.mean(np.hypot(sobel_h, sobel_v)))
+
+    skin_fraction = float(np.mean(skin_mask))
+
+    # Check if image exhibits focal pigmented skin lesion properties
+    is_pigmented = bool(
+        skin_fraction >= 0.20 and
+        lum_drop >= 42.0 and
+        (0.005 <= melanin_core_frac <= 0.40) and
+        mean_ei < 22.0 and
+        roughness < 45.0
+    )
+
+    return {
+        "is_pigmented_lesion": is_pigmented,
+        "contrast_drop": round(lum_drop, 1),
+        "melanin_core_percent": round(melanin_core_frac * 100.0, 2),
+        "variegation": round(variegation, 1),
+        "median_skin_lum": round(median_skin_lum, 1),
+        "p5_lum": round(p5_lum, 1),
+        "erythema_index": round(mean_ei, 1),
+        "roughness": round(roughness, 1)
+    }
+
+
 def process_image_file(img_path):
     """
     Full pipeline: loads image, handles orientation, checks quality, and extracts features.
@@ -338,5 +407,10 @@ def process_image_file(img_path):
     features_dict["sharpness_score"] = round(blur_score, 1)
     features_dict["brightness_score"] = round(brightness, 1)
     features_dict["quality_details"] = q_details
+
+    # Lesion biomarker analysis
+    skin_mask, _ = detect_skin_pixels(rgb_arr)
+    lesion_info = detect_pigmented_lesion(rgb_arr, skin_mask, gray_arr)
+    features_dict["lesion_analysis"] = lesion_info
 
     return acceptable, quality_msg, features_list, features_dict, gray_arr
