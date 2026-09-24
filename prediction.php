@@ -2,70 +2,18 @@
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/ml_bridge.php';
+require_once __DIR__ . '/services/symptom_prediction.php';
 
 $pdo = get_db_connection();
 
-// Fetch symptoms from DB
-$symptoms = [];
-if ($pdo) {
-    try {
-        $stmt = $pdo->query("SELECT * FROM symptoms ORDER BY body_system, name ASC");
-        $symptoms = $stmt->fetchAll();
-    } catch (PDOException $e) {
-        $symptoms = [];
-    }
-}
+// Load symptoms and diseases from structured datasets
+$all_symptoms = SymptomPredictionService::getSymptoms();
+$all_diseases = SymptomPredictionService::getDiseases();
 
-// Fallback symptoms list if database connection is unavailable
-if (empty($symptoms)) {
-    $fallback_keys = [
-        'high_blood_sugar' => ['High Blood Sugar / Thirst', 'Endocrine'],
-        'frequent_urination' => ['Frequent Urination', 'Renal'],
-        'high_blood_pressure' => ['High Blood Pressure', 'Cardiovascular'],
-        'chest_pain' => ['Chest Pain / Tightness', 'Cardiovascular'],
-        'shortness_of_breath' => ['Shortness of Breath / Dyspnea', 'Respiratory'],
-        'cough_with_sputum' => ['Persistent Cough with Sputum', 'Respiratory'],
-        'hemoptysis' => ['Hemoptysis (Coughing Blood)', 'Respiratory'],
-        'fever' => ['Fever (>100.4°F)', 'Systemic'],
-        'chills' => ['Severe Chills / Rigors', 'Systemic'],
-        'joint_pain' => ['Severe Joint / Bone Pain', 'Musculoskeletal'],
-        'headache' => ['Severe Throbbing Headache', 'Neurological'],
-        'seizures' => ['Involuntary Electrical Seizures', 'Neurological'],
-        'resting_tremor' => ['Resting Hand Tremors', 'Neurological'],
-        'memory_loss' => ['Progressive Memory Loss', 'Neurological'],
-        'wheezing' => ['Respiratory Wheezing', 'Respiratory'],
-        'heartburn' => ['Gastric Heartburn / Acid Reflux', 'Gastrointestinal'],
-        'jaundice' => ['Jaundice (Yellowing Eyes/Skin)', 'Hepatic'],
-        'right_upper_quadrant_pain' => ['Right Upper Quadrant Abdominal Pain', 'Hepatic'],
-        'flank_pain' => ['Flank / Low Back Pain', 'Renal'],
-        'dysuria' => ['Dysuria (Painful Urination)', 'Renal'],
-        'fatigue' => ['Chronic Lethargy & Fatigue', 'Systemic'],
-        'cold_intolerance' => ['Cold Intolerance', 'Endocrine'],
-        'heat_intolerance' => ['Heat Intolerance / Sweating', 'Endocrine'],
-        'palpitations' => ['Rapid Heart Palpitations', 'Cardiovascular'],
-        'weight_loss' => ['Unexplained Rapid Weight Loss', 'Systemic'],
-        'sweats' => ['Drenching Night Sweats', 'Systemic']
-    ];
-    foreach ($fallback_keys as $k => $info) {
-        $symptoms[] = [
-            'symptom_key' => $k,
-            'name' => $info[0],
-            'body_system' => $info[1]
-        ];
-    }
-}
-
-// Group symptoms by body_system
-$grouped_symptoms = [];
-foreach ($symptoms as $sym) {
-    $sys = $sym['body_system'];
-    $grouped_symptoms[$sys][] = $sym;
-}
-
-$prediction_result = null;
 $selected_keys = [];
+$server_result = null;
 
-// Check for pre-selection via URL parameter (e.g. from Symptoms Guide)
+// Pre-selection via GET query parameter (e.g. from Symptoms Guide)
 if (isset($_GET['symptom']) && !empty($_GET['symptom'])) {
     $clean_get = preg_replace('/[^a-zA-Z0-9_]/', '', trim($_GET['symptom']));
     if (!empty($clean_get)) {
@@ -73,13 +21,13 @@ if (isset($_GET['symptom']) && !empty($_GET['symptom'])) {
     }
 }
 
+// Handle traditional form submission POST (fallback if JS disabled)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $raw_symptoms = $_POST['symptoms'] ?? [];
     if (!is_array($raw_symptoms)) {
         $raw_symptoms = [$raw_symptoms];
     }
     
-    // Sanitize symptom keys (alphanumeric and underscores only)
     $selected_keys = [];
     foreach ($raw_symptoms as $sk) {
         $clean = preg_replace('/[^a-zA-Z0-9_]/', '', trim($sk));
@@ -89,97 +37,230 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $selected_keys = array_values(array_unique($selected_keys));
 
-    if (!empty($selected_keys)) {
-        $prediction_result = call_symptom_prediction($selected_keys);
+    if (count($selected_keys) >= 2) {
+        $context = [
+            'ageGroup' => $_POST['age_group'] ?? 'adult',
+            'duration' => $_POST['duration'] ?? '1_3_days',
+            'severity' => $_POST['severity'] ?? 'moderate',
+            'trajectory' => $_POST['trajectory'] ?? 'same'
+        ];
+        $server_result = SymptomPredictionService::matchSymptoms($selected_keys, $context);
         
         // Save to DB history if user logged in
-        if (is_logged_in() && $pdo) {
+        if (is_logged_in() && $pdo && !empty($server_result['conditions'])) {
             try {
                 $user = get_logged_in_user();
                 $sym_str = implode(', ', array_map(function($k) { return ucwords(str_replace('_', ' ', $k)); }, $selected_keys));
+                $top = $server_result['conditions'][0];
                 $stmt = $pdo->prepare("INSERT INTO prediction_history (user_id, symptoms_selected, predicted_disease, confidence) VALUES (?, ?, ?, ?)");
                 $stmt->execute([
                     $user['id'],
                     $sym_str,
-                    $prediction_result['prediction'] ?? 'Unknown',
-                    $prediction_result['probability'] ?? 0.0
+                    $top['name'],
+                    $top['score']
                 ]);
             } catch (Exception $e) {
                 // Silently bypass history logging error
             }
         }
-    } else {
-        set_flash_message('warning', 'Please select at least 1 symptom tile below to run the AI model prediction.');
     }
 }
 
-$selected_lookup = array_flip($selected_keys);
-
-$page_title = 'MediSense AI | AI Prediction';
+$page_title = 'MediSense AI | Symptom-Based Disease Prediction';
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<div class="row py-3">
-    <div class="col-lg-12 text-center mb-4">
-        <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-2">AI SYMPTOM CHECKER</span>
-        <h1 class="display-5 fw-extrabold mb-2">Intelligent Multi-Symptom Disease Prediction</h1>
-        <p class="lead text-muted mx-auto" style="max-width: 750px;">
-            Click the symptom tiles below to select your present indicators. Our clinical classification model evaluates co-occurrence patterns to estimate potential conditions.
-        </p>
-    </div>
-</div>
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.php" class="text-decoration-none text-info">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">AI Prediction</li>
+        </ol>
+    </nav>
 
-<div class="row g-4">
-    <!-- Form Column with Matte/Glossy Symptom Tiles -->
-    <div class="col-lg-7">
-        <div class="card-custom p-4 p-md-5">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="fw-bold mb-0 d-flex align-items-center">
-                    <i class="bi bi-grid-3x3-gap-fill text-info me-2"></i> Select Present Symptoms
-                </h4>
-                <span class="badge bg-secondary bg-opacity-50 text-muted small" id="selected-count-badge">
-                    Click tiles to select
-                </span>
-            </div>
-            <p class="small text-muted mb-4">
-                Click any tile to toggle. Unselected tiles are matte; selected tiles illuminate with a glossy finish (no conventional checkboxes):
+    <!-- Header Section -->
+    <div class="row align-items-center mb-4">
+        <div class="col-lg-8">
+            <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-2">
+                <i class="bi bi-cpu-fill me-1"></i> CLINICAL DECISION SUPPORT
+            </span>
+            <h1 class="display-5 fw-extrabold mb-2">Symptom-Based Disease Prediction</h1>
+            <p class="lead text-muted mb-0">
+                Select or type your active symptoms to receive an educational evaluation of possible health conditions based on transparent clinical co-occurrence models.
             </p>
+        </div>
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+            <button type="button" class="btn btn-outline-info rounded-pill px-3 py-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#methodologyModal">
+                <i class="bi bi-info-circle me-1"></i> Data & Methodology
+            </button>
+        </div>
+    </div>
 
-            <form method="POST" action="prediction.php" class="prediction-form" id="predictionForm">
-                <?php foreach ($grouped_symptoms as $system => $sym_list): ?>
-                    <div class="mb-4">
-                        <h6 class="text-info text-uppercase fw-bold small tracking-wider mb-3 pb-1 border-bottom border-secondary border-opacity-25 d-flex align-items-center">
-                            <i class="bi bi-activity me-2"></i> <?= sanitize($system) ?> System
-                        </h6>
-                        <div class="symptom-grid">
-                            <?php foreach ($sym_list as $s): ?>
-                                <?php $is_checked = isset($selected_lookup[$s['symptom_key']]); ?>
-                                <label class="symptom-tile <?= $is_checked ? 'selected' : '' ?>" tabindex="0" role="checkbox" aria-checked="<?= $is_checked ? 'true' : 'false' ?>" id="tile_<?= sanitize($s['symptom_key']) ?>">
-                                    <input 
-                                        type="checkbox" 
-                                        name="symptoms[]" 
-                                        value="<?= sanitize($s['symptom_key']) ?>" 
-                                        id="sym_<?= sanitize($s['symptom_key']) ?>" 
-                                        class="symptom-checkbox visually-hidden"
-                                        <?= $is_checked ? 'checked' : '' ?>
-                                    >
-                                    <div class="symptom-tile-gloss"></div>
-                                    <span class="symptom-tile-name"><?= sanitize($s['name']) ?></span>
-                                </label>
-                            <?php endforeach; ?>
+    <div class="row g-4">
+        <!-- LEFT COLUMN: SYMPTOM INPUT, SEARCH, TILES & CONTEXT -->
+        <div class="col-lg-6">
+            <div class="card-custom p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold mb-0 d-flex align-items-center">
+                        <i class="bi bi-search text-info me-2"></i> Search & Select Symptoms
+                    </h4>
+                    <span class="badge bg-secondary bg-opacity-50 text-muted" id="selectedCountBadge">
+                        0 symptoms selected
+                    </span>
+                </div>
+
+                <!-- Natural Language Search Input -->
+                <div class="position-relative mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text bg-card-subtle text-info border">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input 
+                            type="text" 
+                            id="symptomSearchInput" 
+                            class="form-control" 
+                            placeholder="Type a symptom (e.g., headache, fever, fatigue, vomiting)..."
+                            autocomplete="off"
+                        >
+                    </div>
+                    <!-- Autocomplete Dropdown List -->
+                    <div id="symptomAutocompleteList" class="list-group position-absolute w-100 shadow-lg mt-1 z-3" style="display: none; max-height: 280px; overflow-y: auto;">
+                    </div>
+                </div>
+
+                <!-- Quick-Add Popular Symptoms -->
+                <div class="mb-4">
+                    <span class="small text-muted d-block mb-2 fw-semibold">Quick-Add Common Symptoms:</span>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary symptom-popular-pill rounded-pill" data-symptom="fever">
+                            + Fever
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary symptom-popular-pill rounded-pill" data-symptom="cough_with_sputum">
+                            + Cough
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary symptom-popular-pill rounded-pill" data-symptom="headache">
+                            + Headache
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary symptom-popular-pill rounded-pill" data-symptom="fatigue">
+                            + Fatigue
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary symptom-popular-pill rounded-pill" data-symptom="sore_throat">
+                            + Sore Throat
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary symptom-popular-pill rounded-pill" data-symptom="shortness_of_breath">
+                            + Shortness of Breath
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary symptom-popular-pill rounded-pill" data-symptom="nausea">
+                            + Nausea
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary symptom-popular-pill rounded-pill" data-symptom="dizziness">
+                            + Dizziness
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Selected Symptoms Removable Chips Box -->
+                <div class="p-3 bg-card-subtle rounded-3 border mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold small text-info">
+                            <i class="bi bi-tags-fill me-1"></i> Selected Symptoms (Chips):
+                        </span>
+                        <button type="button" class="btn btn-sm btn-link text-muted p-0 text-decoration-none" id="clearSymptomsBtn">
+                            <i class="bi bi-trash3 me-1"></i> Clear All
+                        </button>
+                    </div>
+                    
+                    <div id="selectedSymptomChips" class="d-flex flex-wrap gap-2 min-h-40 align-items-center">
+                        <!-- Chips rendered dynamically via JS -->
+                    </div>
+
+                    <div id="emptyChipsNotice" class="text-muted small py-2 text-center" style="display: block;">
+                        <i class="bi bi-hand-index-thumb me-1"></i> Select at least 2 symptoms from above or browse categories below.
+                    </div>
+                </div>
+
+                <!-- Optional Clinical Context (Accordion) -->
+                <div class="accordion accordion-flush mb-4" id="clinicalContextAccordion">
+                    <div class="accordion-item bg-transparent border-0">
+                        <h2 class="accordion-header" id="contextHeading">
+                            <button class="accordion-button collapsed bg-card-subtle rounded-3 p-3 text-info fw-bold small shadow-none border" type="button" data-bs-toggle="collapse" data-bs-target="#contextCollapse">
+                                <i class="bi bi-sliders2 me-2"></i> Optional Clinical Context (Age, Duration, Severity)
+                            </button>
+                        </h2>
+                        <div id="contextCollapse" class="accordion-collapse collapse" data-bs-parent="#clinicalContextAccordion">
+                            <div class="accordion-body px-0 pt-3 pb-0">
+                                <div class="row g-3">
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label small text-muted mb-1" for="contextAgeGroup">Age Group</label>
+                                        <select class="form-select form-select-sm" id="contextAgeGroup">
+                                            <option value="child">Child (0-12)</option>
+                                            <option value="teen">Teen (13-17)</option>
+                                            <option value="adult" selected>Adult (18-64)</option>
+                                            <option value="older_adult">Older Adult (65+)</option>
+                                            <option value="unspecified">Prefer not to say</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label small text-muted mb-1" for="contextDuration">Duration</label>
+                                        <select class="form-select form-select-sm" id="contextDuration">
+                                            <option value="less_1_day">Less than 24h</option>
+                                            <option value="1_3_days" selected>1–3 days</option>
+                                            <option value="4_7_days">4–7 days</option>
+                                            <option value="more_1_week">1–2 weeks</option>
+                                            <option value="more_2_weeks">&gt; 2 weeks</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label small text-muted mb-1" for="contextSeverity">Severity</label>
+                                        <select class="form-select form-select-sm" id="contextSeverity">
+                                            <option value="mild">Mild (Noticeable)</option>
+                                            <option value="moderate" selected>Moderate (Disruptive)</option>
+                                            <option value="severe">Severe (Incapacitating)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label small text-muted mb-1" for="contextTrajectory">Progression</label>
+                                        <select class="form-select form-select-sm" id="contextTrajectory">
+                                            <option value="better">Getting better</option>
+                                            <option value="same" selected>Staying same</option>
+                                            <option value="worse">Getting worse</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                <?php endforeach; ?>
+                </div>
 
-                <div class="disclaimer-banner my-4">
-                    <i class="bi bi-info-circle-fill me-1 text-info"></i> Predictions are generated using an automated Random Forest classifier trained on clinical co-occurrence patterns. Results are strictly educational.
+                <!-- Body Systems Filter Bar -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold small text-muted">Browse by Body System:</span>
+                    </div>
+                    <div class="d-flex flex-wrap gap-1 mb-3">
+                        <button type="button" class="btn btn-sm symptom-category-pill active btn-info text-white" data-category="all">All</button>
+                        <button type="button" class="btn btn-sm symptom-category-pill btn-outline-secondary" data-category="general">General</button>
+                        <button type="button" class="btn btn-sm symptom-category-pill btn-outline-secondary" data-category="respiratory">Respiratory</button>
+                        <button type="button" class="btn btn-sm symptom-category-pill btn-outline-secondary" data-category="cardiovascular">Cardio</button>
+                        <button type="button" class="btn btn-sm symptom-category-pill btn-outline-secondary" data-category="gastrointestinal">Digestive</button>
+                        <button type="button" class="btn btn-sm symptom-category-pill btn-outline-secondary" data-category="neurological">Neuro</button>
+                        <button type="button" class="btn btn-sm symptom-category-pill btn-outline-secondary" data-category="dermatological">Skin</button>
+                        <button type="button" class="btn btn-sm symptom-category-pill btn-outline-secondary" data-category="endocrine">Endocrine</button>
+                        <button type="button" class="btn btn-sm symptom-category-pill btn-outline-secondary" data-category="musculoskeletal">Musculo</button>
+                    </div>
+
+                    <!-- Scrollable Symptom Tiles Grid -->
+                    <div id="symptomBrowserContainer" class="symptom-browser-grid p-2 rounded-3 border bg-card-subtle" style="max-height: 240px; overflow-y: auto;">
+                        <!-- Rendered by JS -->
+                    </div>
                 </div>
 
                 <!-- Animated Loading State (Multi-step) -->
                 <div id="ai-loading-state" class="ai-loading-container mb-4" style="display: none;">
                     <div class="ai-spinner"></div>
                     <h5 class="fw-bold mb-2">Analyzing Symptom Profile...</h5>
-                    <p class="small text-muted mb-3">Evaluating clinical features through the diagnostic classifier</p>
+                    <p class="small text-muted mb-3">Evaluating clinical co-occurrence patterns across 73 conditions</p>
                     <div class="ai-loading-steps">
                         <div class="ai-loading-step active" id="loading-step-1">
                             <span class="ai-step-dot"></span>
@@ -187,144 +268,111 @@ require_once __DIR__ . '/includes/header.php';
                         </div>
                         <div class="ai-loading-step" id="loading-step-2">
                             <span class="ai-step-dot"></span>
-                            <span>Processing symptom pattern...</span>
+                            <span>Comparing symptom patterns across 73 conditions...</span>
                         </div>
                         <div class="ai-loading-step" id="loading-step-3">
                             <span class="ai-step-dot"></span>
-                            <span>Generating model prediction...</span>
+                            <span>Evaluating differential criteria & weighting...</span>
                         </div>
                         <div class="ai-loading-step" id="loading-step-4">
                             <span class="ai-step-dot"></span>
-                            <span>Preparing result...</span>
+                            <span>Preparing ranked possible conditions...</span>
                         </div>
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary-custom btn-lg w-100 py-3" id="predictSubmitBtn">
-                    <i class="bi bi-cpu-fill me-2"></i> Submit Symptoms & Predict Condition
+                <!-- Analyze Button -->
+                <button type="button" class="btn btn-primary-custom btn-lg w-100 py-3 fw-bold" id="analyzeSymptomsBtn">
+                    <i class="bi bi-cpu-fill me-2"></i> Analyze Symptoms
                 </button>
-            </form>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: RESULTS, OVERLAPPING ADVISORY & FOLLOW-UP QUESTIONS -->
+        <div class="col-lg-6">
+            <!-- Emergency Alert Box (renders if red flags present) -->
+            <div id="emergencyAlertContainer" style="display: none;"></div>
+
+            <!-- Follow-up Questions Container (Refine symptoms) -->
+            <div id="refineQuestionsContainer" style="display: none;"></div>
+
+            <!-- Main Results Container -->
+            <div id="symptomResultsContainer" style="display: none;">
+                <!-- Dynamically filled by JS -->
+            </div>
+
+            <!-- Empty State / Awaiting Selection -->
+            <div id="emptyResultsContainer" class="card-custom p-5 text-center h-100 d-flex flex-column justify-content-center align-items-center">
+                <div class="p-4 bg-info bg-opacity-10 text-info rounded-circle mb-3">
+                    <i class="bi bi-activity display-3"></i>
+                </div>
+                <h4 class="fw-bold mb-2">Awaiting Symptom Selection</h4>
+                <p class="text-muted small mb-4" style="max-width: 420px;">
+                    Select at least 2 symptoms from the panel on the left. Our clinical co-occurrence matching engine will evaluate overlapping conditions and provide an educational assessment.
+                </p>
+                <div class="p-3 bg-card-subtle rounded-3 border text-start small w-100" style="max-width: 440px;">
+                    <strong class="text-info d-block mb-2"><i class="bi bi-shield-check me-1"></i> System Guardrails:</strong>
+                    <ul class="text-muted mb-0 ps-3">
+                        <li class="mb-1">Transparent, explainable clinical match scores (not fake probability).</li>
+                        <li class="mb-1">Ranks top 3–5 possible conditions considering overlapping symptoms.</li>
+                        <li>Identifies emergency red-flag indicators requiring immediate medical care.</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
+</div>
 
-    <!-- Prediction Results Column -->
-    <div class="col-lg-5">
-        <?php if ($prediction_result): ?>
-            <?php if (isset($prediction_result['error'])): ?>
-                <div class="card-custom p-4 text-center border-danger mb-4">
-                    <i class="bi bi-exclamation-triangle-fill text-warning display-4 mb-3"></i>
-                    <h4 class="fw-bold">Service Notice</h4>
-                    <p class="text-muted small mb-0">
-                        <?= sanitize($prediction_result['error']) ?>
-                    </p>
-                </div>
-            <?php elseif (($prediction_result['status'] ?? '') === 'insufficient_information' || ($prediction_result['prediction'] ?? '') === 'Insufficient Information'): ?>
-                <div class="card-custom p-4 p-md-5 text-center border-warning mb-4">
-                    <span class="badge bg-warning bg-opacity-20 text-warning border border-warning border-opacity-25 mb-3 px-3 py-1 fw-bold">
-                        <i class="bi bi-exclamation-circle-fill me-1"></i> INSUFFICIENT INFORMATION
-                    </span>
-                    <h3 class="fw-bold mb-2">Additional Symptoms Needed</h3>
-                    <p class="text-muted small mb-4">
-                        <?= sanitize($prediction_result['message'] ?? 'A single symptom or non-specific combination does not provide enough statistical evidence across our 65 condition categories. Please select 2 or more symptoms to evaluate.') ?>
-                    </p>
+<!-- DATA & METHODOLOGY MODAL -->
+<div class="modal fade" id="methodologyModal" tabindex="-1" aria-labelledby="methodologyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-card border">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold" id="methodologyModalLabel">
+                    <i class="bi bi-diagram-3-fill text-info me-2"></i> Data & Methodology Transparency
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-muted small" style="line-height: 1.6;">
+                <h6 class="fw-bold text-primary-theme mb-2">1. Clinical Dataset Provenance</h6>
+                <p>
+                    The MediSense AI disease catalog incorporates 73 verified clinical conditions and 58 standardized symptom indicators. Clinical feature sets and symptom frequencies are synthesized from evidence-based publications including the <em>Centers for Disease Control and Prevention (CDC) Clinical Guidelines</em>, <em>World Health Organization (WHO) Clinical Practice Handbook</em>, and <em>Harrison's Principles of Internal Medicine</em>.
+                </p>
 
-                    <div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 text-start small mb-4">
-                        <strong class="text-info d-block mb-2"><i class="bi bi-lightbulb-fill me-1"></i> Suggested Actions:</strong>
-                        <ul class="mb-0 ps-3 text-muted">
-                            <li class="mb-1">Select additional active symptoms from the tiles on the left.</li>
-                            <li class="mb-1">Explore our <a href="symptoms_guide.php" class="text-info text-decoration-underline">Symptoms Guide</a> to view commonly associated signs.</li>
-                            <li>For any concerning symptoms, consult a qualified physician or healthcare professional.</li>
-                        </ul>
-                    </div>
+                <h6 class="fw-bold text-primary-theme mb-2">2. Symptom Normalization (Natural Language Processing)</h6>
+                <p>
+                    Free-form user queries (such as "head ache", "throwing up", or "cold chills") are mapped to standardized clinical symptom keys using a tolerant multi-tier normalization algorithm incorporating synonym indexing, prefix matching, and substring alignment.
+                </p>
 
-                    <div class="d-flex justify-content-between align-items-center text-muted small border-top border-secondary border-opacity-25 pt-3">
-                        <span><i class="bi bi-cpu me-1"></i> <?= sanitize($prediction_result['model_version'] ?? 'Multi-Disease Prediction Model v2') ?></span>
-                        <span class="badge bg-secondary bg-opacity-25 text-info">65 Supported Conditions</span>
-                    </div>
-                </div>
+                <h6 class="fw-bold text-primary-theme mb-2">3. Deterministic Match Scoring Engine</h6>
+                <p>
+                    Rather than outputting arbitrary probability claims, the matching algorithm computes a calibrated overlap score based on clinical feature weights:
+                </p>
+                <ul>
+                    <li><strong>Characteristic / Core Symptoms:</strong> Weighted at 3.0 points.</li>
+                    <li><strong>Secondary / Less-Common Symptoms:</strong> Weighted at 1.5 points.</li>
+                    <li><strong>Mismatch Penalty:</strong> Non-matching symptoms reduce precision by 2.0 points.</li>
+                    <li><strong>Balanced F0.8 Formulation:</strong> Harmonizes sensitivity and specificity, normalized from 0 to 100.</li>
+                </ul>
 
-                <div class="disclaimer-banner p-4 text-start">
-                    <h6 class="fw-bold mb-2 text-warning"><i class="bi bi-shield-exclamation me-1"></i> Important Medical Disclaimer</h6>
-                    <p class="small mb-0 text-muted">
-                        <?= sanitize($prediction_result['disclaimer'] ?? 'These results are educational predictions based on the information provided and are not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment.') ?>
-                    </p>
-                </div>
-            <?php else: ?>
-                <div class="card-custom p-4 text-center border-info mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="badge bg-secondary px-3 py-1">AI MODEL OUTPUT</span>
-                        <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 small">
-                            <?= sanitize($prediction_result['model_version'] ?? 'Multi-Disease Model v2') ?>
-                        </span>
-                    </div>
-                    <h5 class="text-muted text-uppercase fw-bold small mt-2">Most Likely Condition (AI Classification)</h5>
-                    <h2 class="display-6 fw-bold my-2"><?= sanitize($prediction_result['prediction']) ?></h2>
-                    
-                    <div class="my-3 py-2 border-top border-bottom border-secondary border-opacity-25">
-                        <span 
-                            class="display-3 fw-extrabold text-info counter-text animate-counter" 
-                            data-target="<?= htmlspecialchars(number_format((float)$prediction_result['probability'], 1, '.', '')) ?>"
-                        >
-                            00.0%
-                        </span>
-                        <p class="small text-muted mb-0 mt-1">Calculated model likelihood score across 65 conditions</p>
-                    </div>
+                <h6 class="fw-bold text-primary-theme mb-2">4. What the Match Score Means (and Does NOT Mean)</h6>
+                <p>
+                    A score of "85/100" signifies high educational alignment between the patient's reported symptoms and standard medical descriptions of that condition. It is <strong>NOT</strong> a 85% probability of disease. Symptom checkers cannot evaluate physical exam findings, vital signs, or laboratory pathology.
+                </p>
 
-                    <?php if (!empty($prediction_result['influencing_symptoms'])): ?>
-                        <div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 my-3 text-start small">
-                            <strong class="text-primary-theme d-block mb-1">
-                                <i class="bi bi-bounding-box-circles me-1 text-info"></i> Influencing Symptoms Detected:
-                            </strong>
-                            <div class="d-flex flex-wrap gap-1 mt-2">
-                                <?php foreach ($prediction_result['influencing_symptoms'] as $inf): ?>
-                                    <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 px-2 py-1">
-                                        <?= sanitize(ucwords(str_replace('_', ' ', $inf))) ?>
-                                    </span>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if (!empty($prediction_result['runner_ups'])): ?>
-                        <div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 my-3 text-start small">
-                            <strong class="text-primary-theme d-block mb-2">
-                                <i class="bi bi-bar-chart me-1 text-warning"></i> Other Possible Matches Considered:
-                            </strong>
-                            <ul class="list-unstyled mb-0">
-                                <?php foreach ($prediction_result['runner_ups'] as $rup): ?>
-                                    <li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10 text-muted">
-                                        <span><?= sanitize($rup['disease']) ?></span>
-                                        <span class="fw-bold text-primary-theme"><?= number_format((float)$rup['probability'], 1) ?>%</span>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-                    <?php endif; ?>
-
-                    <a href="disease_detail.php?name=<?= urlencode($prediction_result['prediction']) ?>" class="btn btn-outline-info rounded-pill px-4 w-100 my-2">
-                        <i class="bi bi-book me-1"></i> Learn More About <?= sanitize($prediction_result['prediction']) ?>
-                    </a>
-                </div>
-
-                <div class="disclaimer-banner p-4 text-start">
-                    <h6 class="fw-bold mb-2 text-warning"><i class="bi bi-shield-exclamation me-1"></i> Important Medical Disclaimer</h6>
-                    <p class="small mb-0 text-muted">
-                        <?= sanitize($prediction_result['disclaimer'] ?? 'These results are educational predictions based on the information provided and are not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment.') ?>
-                    </p>
-                </div>
-            <?php endif; ?>
-
-        <?php else: ?>
-            <div class="card-custom p-5 text-center h-100 d-flex flex-column justify-content-center align-items-center">
-                <i class="bi bi-activity text-info display-1 mb-3 opacity-50"></i>
-                <h4 class="fw-bold">Awaiting Symptom Selection</h4>
-                <p class="text-muted small max-w-sm mb-0">
-                    Click on the symptom tiles on the left to select your active indicators, then click "Submit Symptoms" to evaluate with our AI diagnostic model.
+                <h6 class="fw-bold text-primary-theme mb-2">5. Handling Overlapping Conditions</h6>
+                <p>
+                    Because infections, auto-immune conditions, and metabolic disorders frequently share early constitutional symptoms (e.g. fever, fatigue, malaise), MediSense AI displays multiple ranked possibilities and provides differential guidance to assist clinical discussions.
                 </p>
             </div>
-        <?php endif; ?>
+            <div class="modal-footer border-top">
+                <button type="button" class="btn btn-info text-white rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
 </div>
+
+<script src="assets/js/symptom_prediction.js"></script>
 
 <?php
 require_once __DIR__ . '/includes/footer.php';

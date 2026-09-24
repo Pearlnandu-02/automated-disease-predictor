@@ -83,8 +83,8 @@ $user = get_logged_in_user();
 <body>
 
     <?php
-    $is_clinical_active = in_array($current_page, ['assessment.php', 'simulator.php']);
-    $is_library_active = in_array($current_page, ['diseases.php', 'disease_detail.php', 'symptoms_guide.php', 'prevention.php']);
+    $is_clinical_active = in_array($current_page, ['assessment.php', 'simulator.php', 'risk_calculator.php', 'report.php']);
+    $is_library_active = in_array($current_page, ['diseases.php', 'disease_detail.php', 'symptoms_guide.php', 'prevention.php', 'education.php', 'emergency.php']);
     ?>
     <!-- Navigation Header -->
     <nav class="navbar navbar-expand-xl navbar-custom sticky-top">
@@ -128,35 +128,57 @@ $user = get_logged_in_user();
                         </a>
                         <ul class="dropdown-menu dropdown-menu-custom shadow-lg border-0" aria-labelledby="clinicalToolsDropdown">
                             <li>
-                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 <?= ($current_page == 'assessment.php' && ($_GET['type'] ?? '') !== 'diabetes') ? 'active-sub' : '' ?>" href="assessment.php">
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 <?= $current_page == 'assessment.php' ? 'active-sub' : '' ?>" href="assessment.php">
                                     <div class="dropdown-icon-box text-info mt-1">
                                         <i class="bi bi-shield-check fs-5"></i>
                                     </div>
                                     <div>
                                         <div class="dropdown-item-title">Clinical Risk Assessment</div>
-                                        <div class="dropdown-item-desc">Evaluate selected health risk factors.</div>
+                                        <div class="dropdown-item-desc">Comprehensive multi-parameter clinical evaluation.</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 <?= $current_page == 'risk_calculator.php' ? 'active-sub' : '' ?>" href="risk_calculator.php">
+                                    <div class="dropdown-icon-box text-warning mt-1">
+                                        <i class="bi bi-calculator fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-item-title">Health Risk Calculator</div>
+                                        <div class="dropdown-item-desc">Interactive BMI, cardiac, metabolic & lifestyle risks.</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 <?= $current_page == 'prediction.php' ? 'active-sub' : '' ?>" href="prediction.php">
+                                    <div class="dropdown-icon-box text-primary mt-1">
+                                        <i class="bi bi-activity fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-item-title">Symptom Checker</div>
+                                        <div class="dropdown-item-desc">Multi-symptom AI disease correlation screening.</div>
                                     </div>
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 <?= $current_page == 'simulator.php' ? 'active-sub' : '' ?>" href="simulator.php">
-                                    <div class="dropdown-icon-box text-info mt-1">
+                                    <div class="dropdown-icon-box text-success mt-1">
                                         <i class="bi bi-sliders fs-5"></i>
                                     </div>
                                     <div>
                                         <div class="dropdown-item-title">Health Simulator</div>
-                                        <div class="dropdown-item-desc">Explore educational health calculations.</div>
+                                        <div class="dropdown-item-desc">Explore educational health calculations & what-if scenarios.</div>
                                     </div>
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 <?= ($current_page == 'assessment.php' && ($_GET['type'] ?? '') === 'diabetes') ? 'active-sub' : '' ?>" href="assessment.php?type=diabetes">
-                                    <div class="dropdown-icon-box text-danger mt-1">
-                                        <i class="bi bi-droplet-fill fs-5"></i>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 <?= $current_page == 'report.php' ? 'active-sub' : '' ?>" href="report.php">
+                                    <div class="dropdown-icon-box text-info mt-1">
+                                        <i class="bi bi-file-earmark-medical fs-5"></i>
                                     </div>
                                     <div>
-                                        <div class="dropdown-item-title">Diabetes Assessment</div>
-                                        <div class="dropdown-item-desc">Review diabetes-related health indicators.</div>
+                                        <div class="dropdown-item-title">Health Reports</div>
+                                        <div class="dropdown-item-desc">View and download printable health summaries.</div>
                                     </div>
                                 </a>
                             </li>
@@ -175,8 +197,8 @@ $user = get_logged_in_user();
                                         <i class="bi bi-journal-medical fs-5"></i>
                                     </div>
                                     <div>
-                                        <div class="dropdown-item-title">Diseases Library</div>
-                                        <div class="dropdown-item-desc">Explore supported conditions.</div>
+                                        <div class="dropdown-item-title">Disease Library</div>
+                                        <div class="dropdown-item-desc">Explore 70+ categorized conditions & clinical summaries.</div>
                                     </div>
                                 </a>
                             </li>
@@ -187,7 +209,7 @@ $user = get_logged_in_user();
                                     </div>
                                     <div>
                                         <div class="dropdown-item-title">Symptoms Guide</div>
-                                        <div class="dropdown-item-desc">Browse symptoms and associated conditions.</div>
+                                        <div class="dropdown-item-desc">Browse clinical symptoms & associated conditions.</div>
                                     </div>
                                 </a>
                             </li>
@@ -197,17 +219,52 @@ $user = get_logged_in_user();
                                         <i class="bi bi-heart-pulse-fill fs-5"></i>
                                     </div>
                                     <div>
-                                        <div class="dropdown-item-title">Prevention</div>
-                                        <div class="dropdown-item-desc">Explore preventive health guidance.</div>
+                                        <div class="dropdown-item-title">Prevention Center</div>
+                                        <div class="dropdown-item-desc">10 essential preventive health domains & practical tips.</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 <?= $current_page == 'education.php' ? 'active-sub' : '' ?>" href="education.php">
+                                    <div class="dropdown-icon-box text-warning mt-1">
+                                        <i class="bi bi-book-half fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-item-title">Health Education</div>
+                                        <div class="dropdown-item-desc">Articles, FAQs, glossary, myths vs facts & AI guide.</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-start gap-3 py-2 px-3 rounded-3 <?= $current_page == 'emergency.php' ? 'active-sub' : '' ?>" href="emergency.php">
+                                    <div class="dropdown-icon-box text-danger mt-1">
+                                        <i class="bi bi-hospital fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="dropdown-item-title">Emergency Guide</div>
+                                        <div class="dropdown-item-desc">Critical warning signs requiring immediate medical care.</div>
                                     </div>
                                 </a>
                             </li>
                         </ul>
                     </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link <?= in_array($current_page, ['dashboard.php', 'profile.php', 'history.php']) ? 'active text-info fw-bold' : '' ?>" href="dashboard.php">
+                            <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                        </a>
+                    </li>
                 </ul>
 
                 <!-- Right Actions Area -->
-                <div class="navbar-actions">
+                <div class="navbar-actions d-flex align-items-center gap-2">
+                    <!-- Global Search Trigger -->
+                    <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-3 py-1 d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#globalSearchModal" title="Global Search (Ctrl+K)">
+                        <i class="bi bi-search"></i>
+                        <span class="d-none d-md-inline small">Search</span>
+                        <kbd class="bg-secondary bg-opacity-25 text-body small px-1 rounded border border-secondary border-opacity-25" style="font-size: 0.65rem;">⌘K</kbd>
+                    </button>
+
                     <!-- Compact Icon-Based Theme Toggle Button -->
                     <button id="themeToggleBtn" type="button" class="theme-toggle-btn" onclick="toggleSiteTheme()" title="Switch to dark mode" aria-label="Switch to dark mode">
                         <i class="bi bi-moon-stars-fill theme-icon-dark text-warning"></i>
@@ -224,10 +281,34 @@ $user = get_logged_in_user();
                     </script>
 
                     <?php if (is_logged_in()): ?>
-                        <a class="btn-nav-dashboard <?= $current_page == 'dashboard.php' ? 'active text-info fw-bold' : '' ?>" href="dashboard.php">Dashboard</a>
-                        <a class="btn-nav-logout" href="logout.php">
-                            <i class="bi bi-box-arrow-right me-1"></i> Logout (<?= sanitize($user['name']) ?>)
-                        </a>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-info dropdown-toggle rounded-pill px-3 py-1" type="button" id="userMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle me-1"></i> <?= sanitize($user['name']) ?>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom shadow-lg border-0" aria-labelledby="userMenuDropdown">
+                                <li>
+                                    <a class="dropdown-item py-2 px-3 <?= $current_page == 'profile.php' ? 'active-sub' : '' ?>" href="profile.php">
+                                        <i class="bi bi-person-lines-fill me-2 text-info"></i> Personal Health Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2 px-3 <?= $current_page == 'history.php' ? 'active-sub' : '' ?>" href="history.php">
+                                        <i class="bi bi-clock-history me-2 text-primary"></i> Assessment History
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2 px-3 <?= $current_page == 'health_assistant.php' ? 'active-sub' : '' ?>" href="health_assistant.php">
+                                        <i class="bi bi-chat-heart me-2 text-success"></i> AI Health Assistant
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider opacity-25"></li>
+                                <li>
+                                    <a class="dropdown-item py-2 px-3 text-danger" href="logout.php">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     <?php else: ?>
                         <a class="btn-nav-login" href="login.php">Login</a>
                         <a class="btn-nav-register" href="register.php">Register</a>

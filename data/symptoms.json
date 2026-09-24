@@ -1,0 +1,865 @@
+[
+  {
+    "key": "high_blood_sugar",
+    "name": "High Blood Sugar / Thirst",
+    "category": "Endocrine",
+    "severity": "Moderate",
+    "synonyms": [
+      "high blood sugar",
+      "high glucose",
+      "thirsty all the time",
+      "excessive thirst",
+      "polydipsia",
+      "dry mouth and thirst"
+    ]
+  },
+  {
+    "key": "frequent_urination",
+    "name": "Frequent Urination (Polyuria)",
+    "category": "Renal",
+    "severity": "Moderate",
+    "synonyms": [
+      "frequent urination",
+      "peeing a lot",
+      "frequent peeing",
+      "polyuria",
+      "urinating often",
+      "peeing constantly",
+      "bladder urgency"
+    ]
+  },
+  {
+    "key": "high_blood_pressure",
+    "name": "High Blood Pressure",
+    "category": "Cardiovascular",
+    "severity": "Severe",
+    "synonyms": [
+      "high blood pressure",
+      "high bp",
+      "hypertension",
+      "elevated blood pressure",
+      "blood pressure spike"
+    ]
+  },
+  {
+    "key": "chest_pain",
+    "name": "Chest Pain / Angina",
+    "category": "Cardiovascular",
+    "severity": "Emergency",
+    "synonyms": [
+      "chest pain",
+      "pain in chest",
+      "chest pressure",
+      "chest tightness",
+      "angina",
+      "tight chest",
+      "chest ache",
+      "heart pain",
+      "heaviness in chest",
+      "substernal pain"
+    ]
+  },
+  {
+    "key": "shortness_of_breath",
+    "name": "Shortness of Breath (Dyspnea)",
+    "category": "Respiratory",
+    "severity": "Severe",
+    "synonyms": [
+      "shortness of breath",
+      "short of breath",
+      "cant breathe",
+      "difficulty breathing",
+      "breathless",
+      "breathlessness",
+      "air hunger",
+      "dyspnea",
+      "hard to breathe",
+      "labored breathing"
+    ]
+  },
+  {
+    "key": "cough_with_sputum",
+    "name": "Persistent Cough with Sputum",
+    "category": "Respiratory",
+    "severity": "Moderate",
+    "synonyms": [
+      "cough with phlegm",
+      "productive cough",
+      "wet cough",
+      "coughing mucus",
+      "coughing up phlegm",
+      "coughing up mucus",
+      "chest cough",
+      "cough with sputum"
+    ]
+  },
+  {
+    "key": "hemoptysis",
+    "name": "Coughing Blood (Hemoptysis)",
+    "category": "Respiratory",
+    "severity": "Emergency",
+    "synonyms": [
+      "coughing blood",
+      "blood in cough",
+      "coughing up blood",
+      "spitting blood",
+      "hemoptysis",
+      "bloody sputum"
+    ]
+  },
+  {
+    "key": "fever",
+    "name": "High Fever (>100.4 F)",
+    "category": "Systemic",
+    "severity": "Severe",
+    "synonyms": [
+      "fever",
+      "fevers",
+      "high temp",
+      "high temperature",
+      "feverish",
+      "hot",
+      "pyrexia",
+      "burning up",
+      "chills and fever",
+      "elevated temperature"
+    ]
+  },
+  {
+    "key": "chills",
+    "name": "Severe Chills / Rigors",
+    "category": "Systemic",
+    "severity": "Moderate",
+    "synonyms": [
+      "chills",
+      "severe chills",
+      "shivering",
+      "shivering cold",
+      "rigors",
+      "cold chills",
+      "teeth chattering"
+    ]
+  },
+  {
+    "key": "joint_pain",
+    "name": "Severe Joint / Bone Pain",
+    "category": "Musculoskeletal",
+    "severity": "Moderate",
+    "synonyms": [
+      "joint pain",
+      "arthralgia",
+      "aching joints",
+      "pain in knees",
+      "knee pain",
+      "pain in fingers",
+      "wrist pain",
+      "arthritic pain"
+    ]
+  },
+  {
+    "key": "headache",
+    "name": "Severe Throbbing Headache",
+    "category": "Neurological",
+    "severity": "Moderate",
+    "synonyms": [
+      "headache",
+      "head ache",
+      "headaches",
+      "pain in head",
+      "pain in my head",
+      "migraine",
+      "head throbbing",
+      "throbbing head",
+      "cephalalgia",
+      "temple pain"
+    ]
+  },
+  {
+    "key": "seizures",
+    "name": "Involuntary Seizures / Convulsions",
+    "category": "Neurological",
+    "severity": "Emergency",
+    "synonyms": [
+      "seizures",
+      "convulsions",
+      "fits",
+      "epileptic seizure",
+      "shaking uncontrollably"
+    ]
+  },
+  {
+    "key": "resting_tremor",
+    "name": "Resting Hand Tremors",
+    "category": "Neurological",
+    "severity": "Moderate",
+    "synonyms": [
+      "hand tremor",
+      "shaking hands",
+      "trembling hands",
+      "shaky fingers",
+      "resting tremor",
+      "pill-rolling tremor"
+    ]
+  },
+  {
+    "key": "memory_loss",
+    "name": "Progressive Memory Loss / Confusion",
+    "category": "Neurological",
+    "severity": "Severe",
+    "synonyms": [
+      "memory loss",
+      "forgetfulness",
+      "forgetting things",
+      "confusion",
+      "cognitive decline",
+      "trouble remembering",
+      "amnesia"
+    ]
+  },
+  {
+    "key": "wheezing",
+    "name": "Respiratory Wheezing",
+    "category": "Respiratory",
+    "severity": "Severe",
+    "synonyms": [
+      "wheezing",
+      "wheeze",
+      "whistling breathing",
+      "noisy breathing",
+      "bronchial whistling",
+      "musical breathing"
+    ]
+  },
+  {
+    "key": "heartburn",
+    "name": "Gastric Heartburn / Acid Reflux",
+    "category": "Gastrointestinal",
+    "severity": "Moderate",
+    "synonyms": [
+      "heartburn",
+      "acid reflux",
+      "indigestion",
+      "burning in chest",
+      "acid burps",
+      "acid in throat",
+      "gerd symptoms",
+      "water brash"
+    ]
+  },
+  {
+    "key": "jaundice",
+    "name": "Yellowing of Skin / Eyes (Jaundice)",
+    "category": "Hepatic",
+    "severity": "Severe",
+    "synonyms": [
+      "jaundice",
+      "yellow eyes",
+      "yellow skin",
+      "yellowing",
+      "icterus",
+      "yellow sclera"
+    ]
+  },
+  {
+    "key": "right_upper_quadrant_pain",
+    "name": "Right Upper Quadrant Abdominal Pain",
+    "category": "Hepatic",
+    "severity": "Moderate",
+    "synonyms": [
+      "upper right stomach pain",
+      "right rib pain",
+      "gallbladder pain",
+      "liver area pain",
+      "biliary colic"
+    ]
+  },
+  {
+    "key": "flank_pain",
+    "name": "Flank / Lower Back Pain",
+    "category": "Renal",
+    "severity": "Moderate",
+    "synonyms": [
+      "flank pain",
+      "side pain",
+      "kidney pain",
+      "back flank pain",
+      "lower side pain",
+      "renal angle tenderness"
+    ]
+  },
+  {
+    "key": "dysuria",
+    "name": "Painful Urination (Dysuria)",
+    "category": "Renal",
+    "severity": "Moderate",
+    "synonyms": [
+      "painful urination",
+      "burning urination",
+      "burns when i pee",
+      "pain when peeing",
+      "dysuria",
+      "stinging urine",
+      "urinary burning"
+    ]
+  },
+  {
+    "key": "fatigue",
+    "name": "Chronic Fatigue & Weakness",
+    "category": "Systemic",
+    "severity": "Mild",
+    "synonyms": [
+      "fatigue",
+      "tired",
+      "tiredness",
+      "exhaustion",
+      "exhausted",
+      "low energy",
+      "lack of energy",
+      "lethargy",
+      "lethargic",
+      "run down",
+      "weakness"
+    ]
+  },
+  {
+    "key": "cold_intolerance",
+    "name": "Cold Intolerance / Hypothermia Sensitivity",
+    "category": "Endocrine",
+    "severity": "Moderate",
+    "synonyms": [
+      "cold intolerance",
+      "always cold",
+      "feeling cold easily",
+      "sensitive to cold",
+      "chilly all the time"
+    ]
+  },
+  {
+    "key": "heat_intolerance",
+    "name": "Heat Intolerance & Excessive Sweating",
+    "category": "Endocrine",
+    "severity": "Moderate",
+    "synonyms": [
+      "heat intolerance",
+      "always hot",
+      "cant stand heat",
+      "excessive sweating from heat",
+      "overheating easily"
+    ]
+  },
+  {
+    "key": "palpitations",
+    "name": "Rapid Heart Palpitations / Tachycardia",
+    "category": "Cardiovascular",
+    "severity": "Moderate",
+    "synonyms": [
+      "palpitations",
+      "racing heart",
+      "heart racing",
+      "heart pounding",
+      "irregular heartbeat",
+      "heart flutter",
+      "fast heart rate",
+      "tachycardia",
+      "skipping beats"
+    ]
+  },
+  {
+    "key": "weight_loss",
+    "name": "Unexplained Rapid Weight Loss",
+    "category": "Systemic",
+    "severity": "Moderate",
+    "synonyms": [
+      "weight loss",
+      "unexplained weight loss",
+      "losing weight without trying",
+      "rapid weight loss",
+      "dropping weight"
+    ]
+  },
+  {
+    "key": "sweats",
+    "name": "Drenching Night Sweats",
+    "category": "Systemic",
+    "severity": "Moderate",
+    "synonyms": [
+      "night sweats",
+      "sweating at night",
+      "drenching sweats",
+      "waking up drenched in sweat",
+      "nocturnal sweating"
+    ]
+  },
+  {
+    "key": "nausea",
+    "name": "Nausea & Loss of Appetite",
+    "category": "Gastrointestinal",
+    "severity": "Moderate",
+    "synonyms": [
+      "nausea",
+      "nauseous",
+      "feeling sick",
+      "queasy",
+      "upset stomach",
+      "sick to my stomach",
+      "feeling nauseated",
+      "loss of appetite"
+    ]
+  },
+  {
+    "key": "vomiting",
+    "name": "Persistent Vomiting",
+    "category": "Gastrointestinal",
+    "severity": "Moderate",
+    "synonyms": [
+      "vomiting",
+      "throwing up",
+      "puking",
+      "vomit",
+      "threw up",
+      "feeling like vomiting",
+      "emesis",
+      "retching"
+    ]
+  },
+  {
+    "key": "dizziness",
+    "name": "Dizziness & Lightheadedness",
+    "category": "Neurological",
+    "severity": "Moderate",
+    "synonyms": [
+      "dizziness",
+      "lightheaded",
+      "lightheadedness",
+      "feeling faint",
+      "room spinning",
+      "vertigo",
+      "woozy",
+      "unsteady"
+    ]
+  },
+  {
+    "key": "abdominal_pain",
+    "name": "Generalized Abdominal Pain / Cramping",
+    "category": "Gastrointestinal",
+    "severity": "Moderate",
+    "synonyms": [
+      "stomach pain",
+      "stomach ache",
+      "belly ache",
+      "belly pain",
+      "tummy ache",
+      "tummy pain",
+      "abdominal pain",
+      "stomach cramps",
+      "belly cramps",
+      "gut pain",
+      "abdominal cramps"
+    ]
+  },
+  {
+    "key": "runny_nose",
+    "name": "Runny or Stuffy Nose (Rhinorrhea)",
+    "category": "Respiratory",
+    "severity": "Mild",
+    "synonyms": [
+      "runny nose",
+      "rhinorrhea",
+      "watery nose",
+      "dripping nose",
+      "streaming nose",
+      "nasal drip"
+    ]
+  },
+  {
+    "key": "sneezing",
+    "name": "Frequent Sneezing",
+    "category": "Respiratory",
+    "severity": "Mild",
+    "synonyms": [
+      "sneezing",
+      "frequent sneezing",
+      "sneeze",
+      "sneezes",
+      "fits of sneezing",
+      "sneezing attacks"
+    ]
+  },
+  {
+    "key": "sore_throat",
+    "name": "Sore or Scratchy Throat",
+    "category": "Respiratory",
+    "severity": "Mild",
+    "synonyms": [
+      "sore throat",
+      "scratchy throat",
+      "throat pain",
+      "painful swallowing",
+      "throat hurts",
+      "pharyngitis",
+      "irritated throat"
+    ]
+  },
+  {
+    "key": "dry_cough",
+    "name": "Dry Non-Productive Cough",
+    "category": "Respiratory",
+    "severity": "Moderate",
+    "synonyms": [
+      "cough",
+      "dry cough",
+      "tickle in throat",
+      "dry tickly cough",
+      "hacking cough",
+      "non productive cough",
+      "persistent dry cough"
+    ]
+  },
+  {
+    "key": "nasal_congestion",
+    "name": "Sinus Pressure & Nasal Congestion",
+    "category": "Respiratory",
+    "severity": "Moderate",
+    "synonyms": [
+      "stuffy nose",
+      "blocked nose",
+      "nasal congestion",
+      "congestion",
+      "sinus pressure",
+      "blocked sinuses",
+      "sinus congestion"
+    ]
+  },
+  {
+    "key": "loss_of_smell",
+    "name": "Loss of Smell or Taste (Anosmia)",
+    "category": "Neurological",
+    "severity": "Moderate",
+    "synonyms": [
+      "loss of smell",
+      "cant smell",
+      "loss of taste",
+      "anosmia",
+      "cant taste food",
+      "ageusia"
+    ]
+  },
+  {
+    "key": "diarrhea",
+    "name": "Frequent Watery Diarrhea",
+    "category": "Gastrointestinal",
+    "severity": "Moderate",
+    "synonyms": [
+      "diarrhea",
+      "loose motions",
+      "watery stool",
+      "watery diarrhea",
+      "loose stools",
+      "the runs",
+      "frequent loose bowel movements"
+    ]
+  },
+  {
+    "key": "constipation",
+    "name": "Severe or Chronic Constipation",
+    "category": "Gastrointestinal",
+    "severity": "Moderate",
+    "synonyms": [
+      "constipation",
+      "constipated",
+      "hard stool",
+      "cant poop",
+      "unable to pass stool",
+      "infrequent bowel movements",
+      "difficulty passing stool"
+    ]
+  },
+  {
+    "key": "bloating",
+    "name": "Abdominal Bloating & Gas Distension",
+    "category": "Gastrointestinal",
+    "severity": "Mild",
+    "synonyms": [
+      "bloating",
+      "bloated stomach",
+      "swollen belly",
+      "gas",
+      "excess gas",
+      "abdominal distension",
+      "flatulence",
+      "distended stomach"
+    ]
+  },
+  {
+    "key": "skin_rash",
+    "name": "Visible Skin Rash or Erythema",
+    "category": "Dermatological",
+    "severity": "Moderate",
+    "synonyms": [
+      "skin rash",
+      "rash",
+      "red spots",
+      "red patches on skin",
+      "skin redness",
+      "erythema",
+      "breaking out in rash",
+      "skin eruption"
+    ]
+  },
+  {
+    "key": "itching",
+    "name": "Intense Pruritus / Persistent Itching",
+    "category": "Dermatological",
+    "severity": "Mild",
+    "synonyms": [
+      "itching",
+      "itchy skin",
+      "pruritus",
+      "scratching all over",
+      "intense itching",
+      "skin itching"
+    ]
+  },
+  {
+    "key": "skin_flaking",
+    "name": "Flaking or Scaly Skin Patches",
+    "category": "Dermatological",
+    "severity": "Moderate",
+    "synonyms": [
+      "flaking skin",
+      "scaly skin",
+      "peeling skin",
+      "dandruff-like scales",
+      "flaky patches",
+      "silvery scales"
+    ]
+  },
+  {
+    "key": "acne_breakouts",
+    "name": "Acne Papules, Pustules or Cysts",
+    "category": "Dermatological",
+    "severity": "Mild",
+    "synonyms": [
+      "acne",
+      "pimples",
+      "breakouts",
+      "blackheads",
+      "whiteheads",
+      "zits",
+      "cystic acne",
+      "pustules"
+    ]
+  },
+  {
+    "key": "hives_welts",
+    "name": "Raised Itchy Wheals / Hives (Urticaria)",
+    "category": "Dermatological",
+    "severity": "Moderate",
+    "synonyms": [
+      "hives",
+      "welts",
+      "urticaria",
+      "raised itchy bumps",
+      "allergic wheals",
+      "nettle rash"
+    ]
+  },
+  {
+    "key": "localized_swelling",
+    "name": "Localized Tissue Swelling or Edema",
+    "category": "Systemic",
+    "severity": "Moderate",
+    "synonyms": [
+      "localized swelling",
+      "swollen joint",
+      "swollen tissue",
+      "swelling",
+      "edema",
+      "puffy swelling"
+    ]
+  },
+  {
+    "key": "muscle_pain",
+    "name": "Muscle Aches & Myalgia",
+    "category": "Musculoskeletal",
+    "severity": "Moderate",
+    "synonyms": [
+      "muscle pain",
+      "body aches",
+      "muscle aches",
+      "myalgia",
+      "sore muscles",
+      "aching muscles"
+    ]
+  },
+  {
+    "key": "back_pain",
+    "name": "Lower Back Ache or Lumbar Stiffness",
+    "category": "Musculoskeletal",
+    "severity": "Moderate",
+    "synonyms": [
+      "back pain",
+      "lower back pain",
+      "backache",
+      "lumbar pain",
+      "stiff back",
+      "lumbago"
+    ]
+  },
+  {
+    "key": "joint_stiffness",
+    "name": "Morning Joint Stiffness",
+    "category": "Musculoskeletal",
+    "severity": "Moderate",
+    "synonyms": [
+      "joint stiffness",
+      "stiff joints",
+      "morning stiffness",
+      "stiff fingers",
+      "cant bend joints in morning"
+    ]
+  },
+  {
+    "key": "numbness_tingling",
+    "name": "Numbness, Tingling or Paresthesia",
+    "category": "Neurological",
+    "severity": "Moderate",
+    "synonyms": [
+      "numbness",
+      "tingling",
+      "pins and needles",
+      "paresthesia",
+      "numb hands",
+      "numb feet",
+      "tingling sensation"
+    ]
+  },
+  {
+    "key": "blurred_vision",
+    "name": "Blurred or Fluctuating Vision",
+    "category": "Neurological",
+    "severity": "Moderate",
+    "synonyms": [
+      "blurred vision",
+      "blurry vision",
+      "fuzzy vision",
+      "cloudy vision",
+      "trouble focusing eyes"
+    ]
+  },
+  {
+    "key": "excessive_hunger",
+    "name": "Excessive Hunger (Polyphagia)",
+    "category": "Endocrine",
+    "severity": "Mild",
+    "synonyms": [
+      "excessive hunger",
+      "always hungry",
+      "polyphagia",
+      "constant appetite",
+      "extreme hunger",
+      "voracious hunger"
+    ]
+  },
+  {
+    "key": "weight_gain",
+    "name": "Unintentional Rapid Weight Gain",
+    "category": "Endocrine",
+    "severity": "Mild",
+    "synonyms": [
+      "weight gain",
+      "unexplained weight gain",
+      "gaining weight rapidly",
+      "rapid weight gain",
+      "accumulating weight"
+    ]
+  },
+  {
+    "key": "hair_thinning",
+    "name": "Diffuse Hair Thinning or Hair Loss",
+    "category": "Dermatological",
+    "severity": "Mild",
+    "synonyms": [
+      "hair_thinning",
+      "hair thinning"
+    ]
+  },
+  {
+    "key": "anxiety_nervousness",
+    "name": "Excessive Worry, Nervousness or Panic",
+    "category": "Psychological",
+    "severity": "Moderate",
+    "synonyms": [
+      "anxiety",
+      "nervousness",
+      "panic",
+      "feeling nervous",
+      "worried",
+      "excessive worry",
+      "jittery",
+      "feeling anxious"
+    ]
+  },
+  {
+    "key": "depressed_mood",
+    "name": "Persistent Sadness or Low Energy Mood",
+    "category": "Psychological",
+    "severity": "Moderate",
+    "synonyms": [
+      "depressed mood",
+      "feeling down",
+      "feeling sad",
+      "hopelessness",
+      "loss of interest",
+      "depression",
+      "low mood",
+      "anhedonia"
+    ]
+  },
+  {
+    "key": "sleep_disturbance",
+    "name": "Insomnia or Disrupted Sleep Quality",
+    "category": "Psychological",
+    "severity": "Moderate",
+    "synonyms": [
+      "insomnia",
+      "cant sleep",
+      "sleep problems",
+      "waking up at night",
+      "trouble falling asleep",
+      "broken sleep",
+      "poor sleep"
+    ]
+  },
+  {
+    "key": "leg_swelling",
+    "name": "Lower Extremity / Ankle Edema",
+    "category": "Cardiovascular",
+    "severity": "Moderate",
+    "synonyms": [
+      "leg swelling",
+      "swollen ankles",
+      "ankle swelling",
+      "swollen feet",
+      "swollen legs",
+      "edema",
+      "fluid in legs",
+      "puffy ankles",
+      "pedal edema"
+    ]
+  },
+  {
+    "key": "blood_in_urine",
+    "name": "Hematuria / Discolored Urine",
+    "category": "Renal",
+    "severity": "Severe",
+    "synonyms": [
+      "blood in urine",
+      "red urine",
+      "pink urine",
+      "hematuria",
+      "dark bloody urine",
+      "smoky urine"
+    ]
+  }
+]

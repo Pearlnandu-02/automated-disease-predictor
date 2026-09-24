@@ -1,0 +1,3181 @@
+[
+  {
+    "id": "diabetes",
+    "name": "Diabetes",
+    "category": "Endocrine",
+    "symptoms": [
+      "high_blood_sugar",
+      "frequent_urination",
+      "fatigue",
+      "weight_loss",
+      "blurred_vision",
+      "excessive_hunger"
+    ],
+    "commonSymptoms": [
+      "high_blood_sugar",
+      "frequent_urination",
+      "fatigue"
+    ],
+    "lessCommonSymptoms": [
+      "weight_loss",
+      "blurred_vision",
+      "excessive_hunger"
+    ],
+    "description": "A chronic metabolic disease characterized by elevated blood glucose levels leading to vascular and organ complications.",
+    "causes": "Insulin resistance or insufficient insulin production by pancreatic beta cells.",
+    "riskFactors": [
+      "Obesity",
+      "physical inactivity",
+      "genetic predisposition",
+      "high-refined sugar diets."
+    ],
+    "prevention": [
+      "Maintain healthy body weight",
+      "engage in 150 mins/week exercise",
+      "consume fiber-rich foods."
+    ],
+    "generalGuidance": [
+      "Blood glucose monitoring, dietary management, insulin therapy under physician guidance."
+    ],
+    "redFlags": [
+      "Severe lethargy with fruity acetone breath odor",
+      "Blood glucose > 300 mg/dL",
+      "Extreme unquenchable thirst and dehydration"
+    ],
+    "whenToSeekCare": "Seek immediate care for severe confusion, rapid breathing, or blood glucose > 300 mg/dL.",
+    "differentiatingFeatures": "Differentiated by glycemic and hormonal biomarker laboratory panels.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "hypertension",
+    "name": "Hypertension",
+    "category": "Cardiovascular",
+    "symptoms": [
+      "high_blood_pressure",
+      "headache",
+      "dizziness"
+    ],
+    "commonSymptoms": [
+      "high_blood_pressure",
+      "headache",
+      "dizziness"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "Long-term high blood pressure against arterial walls causing increased cardiac workload.",
+    "causes": "Arterial stiffening, genetic factors, excessive sodium intake, renal dysfunction.",
+    "riskFactors": [
+      "High sodium diet",
+      "chronic stress",
+      "smoking",
+      "excessive alcohol",
+      "family history."
+    ],
+    "prevention": [
+      "Reduce salt intake",
+      "exercise regularly",
+      "manage stress",
+      "avoid tobacco."
+    ],
+    "generalGuidance": [
+      "Periodic blood pressure tracking, DASH diet, anti-hypertensive medications."
+    ],
+    "redFlags": [
+      "Crushing chest pressure radiating to arm or jaw",
+      "Loss of consciousness / syncope",
+      "Extreme diaphoresis and breathlessness"
+    ],
+    "whenToSeekCare": "Seek urgent care for blood pressure > 180/120 mm Hg or sudden severe headache/chest pain.",
+    "differentiatingFeatures": "Characterized by exertional triggers and cardiac biomarker changes.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "heart-disease",
+    "name": "Heart Disease",
+    "category": "Cardiovascular",
+    "symptoms": [
+      "chest_pain",
+      "shortness_of_breath",
+      "fatigue",
+      "palpitations"
+    ],
+    "commonSymptoms": [
+      "chest_pain",
+      "shortness_of_breath",
+      "fatigue"
+    ],
+    "lessCommonSymptoms": [
+      "palpitations"
+    ],
+    "description": "Range of cardiac conditions including coronary artery disease and heart muscle dysfunction.",
+    "causes": "Atherosclerotic plaque accumulation narrowing coronary arteries.",
+    "riskFactors": [
+      "High cholesterol",
+      "smoking",
+      "diabetes",
+      "hypertension",
+      "sedentary lifestyle."
+    ],
+    "prevention": [
+      "Cardio-healthy diet",
+      "smoking cessation",
+      "lipid monitoring",
+      "regular physical activity."
+    ],
+    "generalGuidance": [
+      "Cardiac rehabilitation, lipid-lowering medication, lifestyle modification."
+    ],
+    "redFlags": [
+      "Crushing chest pressure radiating to arm or jaw",
+      "Loss of consciousness / syncope",
+      "Extreme diaphoresis and breathlessness"
+    ],
+    "whenToSeekCare": "Seek emergency care immediately for crushing chest pain, arm radiation, or severe shortness of breath.",
+    "differentiatingFeatures": "Characterized by exertional triggers and cardiac biomarker changes.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "asthma",
+    "name": "Asthma",
+    "category": "Respiratory",
+    "symptoms": [
+      "shortness_of_breath",
+      "cough_with_sputum",
+      "wheezing",
+      "dry_cough"
+    ],
+    "commonSymptoms": [
+      "shortness_of_breath",
+      "cough_with_sputum",
+      "wheezing"
+    ],
+    "lessCommonSymptoms": [
+      "dry_cough"
+    ],
+    "description": "Chronic inflammatory disease of airway passages causing episodic wheezing and bronchospasm.",
+    "causes": "Environmental allergens, airway hyper-responsiveness, respiratory viral infections.",
+    "riskFactors": [
+      "Family history",
+      "allergen exposure",
+      "air pollution",
+      "secondhand smoke."
+    ],
+    "prevention": [
+      "Identify and avoid allergen triggers",
+      "use prophylactic inhalers as directed."
+    ],
+    "generalGuidance": [
+      "Inhaled corticosteroids, quick-relief bronchodilators, asthma action plan."
+    ],
+    "redFlags": [
+      "Severe shortness of breath at rest",
+      "Cyanosis (blue lips or nail beds)",
+      "Inability to speak in full sentences"
+    ],
+    "whenToSeekCare": "Seek emergency care for severe chest tightness, inability to speak full sentences, or blue lips.",
+    "differentiatingFeatures": "Characterized by respiratory auscultation findings and sputum characteristics.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "pneumonia",
+    "name": "Pneumonia",
+    "category": "Respiratory",
+    "symptoms": [
+      "chest_pain",
+      "shortness_of_breath",
+      "cough_with_sputum",
+      "fever",
+      "chills"
+    ],
+    "commonSymptoms": [
+      "chest_pain",
+      "shortness_of_breath",
+      "cough_with_sputum"
+    ],
+    "lessCommonSymptoms": [
+      "fever",
+      "chills"
+    ],
+    "description": "Inflammatory infection of pulmonary alveoli filled with fluid or purulent exudate.",
+    "causes": "Bacterial (Streptococcus pneumoniae), viral (Influenza, RSV), or fungal pathogens.",
+    "riskFactors": [
+      "Advanced age",
+      "immunocompromised status",
+      "chronic lung disease",
+      "smoking."
+    ],
+    "prevention": [
+      "Pneumococcal vaccination",
+      "annual flu vaccine",
+      "hand hygiene."
+    ],
+    "generalGuidance": [
+      "Targeted antibiotic or antiviral therapy, adequate hydration, fever management."
+    ],
+    "redFlags": [
+      "Severe shortness of breath at rest",
+      "Cyanosis (blue lips or nail beds)",
+      "Inability to speak in full sentences"
+    ],
+    "whenToSeekCare": "Seek urgent medical attention for high fever, chest pain during breathing, or severe oxygen drop.",
+    "differentiatingFeatures": "Characterized by respiratory auscultation findings and sputum characteristics.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "tuberculosis",
+    "name": "Tuberculosis",
+    "category": "Respiratory / Infectious",
+    "symptoms": [
+      "cough_with_sputum",
+      "hemoptysis",
+      "fever",
+      "weight_loss",
+      "sweats"
+    ],
+    "commonSymptoms": [
+      "cough_with_sputum",
+      "hemoptysis",
+      "fever"
+    ],
+    "lessCommonSymptoms": [
+      "weight_loss",
+      "sweats"
+    ],
+    "description": "Contagious bacterial infection affecting pulmonary tissue caused by Mycobacterium tuberculosis.",
+    "causes": "Inhalation of airborne droplet nuclei containing M. tuberculosis.",
+    "riskFactors": [
+      "Immunosuppression (HIV)",
+      "close contact with active TB cases",
+      "malnutrition."
+    ],
+    "prevention": [
+      "BCG vaccination where indicated",
+      "infection control in crowded environments."
+    ],
+    "generalGuidance": [
+      "Strict 6-month anti-tubercular drug regimen (DOTS protocol)."
+    ],
+    "redFlags": [
+      "Severe shortness of breath at rest",
+      "Cyanosis (blue lips or nail beds)",
+      "Inability to speak in full sentences"
+    ],
+    "whenToSeekCare": "Seek immediate evaluation for coughing up blood, persistent night sweats, or unexplained weight loss.",
+    "differentiatingFeatures": "Characterized by respiratory auscultation findings and sputum characteristics.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "covid-19",
+    "name": "COVID-19",
+    "category": "Respiratory / Infectious",
+    "symptoms": [
+      "shortness_of_breath",
+      "cough_with_sputum",
+      "fever",
+      "fatigue",
+      "loss_of_smell"
+    ],
+    "commonSymptoms": [
+      "shortness_of_breath",
+      "cough_with_sputum",
+      "fever"
+    ],
+    "lessCommonSymptoms": [
+      "fatigue",
+      "loss_of_smell"
+    ],
+    "description": "Acute infectious disease caused by the SARS-CoV-2 coronavirus variant.",
+    "causes": "Respiratory transmission of SARS-CoV-2 viral particles.",
+    "riskFactors": [
+      "Unvaccinated status",
+      "older age",
+      "underlying pulmonary/cardiac comorbidities."
+    ],
+    "prevention": [
+      "Vaccination",
+      "indoor ventilation",
+      "mask usage during outbreaks",
+      "hand hygiene."
+    ],
+    "generalGuidance": [
+      "Symptomatic control, hydration, antiviral drugs for high-risk patients."
+    ],
+    "redFlags": [
+      "Severe shortness of breath at rest",
+      "Cyanosis (blue lips or nail beds)",
+      "Inability to speak in full sentences"
+    ],
+    "whenToSeekCare": "Seek emergency care for persistent chest pressure, oxygen saturation < 94%, or confusion.",
+    "differentiatingFeatures": "Characterized by respiratory auscultation findings and sputum characteristics.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "influenza",
+    "name": "Influenza",
+    "category": "Respiratory / Infectious",
+    "symptoms": [
+      "fever",
+      "chills",
+      "joint_pain",
+      "headache",
+      "fatigue",
+      "muscle_pain"
+    ],
+    "commonSymptoms": [
+      "fever",
+      "chills",
+      "joint_pain"
+    ],
+    "lessCommonSymptoms": [
+      "headache",
+      "fatigue",
+      "muscle_pain"
+    ],
+    "description": "Acute viral infection of upper and lower respiratory tracts caused by influenza viruses.",
+    "causes": "Infection by Influenza A or B viral strains.",
+    "riskFactors": [
+      "Seasonal outbreaks",
+      "immunocompromised health",
+      "extreme ages."
+    ],
+    "prevention": [
+      "Annual influenza vaccination",
+      "hand washing",
+      "avoiding close contact with sick persons."
+    ],
+    "generalGuidance": [
+      "Rest, fluid intake, antiviral treatment (Oseltamivir) within 48 hours of onset."
+    ],
+    "redFlags": [
+      "Severe shortness of breath at rest",
+      "Cyanosis (blue lips or nail beds)",
+      "Inability to speak in full sentences"
+    ],
+    "whenToSeekCare": "Seek medical attention if fever persists over 4 days or severe breathing difficulty develops.",
+    "differentiatingFeatures": "Characterized by respiratory auscultation findings and sputum characteristics.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "dengue",
+    "name": "Dengue",
+    "category": "Infectious / Tropical",
+    "symptoms": [
+      "fever",
+      "joint_pain",
+      "headache",
+      "fatigue",
+      "nausea",
+      "skin_rash"
+    ],
+    "commonSymptoms": [
+      "fever",
+      "joint_pain",
+      "headache"
+    ],
+    "lessCommonSymptoms": [
+      "fatigue",
+      "nausea",
+      "skin_rash"
+    ],
+    "description": "Mosquito-borne viral infection causing severe flu-like illness and low blood platelets.",
+    "causes": "Transmission of Dengue virus (DENV-1-4) by infected Aedes aegypti mosquitoes.",
+    "riskFactors": [
+      "Living in tropical endemic areas",
+      "standing water reservoirs."
+    ],
+    "prevention": [
+      "Mosquito repellent usage",
+      "eliminating standing water containers",
+      "wearing long clothing."
+    ],
+    "generalGuidance": [
+      "Supportive care, continuous hydration, monitoring blood platelet count."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Seek emergency care for severe abdominal pain, persistent vomiting, or mucosal bleeding.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "malaria",
+    "name": "Malaria",
+    "category": "Infectious / Tropical",
+    "symptoms": [
+      "fever",
+      "chills",
+      "headache",
+      "sweats",
+      "nausea"
+    ],
+    "commonSymptoms": [
+      "fever",
+      "chills",
+      "headache"
+    ],
+    "lessCommonSymptoms": [
+      "sweats",
+      "nausea"
+    ],
+    "description": "Life-threatening parasitic infection transmitted by female Anopheles mosquitoes.",
+    "causes": "Plasmodium parasite infection (P. falciparum, P. vivax).",
+    "riskFactors": [
+      "Travel to endemic tropical regions",
+      "lack of bednet protection."
+    ],
+    "prevention": [
+      "Prophylactic antimalarial medication",
+      "insecticide-treated mosquito nets."
+    ],
+    "generalGuidance": [
+      "Artemisinin-based combination therapies (ACT) prescribed by physicians."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Seek immediate medical attention for high cyclical fever, severe chills, or jaundice.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "typhoid",
+    "name": "Typhoid",
+    "category": "Infectious / Gastrointestinal",
+    "symptoms": [
+      "fever",
+      "headache",
+      "fatigue",
+      "nausea",
+      "abdominal_pain",
+      "diarrhea"
+    ],
+    "commonSymptoms": [
+      "fever",
+      "headache",
+      "fatigue"
+    ],
+    "lessCommonSymptoms": [
+      "nausea",
+      "abdominal_pain",
+      "diarrhea"
+    ],
+    "description": "Systemic bacterial fever caused by Salmonella enterica serovar Typhi.",
+    "causes": "Ingestion of food or water contaminated with S. Typhi bacteria.",
+    "riskFactors": [
+      "Poor sanitation",
+      "unhygienic street food",
+      "lack of clean drinking water."
+    ],
+    "prevention": [
+      "Typhoid vaccination",
+      "drinking boiled/filtered water",
+      "hygienic food preparation."
+    ],
+    "generalGuidance": [
+      "Targeted oral/intravenous antibiotics and fever control."
+    ],
+    "redFlags": [
+      "Coffee-ground vomiting or hematemesis",
+      "Black tarry stools (melena)",
+      "Rigid involuntary abdominal guarding"
+    ],
+    "whenToSeekCare": "Seek medical care for continuous high fever, Rose spots on abdomen, or severe lethargy.",
+    "differentiatingFeatures": "Differentiated by relation to meals, stool characteristics, and localized peritoneal signs.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "migraine",
+    "name": "Migraine",
+    "category": "Neurological",
+    "symptoms": [
+      "headache",
+      "nausea",
+      "vomiting",
+      "dizziness"
+    ],
+    "commonSymptoms": [
+      "headache",
+      "nausea",
+      "vomiting"
+    ],
+    "lessCommonSymptoms": [
+      "dizziness"
+    ],
+    "description": "Recurrent neurological headache disorder characterized by moderate-to-severe throbbing pain.",
+    "causes": "Neurovascular reactivity, trigeminal nerve activation, serotonin level fluctuations.",
+    "riskFactors": [
+      "Stress",
+      "hormonal changes",
+      "sleep disruption",
+      "dietary triggers (caffeine",
+      "monosodium glutamate)."
+    ],
+    "prevention": [
+      "Maintain consistent sleep schedules",
+      "stress reduction",
+      "trigger diary tracking."
+    ],
+    "generalGuidance": [
+      "Acute triptan therapy, preventive medications, dark room rest."
+    ],
+    "redFlags": [
+      "Sudden thunderclap headache",
+      "Focal neurological deficits (facial droop, arm weakness)",
+      "Seizures lasting > 5 minutes"
+    ],
+    "whenToSeekCare": "Seek urgent evaluation for a sudden \"thunderclap\" headache or accompanied facial numbness/weakness.",
+    "differentiatingFeatures": "Differentiated by neurological exam and temporal symptom onset.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "epilepsy",
+    "name": "Epilepsy",
+    "category": "Neurological",
+    "symptoms": [
+      "headache",
+      "seizures",
+      "dizziness"
+    ],
+    "commonSymptoms": [
+      "headache",
+      "seizures",
+      "dizziness"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "Central nervous system disorder characterized by recurrent unprovoked electrical seizures.",
+    "causes": "Abnormal brain electrical activity due to genetics, head trauma, stroke, or structural brain lesions.",
+    "riskFactors": [
+      "Family history",
+      "prior head injury",
+      "central nervous system infections."
+    ],
+    "prevention": [
+      "Head injury prevention (helmets)",
+      "consistent medication adherence."
+    ],
+    "generalGuidance": [
+      "Antiepileptic drugs (AEDs), regular neurological monitoring."
+    ],
+    "redFlags": [
+      "Sudden thunderclap headache",
+      "Focal neurological deficits (facial droop, arm weakness)",
+      "Seizures lasting > 5 minutes"
+    ],
+    "whenToSeekCare": "Seek emergency services if a seizure lasts longer than 5 minutes or consecutive seizures occur.",
+    "differentiatingFeatures": "Differentiated by neurological exam and temporal symptom onset.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "parkinsons-disease",
+    "name": "Parkinson's Disease",
+    "category": "Neurological",
+    "symptoms": [
+      "resting_tremor",
+      "fatigue",
+      "dizziness"
+    ],
+    "commonSymptoms": [
+      "resting_tremor",
+      "fatigue",
+      "dizziness"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "Progressive neurodegenerative disorder characterized by loss of dopamine-producing brain cells.",
+    "causes": "Degeneration of substantia nigra dopaminergic neurons, alpha-synuclein accumulation.",
+    "riskFactors": [
+      "Advanced age",
+      "male sex",
+      "pesticide/environmental toxin exposure."
+    ],
+    "prevention": [
+      "Regular aerobic exercise",
+      "neuroprotective lifestyle habits."
+    ],
+    "generalGuidance": [
+      "Levodopa/Carbidopa medication, physical therapy, occupational assistance."
+    ],
+    "redFlags": [
+      "Sudden thunderclap headache",
+      "Focal neurological deficits (facial droop, arm weakness)",
+      "Seizures lasting > 5 minutes"
+    ],
+    "whenToSeekCare": "Seek medical advice upon noticing resting hand tremors, muscle rigidity, or gait disturbance.",
+    "differentiatingFeatures": "Differentiated by neurological exam and temporal symptom onset.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "alzheimers-disease",
+    "name": "Alzheimer's Disease",
+    "category": "Neurological",
+    "symptoms": [
+      "memory_loss",
+      "fatigue"
+    ],
+    "commonSymptoms": [
+      "memory_loss",
+      "fatigue"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "Progressive neurodegenerative disease causing memory impairment and cognitive decline.",
+    "causes": "Accumulation of extracellular amyloid-beta plaques and intracellular tau tangles.",
+    "riskFactors": [
+      "Age over 65",
+      "APOE-e4 gene variant",
+      "cardiovascular comorbidities",
+      "low cognitive reserve."
+    ],
+    "prevention": [
+      "Cardiovascular health management",
+      "lifelong mental stimulation",
+      "Mediterranean diet."
+    ],
+    "generalGuidance": [
+      "Cholinesterase inhibitors, supportive cognitive care, safety modifications."
+    ],
+    "redFlags": [
+      "Sudden thunderclap headache",
+      "Focal neurological deficits (facial droop, arm weakness)",
+      "Seizures lasting > 5 minutes"
+    ],
+    "whenToSeekCare": "Seek neurological assessment for progressive short-term memory loss interfering with daily living.",
+    "differentiatingFeatures": "Differentiated by neurological exam and temporal symptom onset.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "copd",
+    "name": "COPD",
+    "category": "Respiratory",
+    "symptoms": [
+      "shortness_of_breath",
+      "cough_with_sputum",
+      "wheezing",
+      "fatigue"
+    ],
+    "commonSymptoms": [
+      "shortness_of_breath",
+      "cough_with_sputum",
+      "wheezing"
+    ],
+    "lessCommonSymptoms": [
+      "fatigue"
+    ],
+    "description": "Progressive airflow limitation caused by emphysema and chronic bronchitis.",
+    "causes": "Long-term exposure to irritating gases, primarily cigarette smoke or biomass fuel.",
+    "riskFactors": [
+      "Cigarette smoking",
+      "occupational dust exposure",
+      "alpha-1 antitrypsin deficiency."
+    ],
+    "prevention": [
+      "Complete smoking cessation",
+      "avoiding workplace respiratory irritants."
+    ],
+    "generalGuidance": [
+      "Inhaled bronchodilators, pulmonary rehabilitation, supplemental oxygen therapy."
+    ],
+    "redFlags": [
+      "Severe shortness of breath at rest",
+      "Cyanosis (blue lips or nail beds)",
+      "Inability to speak in full sentences"
+    ],
+    "whenToSeekCare": "Seek immediate emergency care for acute exacerbation with severe breathlessness and cyanosis.",
+    "differentiatingFeatures": "Characterized by respiratory auscultation findings and sputum characteristics.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "bronchitis",
+    "name": "Bronchitis",
+    "category": "Respiratory",
+    "symptoms": [
+      "shortness_of_breath",
+      "cough_with_sputum",
+      "fever",
+      "fatigue",
+      "sore_throat"
+    ],
+    "commonSymptoms": [
+      "shortness_of_breath",
+      "cough_with_sputum",
+      "fever"
+    ],
+    "lessCommonSymptoms": [
+      "fatigue",
+      "sore_throat"
+    ],
+    "description": "Inflammation of bronchial mucosal lining leading to productive cough.",
+    "causes": "Viral respiratory infections (rhinovirus, influenza) or acute chemical irritants.",
+    "riskFactors": [
+      "Smoking exposure",
+      "air pollution",
+      "weakened immune defense."
+    ],
+    "prevention": [
+      "Avoid smoking exposure",
+      "practice hand hygiene",
+      "get vaccinated."
+    ],
+    "generalGuidance": [
+      "Expectorants, hydration, rest, avoiding respiratory irritants."
+    ],
+    "redFlags": [
+      "Severe shortness of breath at rest",
+      "Cyanosis (blue lips or nail beds)",
+      "Inability to speak in full sentences"
+    ],
+    "whenToSeekCare": "Seek medical consultation if cough persists over 3 weeks or sputum contains blood.",
+    "differentiatingFeatures": "Characterized by respiratory auscultation findings and sputum characteristics.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "gastritis",
+    "name": "Gastritis",
+    "category": "Gastrointestinal",
+    "symptoms": [
+      "heartburn",
+      "nausea",
+      "vomiting",
+      "abdominal_pain"
+    ],
+    "commonSymptoms": [
+      "heartburn",
+      "nausea",
+      "vomiting"
+    ],
+    "lessCommonSymptoms": [
+      "abdominal_pain"
+    ],
+    "description": "Inflammation or erosion of the protective gastric mucosal lining.",
+    "causes": "Helicobacter pylori bacterial infection, chronic NSAID use, excessive alcohol.",
+    "riskFactors": [
+      "Frequent painkiller use",
+      "severe physiological stress",
+      "H. pylori exposure."
+    ],
+    "prevention": [
+      "Limit NSAID usage",
+      "avoid excessive alcohol and spicy trigger foods."
+    ],
+    "generalGuidance": [
+      "Proton pump inhibitors (PPIs), antacids, H. pylori antibiotic eradication."
+    ],
+    "redFlags": [
+      "Coffee-ground vomiting or hematemesis",
+      "Black tarry stools (melena)",
+      "Rigid involuntary abdominal guarding"
+    ],
+    "whenToSeekCare": "Seek immediate medical care for vomiting blood, dark tarry stools, or severe stomach pain.",
+    "differentiatingFeatures": "Differentiated by relation to meals, stool characteristics, and localized peritoneal signs.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "hepatitis",
+    "name": "Hepatitis",
+    "category": "Gastrointestinal / Hepatic",
+    "symptoms": [
+      "jaundice",
+      "fatigue",
+      "nausea",
+      "abdominal_pain"
+    ],
+    "commonSymptoms": [
+      "jaundice",
+      "fatigue",
+      "nausea"
+    ],
+    "lessCommonSymptoms": [
+      "abdominal_pain"
+    ],
+    "description": "Inflammation of liver tissue caused primarily by viral pathogens or toxins.",
+    "causes": "Hepatitis viruses (A, B, C, D, E), heavy alcohol consumption, autoimmune reactions.",
+    "riskFactors": [
+      "Unprotected exposure to bodily fluids",
+      "contaminated water",
+      "heavy alcohol intake."
+    ],
+    "prevention": [
+      "Hepatitis A & B vaccination",
+      "safe needle protocols",
+      "clean water consumption."
+    ],
+    "generalGuidance": [
+      "Antiviral medications, supportive liver care, complete alcohol abstinence."
+    ],
+    "redFlags": [
+      "Coffee-ground vomiting or hematemesis",
+      "Black tarry stools (melena)",
+      "Rigid involuntary abdominal guarding"
+    ],
+    "whenToSeekCare": "Seek urgent medical attention for yellowing skin/eyes (jaundice) or dark brown urine.",
+    "differentiatingFeatures": "Differentiated by relation to meals, stool characteristics, and localized peritoneal signs.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "fatty-liver-disease",
+    "name": "Fatty Liver Disease",
+    "category": "Gastrointestinal / Hepatic",
+    "symptoms": [
+      "right_upper_quadrant_pain",
+      "fatigue",
+      "abdominal_pain"
+    ],
+    "commonSymptoms": [
+      "right_upper_quadrant_pain",
+      "fatigue",
+      "abdominal_pain"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "Excessive accumulation of triglycerides within hepatic cells (steatosis).",
+    "causes": "Metabolic dysfunction, insulin resistance, high fructose intake, heavy alcohol consumption.",
+    "riskFactors": [
+      "Obesity",
+      "type 2 diabetes",
+      "high cholesterol",
+      "metabolic syndrome."
+    ],
+    "prevention": [
+      "Weight reduction (7-10%)",
+      "low-carb diet",
+      "regular aerobic exercise."
+    ],
+    "generalGuidance": [
+      "Dietary modification, lifestyle intervention, managing blood glucose."
+    ],
+    "redFlags": [
+      "Coffee-ground vomiting or hematemesis",
+      "Black tarry stools (melena)",
+      "Rigid involuntary abdominal guarding"
+    ],
+    "whenToSeekCare": "Seek medical evaluation if experiencing persistent right upper quadrant abdominal discomfort.",
+    "differentiatingFeatures": "Differentiated by relation to meals, stool characteristics, and localized peritoneal signs.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "chronic-kidney-disease",
+    "name": "Chronic Kidney Disease",
+    "category": "Renal",
+    "symptoms": [
+      "frequent_urination",
+      "flank_pain",
+      "fatigue",
+      "leg_swelling"
+    ],
+    "commonSymptoms": [
+      "frequent_urination",
+      "flank_pain",
+      "fatigue"
+    ],
+    "lessCommonSymptoms": [
+      "leg_swelling"
+    ],
+    "description": "Gradual loss of renal filtration function over months to years.",
+    "causes": "Uncontrolled diabetes mellitus, long-standing hypertension, glomerulonephritis.",
+    "riskFactors": [
+      "Diabetes",
+      "hypertension",
+      "family history of renal disease",
+      "prolonged NSAID use."
+    ],
+    "prevention": [
+      "Strict blood sugar and blood pressure control",
+      "avoiding nephrotoxic drugs."
+    ],
+    "generalGuidance": [
+      "Renoprotective medications (ACE inhibitors), renal diet, dialysis in advanced stages."
+    ],
+    "redFlags": [
+      "Complete inability to pass urine (anuria)",
+      "High fever with severe flank rigors",
+      "Visible gross hematuria"
+    ],
+    "whenToSeekCare": "Seek medical evaluation for swelling in legs/ankles, decreased urine output, or persistent nausea.",
+    "differentiatingFeatures": "Differentiated by urinalysis and renal function indices.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "urinary-tract-infection-uti",
+    "name": "Urinary Tract Infection (UTI)",
+    "category": "Renal / Urological",
+    "symptoms": [
+      "frequent_urination",
+      "fever",
+      "flank_pain",
+      "dysuria",
+      "blood_in_urine"
+    ],
+    "commonSymptoms": [
+      "frequent_urination",
+      "fever",
+      "flank_pain"
+    ],
+    "lessCommonSymptoms": [
+      "dysuria",
+      "blood_in_urine"
+    ],
+    "description": "Infection of urinary structures, most commonly the urinary bladder (cystitis).",
+    "causes": "Bacterial colonization (Escherichia coli) ascending through urethra into urinary bladder.",
+    "riskFactors": [
+      "Female anatomy",
+      "sexual activity",
+      "urinary catheterization",
+      "inadequate hydration."
+    ],
+    "prevention": [
+      "Adequate fluid intake",
+      "voiding after intercourse",
+      "maintaining personal hygiene."
+    ],
+    "generalGuidance": [
+      "Targeted antibiotic therapy, increased water intake."
+    ],
+    "redFlags": [
+      "Complete inability to pass urine (anuria)",
+      "High fever with severe flank rigors",
+      "Visible gross hematuria"
+    ],
+    "whenToSeekCare": "Seek urgent medical attention if experiencing high fever, flank/back pain, or severe chills.",
+    "differentiatingFeatures": "Differentiated by urinalysis and renal function indices.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "anemia",
+    "name": "Anemia",
+    "category": "Hematological",
+    "symptoms": [
+      "shortness_of_breath",
+      "fatigue",
+      "palpitations",
+      "dizziness"
+    ],
+    "commonSymptoms": [
+      "shortness_of_breath",
+      "fatigue",
+      "palpitations"
+    ],
+    "lessCommonSymptoms": [
+      "dizziness"
+    ],
+    "description": "Deficiency in healthy red blood cells or hemoglobin concentration impaired oxygen delivery.",
+    "causes": "Iron deficiency, vitamin B12/folate deficiency, chronic blood loss, bone marrow failure.",
+    "riskFactors": [
+      "Inadequate iron diet",
+      "heavy menstrual bleeding",
+      "gastrointestinal bleeding."
+    ],
+    "prevention": [
+      "Iron-rich balanced diet (leafy greens",
+      "meat)",
+      "vitamin C intake."
+    ],
+    "generalGuidance": [
+      "Iron/vitamin supplementation, addressing underlying blood loss cause."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Seek immediate care for severe shortness of breath, dizziness upon standing, or chest tightness.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "hypothyroidism",
+    "name": "Hypothyroidism",
+    "category": "Endocrine",
+    "symptoms": [
+      "fatigue",
+      "cold_intolerance",
+      "weight_loss",
+      "weight_gain",
+      "hair_thinning"
+    ],
+    "commonSymptoms": [
+      "fatigue",
+      "cold_intolerance",
+      "weight_loss"
+    ],
+    "lessCommonSymptoms": [
+      "weight_gain",
+      "hair_thinning"
+    ],
+    "description": "Underactive thyroid gland producing insufficient thyroid hormones (T3/T4).",
+    "causes": "Hashimoto autoimmune thyroiditis, thyroidectomy, iodine deficiency.",
+    "riskFactors": [
+      "Female sex",
+      "middle age",
+      "autoimmune conditions",
+      "personal history of radiation."
+    ],
+    "prevention": [
+      "Adequate dietary iodine intake",
+      "periodic TSH screening."
+    ],
+    "generalGuidance": [
+      "Daily levothyroxine hormone replacement therapy."
+    ],
+    "redFlags": [
+      "Severe lethargy with fruity acetone breath odor",
+      "Blood glucose > 300 mg/dL",
+      "Extreme unquenchable thirst and dehydration"
+    ],
+    "whenToSeekCare": "Seek medical review for progressive unexplained weight gain, extreme fatigue, or cold intolerance.",
+    "differentiatingFeatures": "Differentiated by glycemic and hormonal biomarker laboratory panels.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "hyperthyroidism",
+    "name": "Hyperthyroidism",
+    "category": "Endocrine",
+    "symptoms": [
+      "heat_intolerance",
+      "palpitations",
+      "weight_loss",
+      "sweats"
+    ],
+    "commonSymptoms": [
+      "heat_intolerance",
+      "palpitations",
+      "weight_loss"
+    ],
+    "lessCommonSymptoms": [
+      "sweats"
+    ],
+    "description": "Overactive thyroid gland producing excessive thyroid hormones.",
+    "causes": "Graves autoimmune disease, toxic multinodular goiter, thyroiditis.",
+    "riskFactors": [
+      "Female sex",
+      "family history of Graves disease",
+      "high iodine exposure."
+    ],
+    "prevention": [
+      "Regular thyroid monitoring",
+      "stress management."
+    ],
+    "generalGuidance": [
+      "Anti-thyroid medications (Methimazole), beta-blockers, radioactive iodine."
+    ],
+    "redFlags": [
+      "Severe lethargy with fruity acetone breath odor",
+      "Blood glucose > 300 mg/dL",
+      "Extreme unquenchable thirst and dehydration"
+    ],
+    "whenToSeekCare": "Seek immediate medical attention for rapid irregular heart rate (palpitations) or severe tremors.",
+    "differentiatingFeatures": "Differentiated by glycemic and hormonal biomarker laboratory panels.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "common-cold",
+    "name": "Common Cold",
+    "category": "Respiratory",
+    "symptoms": [
+      "runny_nose",
+      "sneezing",
+      "sore_throat",
+      "dry_cough"
+    ],
+    "commonSymptoms": [
+      "runny_nose",
+      "sneezing",
+      "sore_throat"
+    ],
+    "lessCommonSymptoms": [
+      "dry_cough"
+    ],
+    "description": "A mild viral infectious disease of the upper respiratory tract primarily affecting the nasal mucosa and throat.",
+    "causes": "Rhinoviruses, coronaviruses, adenoviruses, or enteroviruses.",
+    "riskFactors": [
+      "Exposure to infected individuals",
+      "seasonal winter changes",
+      "psychological stress",
+      "sleep deprivation."
+    ],
+    "prevention": [
+      "Frequent hand hygiene",
+      "avoiding touching facial mucous membranes",
+      "maintaining adequate hydration and rest."
+    ],
+    "generalGuidance": [
+      "Rest, oral hydration, warm saline gargles, over-the-counter decongestants or analgesics as appropriate."
+    ],
+    "redFlags": [
+      "Severe shortness of breath at rest",
+      "Cyanosis (blue lips or nail beds)",
+      "Inability to speak in full sentences"
+    ],
+    "whenToSeekCare": "Seek medical care if symptoms persist beyond 10-14 days, high fever develops, or wheezing occurs.",
+    "differentiatingFeatures": "Characterized by respiratory auscultation findings and sputum characteristics.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "allergic-rhinitis",
+    "name": "Allergic Rhinitis",
+    "category": "Respiratory",
+    "symptoms": [
+      "runny_nose",
+      "sneezing",
+      "nasal_congestion",
+      "itching"
+    ],
+    "commonSymptoms": [
+      "runny_nose",
+      "sneezing",
+      "nasal_congestion"
+    ],
+    "lessCommonSymptoms": [
+      "itching"
+    ],
+    "description": "Inflammation of the interior nasal passages caused by an IgE-mediated allergic response to inhaled environmental allergens.",
+    "causes": "Inhaled allergens including tree/grass pollen, house dust mites, animal dander, and fungal spores.",
+    "riskFactors": [
+      "Atopic genetic predisposition",
+      "family history of asthma or eczema",
+      "high environmental allergen exposure."
+    ],
+    "prevention": [
+      "Minimize exposure to identified allergens",
+      "use HEPA filtration",
+      "keep windows closed during high pollen counts."
+    ],
+    "generalGuidance": [
+      "Nasal corticosteroid sprays, oral second-generation antihistamines, saline nasal rinses, allergen immunotherapy."
+    ],
+    "redFlags": [
+      "Severe shortness of breath at rest",
+      "Cyanosis (blue lips or nail beds)",
+      "Inability to speak in full sentences"
+    ],
+    "whenToSeekCare": "Seek evaluation if chronic nasal obstruction causes secondary sinusitis or impairs quality of sleep.",
+    "differentiatingFeatures": "Characterized by respiratory auscultation findings and sputum characteristics.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "sinusitis",
+    "name": "Sinusitis",
+    "category": "Respiratory",
+    "symptoms": [
+      "cough_with_sputum",
+      "fever",
+      "headache",
+      "nasal_congestion"
+    ],
+    "commonSymptoms": [
+      "cough_with_sputum",
+      "fever",
+      "headache"
+    ],
+    "lessCommonSymptoms": [
+      "nasal_congestion"
+    ],
+    "description": "Inflammation or infection of the mucosal lining of the paranasal sinuses, causing facial pressure and nasal congestion.",
+    "causes": "Secondary bacterial infection following viral upper respiratory infection, allergic swelling, or anatomical nasal polyps.",
+    "riskFactors": [
+      "Recent viral cold",
+      "allergic rhinitis",
+      "structural deviated septum",
+      "environmental smoke exposure."
+    ],
+    "prevention": [
+      "Prompt management of colds and allergies",
+      "indoor humidification",
+      "nasal saline irrigation."
+    ],
+    "generalGuidance": [
+      "Nasal saline irrigation, decongestants, intranasal steroids, oral antibiotics if bacterial infection confirmed."
+    ],
+    "redFlags": [
+      "Severe shortness of breath at rest",
+      "Cyanosis (blue lips or nail beds)",
+      "Inability to speak in full sentences"
+    ],
+    "whenToSeekCare": "Seek urgent medical care if experiencing severe headache, periorbital swelling, vision changes, or high fever.",
+    "differentiatingFeatures": "Characterized by respiratory auscultation findings and sputum characteristics.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "heart-failure",
+    "name": "Heart Failure",
+    "category": "Cardiovascular",
+    "symptoms": [
+      "shortness_of_breath",
+      "fatigue",
+      "palpitations",
+      "leg_swelling"
+    ],
+    "commonSymptoms": [
+      "shortness_of_breath",
+      "fatigue",
+      "palpitations"
+    ],
+    "lessCommonSymptoms": [
+      "leg_swelling"
+    ],
+    "description": "A chronic, progressive condition in which the cardiac muscle is unable to pump sufficient blood volume to meet systemic metabolic demands.",
+    "causes": "Long-standing hypertension, prior myocardial infarction, coronary artery disease, cardiomyopathy, or valvular heart disease.",
+    "riskFactors": [
+      "Hypertension",
+      "history of heart attack",
+      "diabetes",
+      "obesity",
+      "smoking",
+      "excessive alcohol consumption."
+    ],
+    "prevention": [
+      "Strict blood pressure control",
+      "coronary disease prevention",
+      "smoking cessation",
+      "low-sodium dietary habits."
+    ],
+    "generalGuidance": [
+      "ACE inhibitors/ARNs, beta-blockers, aldosterone antagonists, SGLT2 inhibitors, diuretics, fluid restriction, daily weight tracking."
+    ],
+    "redFlags": [
+      "Crushing chest pressure radiating to arm or jaw",
+      "Loss of consciousness / syncope",
+      "Extreme diaphoresis and breathlessness"
+    ],
+    "whenToSeekCare": "Seek immediate emergency care for sudden severe breathlessness, inability to lie flat, or rapid unexplained weight gain (>3 lbs in 24h).",
+    "differentiatingFeatures": "Characterized by exertional triggers and cardiac biomarker changes.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "arrhythmia",
+    "name": "Arrhythmia",
+    "category": "Cardiovascular",
+    "symptoms": [
+      "chest_pain",
+      "shortness_of_breath",
+      "palpitations",
+      "dizziness"
+    ],
+    "commonSymptoms": [
+      "chest_pain",
+      "shortness_of_breath",
+      "palpitations"
+    ],
+    "lessCommonSymptoms": [
+      "dizziness"
+    ],
+    "description": "Disruptions or irregularities in the electrical conduction system of the heart, resulting in bradycardia, tachycardia, or fibrillatory rhythm.",
+    "causes": "Ischemic heart disease, electrolyte imbalances, structural cardiac remodeling, caffeine, thyroid disease, or electrical channelopathies.",
+    "riskFactors": [
+      "Underlying coronary disease",
+      "hypertension",
+      "electrolyte disturbances (potassium/magnesium)",
+      "sleep apnea",
+      "stimulant use."
+    ],
+    "prevention": [
+      "Limit caffeine and alcohol",
+      "avoid illicit stimulants",
+      "manage stress",
+      "monitor electrolyte balance."
+    ],
+    "generalGuidance": [
+      "Anti-arrhythmic medications, rate-control agents (beta-blockers), catheter ablation, cardioversion, pacemakers or ICDs."
+    ],
+    "redFlags": [
+      "Crushing chest pressure radiating to arm or jaw",
+      "Loss of consciousness / syncope",
+      "Extreme diaphoresis and breathlessness"
+    ],
+    "whenToSeekCare": "Seek immediate emergency medical care for palpitations accompanied by syncope, chest pain, or severe dizziness.",
+    "differentiatingFeatures": "Characterized by exertional triggers and cardiac biomarker changes.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "angina-pectoris",
+    "name": "Angina Pectoris",
+    "category": "Cardiovascular",
+    "symptoms": [
+      "chest_pain",
+      "shortness_of_breath",
+      "fatigue"
+    ],
+    "commonSymptoms": [
+      "chest_pain",
+      "shortness_of_breath",
+      "fatigue"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "Reversible chest pain or pressure resulting from transient myocardial ischemia due to inadequate coronary blood flow.",
+    "causes": "Atherosclerotic coronary artery stenosis restricting oxygen delivery during times of increased myocardial workload.",
+    "riskFactors": [
+      "Coronary artery disease",
+      "hypertension",
+      "dyslipidemia",
+      "smoking",
+      "diabetes",
+      "sedentary lifestyle."
+    ],
+    "prevention": [
+      "Manage cardiovascular risk factors",
+      "adhere to Mediterranean-style diet",
+      "smoking cessation",
+      "regular moderate exercise."
+    ],
+    "generalGuidance": [
+      "Sublingual nitroglycerin for acute episodes, beta-blockers, calcium channel blockers, statins, antiplatelet therapy."
+    ],
+    "redFlags": [
+      "Crushing chest pressure radiating to arm or jaw",
+      "Loss of consciousness / syncope",
+      "Extreme diaphoresis and breathlessness"
+    ],
+    "whenToSeekCare": "Seek emergency medical services immediately if chest pain lasts longer than 10 minutes or does not resolve with rest and nitroglycerin.",
+    "differentiatingFeatures": "Characterized by exertional triggers and cardiac biomarker changes.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "peripheral-artery-disease",
+    "name": "Peripheral Artery Disease",
+    "category": "Cardiovascular",
+    "symptoms": [
+      "fatigue",
+      "muscle_pain",
+      "numbness_tingling"
+    ],
+    "commonSymptoms": [
+      "fatigue",
+      "muscle_pain",
+      "numbness_tingling"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "A circulatory condition in which atherosclerotic plaque narrows peripheral arteries, severely reducing blood flow to the limbs.",
+    "causes": "Systemic atherosclerosis affecting the abdominal aorta, iliac, femoral, and popliteal arterial branches.",
+    "riskFactors": [
+      "Cigarette smoking",
+      "type 2 diabetes",
+      "chronic hypertension",
+      "advanced age",
+      "hypercholesterolemia."
+    ],
+    "prevention": [
+      "Smoking cessation",
+      "routine walking exercise programs",
+      "glycemic and lipid control",
+      "blood pressure optimization."
+    ],
+    "generalGuidance": [
+      "Supervised exercise therapy, antiplatelet medications (aspirin/clopidogrel), statin therapy, cilostazol, endovascular revascularization."
+    ],
+    "redFlags": [
+      "Crushing chest pressure radiating to arm or jaw",
+      "Loss of consciousness / syncope",
+      "Extreme diaphoresis and breathlessness"
+    ],
+    "whenToSeekCare": "Seek urgent care for resting foot pain, cold/pale extremities, or non-healing ulcers on the lower extremities.",
+    "differentiatingFeatures": "Characterized by exertional triggers and cardiac biomarker changes.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "prediabetes",
+    "name": "Prediabetes",
+    "category": "Endocrine",
+    "symptoms": [
+      "high_blood_sugar",
+      "frequent_urination",
+      "fatigue"
+    ],
+    "commonSymptoms": [
+      "high_blood_sugar",
+      "frequent_urination",
+      "fatigue"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "A metabolic state where blood glucose levels are above normal ranges (HbA1c 5.7-6.4%) but not yet meeting the threshold for type 2 diabetes.",
+    "causes": "Progressive peripheral insulin resistance coupled with relative pancreatic beta-cell secretory compensation.",
+    "riskFactors": [
+      "Overweight/obesity (BMI > 25)",
+      "physical inactivity",
+      "age > 45",
+      "family history of type 2 diabetes",
+      "gestational diabetes history."
+    ],
+    "prevention": [
+      "Structured lifestyle interventions: 7% sustained weight reduction",
+      "150 minutes/week moderate physical exercise",
+      "whole-food diet."
+    ],
+    "generalGuidance": [
+      "Intensive dietary modification, aerobic and resistance training, routine HbA1c monitoring every 6-12 months, metformin where indicated."
+    ],
+    "redFlags": [
+      "Severe lethargy with fruity acetone breath odor",
+      "Blood glucose > 300 mg/dL",
+      "Extreme unquenchable thirst and dehydration"
+    ],
+    "whenToSeekCare": "Consult a physician for routine screening if persistent fatigue, increased thirst, or unexplained weight shifts occur.",
+    "differentiatingFeatures": "Differentiated by glycemic and hormonal biomarker laboratory panels.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "obesity",
+    "name": "Obesity",
+    "category": "Endocrine",
+    "symptoms": [
+      "shortness_of_breath",
+      "joint_pain",
+      "fatigue",
+      "weight_gain"
+    ],
+    "commonSymptoms": [
+      "shortness_of_breath",
+      "joint_pain",
+      "fatigue"
+    ],
+    "lessCommonSymptoms": [
+      "weight_gain"
+    ],
+    "description": "A complex, chronic multifactorial disease characterized by excessive adiposity that impairs physical and metabolic health.",
+    "causes": "Energy imbalance between caloric consumption and metabolic expenditure, neuroendocrine appetite regulation dysregulation, genetics.",
+    "riskFactors": [
+      "Sedentary lifestyle",
+      "high-density refined food availability",
+      "endocrine disruptors",
+      "chronic sleep disruption",
+      "genetic susceptibility."
+    ],
+    "prevention": [
+      "Whole-food dietary patterns",
+      "regular daily physical activity",
+      "stress mitigation",
+      "adequate sleep",
+      "behavioral health support."
+    ],
+    "generalGuidance": [
+      "Comprehensive lifestyle therapy, medical nutritional therapy, pharmacotherapy (GLP-1 receptor agonists), bariatric metabolic surgery."
+    ],
+    "redFlags": [
+      "Severe lethargy with fruity acetone breath odor",
+      "Blood glucose > 300 mg/dL",
+      "Extreme unquenchable thirst and dehydration"
+    ],
+    "whenToSeekCare": "Seek healthcare consultation when excess weight contributes to joint pain, obstructive sleep apnea, or metabolic dysregulation.",
+    "differentiatingFeatures": "Differentiated by glycemic and hormonal biomarker laboratory panels.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "polycystic-ovary-syndrome-pcos",
+    "name": "Polycystic Ovary Syndrome (PCOS)",
+    "category": "Endocrine",
+    "symptoms": [
+      "fatigue",
+      "acne_breakouts",
+      "weight_gain",
+      "hair_thinning"
+    ],
+    "commonSymptoms": [
+      "fatigue",
+      "acne_breakouts",
+      "weight_gain"
+    ],
+    "lessCommonSymptoms": [
+      "hair_thinning"
+    ],
+    "description": "A prevalent endocrine disorder in reproductive-aged females characterized by ovulatory dysfunction, hyperandrogenism, and polycystic ovarian morphology.",
+    "causes": "Complex genetic, neuroendocrine, and metabolic factors with underlying hyperinsulinemia and ovarian theca-cell androgen overproduction.",
+    "riskFactors": [
+      "Family history of PCOS",
+      "insulin resistance",
+      "metabolic syndrome",
+      "obesity",
+      "sedentary lifestyle."
+    ],
+    "prevention": [
+      "Weight management",
+      "low-glycemic dietary habits",
+      "regular physical activity to enhance peripheral insulin sensitivity."
+    ],
+    "generalGuidance": [
+      "Combined oral contraceptives, metformin for insulin resistance, lifestyle modification, anti-androgens (spironolactone), ovulation induction."
+    ],
+    "redFlags": [
+      "Severe lethargy with fruity acetone breath odor",
+      "Blood glucose > 300 mg/dL",
+      "Extreme unquenchable thirst and dehydration"
+    ],
+    "whenToSeekCare": "Consult a gynecologist or endocrinologist for irregular menstrual cycles, severe cystic acne, or difficulty conceiving.",
+    "differentiatingFeatures": "Differentiated by glycemic and hormonal biomarker laboratory panels.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "gerd-acid-reflux",
+    "name": "GERD (Acid Reflux)",
+    "category": "Gastrointestinal",
+    "symptoms": [
+      "heartburn",
+      "nausea",
+      "abdominal_pain",
+      "sore_throat"
+    ],
+    "commonSymptoms": [
+      "heartburn",
+      "nausea",
+      "abdominal_pain"
+    ],
+    "lessCommonSymptoms": [
+      "sore_throat"
+    ],
+    "description": "A chronic gastrointestinal disorder where stomach acid persistently refluxes backward into the esophagus, irritating the mucosal lining.",
+    "causes": "Transient lower esophageal sphincter (LES) relaxations, hiatal hernia, delayed gastric emptying, increased intra-abdominal pressure.",
+    "riskFactors": [
+      "Obesity",
+      "pregnancy",
+      "hiatal hernia",
+      "smoking",
+      "late-night heavy meals",
+      "consumption of fatty",
+      "spicy",
+      "citrus",
+      "or caffeinated foods."
+    ],
+    "prevention": [
+      "Elevate head of bed",
+      "avoid recumbency within 3 hours of meals",
+      "lose excess weight",
+      "avoid trigger foods",
+      "stop smoking."
+    ],
+    "generalGuidance": [
+      "Proton pump inhibitors (PPIs), H2-receptor antagonists, antacids, lifestyle modifications, endoscopic or surgical fundoplication."
+    ],
+    "redFlags": [
+      "Coffee-ground vomiting or hematemesis",
+      "Black tarry stools (melena)",
+      "Rigid involuntary abdominal guarding"
+    ],
+    "whenToSeekCare": "Seek prompt evaluation for progressive dysphagia (trouble swallowing), unintentional weight loss, hematemesis, or anemia.",
+    "differentiatingFeatures": "Differentiated by relation to meals, stool characteristics, and localized peritoneal signs.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "peptic-ulcer-disease",
+    "name": "Peptic Ulcer Disease",
+    "category": "Gastrointestinal",
+    "symptoms": [
+      "heartburn",
+      "nausea",
+      "vomiting",
+      "abdominal_pain"
+    ],
+    "commonSymptoms": [
+      "heartburn",
+      "nausea",
+      "vomiting"
+    ],
+    "lessCommonSymptoms": [
+      "abdominal_pain"
+    ],
+    "description": "Erosive mucosal lesions occurring in the protective inner lining of the stomach (gastric ulcer) or proximal small intestine (duodenal ulcer).",
+    "causes": "Helicobacter pylori bacterial colonization, chronic usage of nonsteroidal anti-inflammatory drugs (NSAIDs), hyperacidity.",
+    "riskFactors": [
+      "H. pylori infection",
+      "regular NSAID or aspirin use",
+      "smoking",
+      "heavy alcohol consumption",
+      "severe physiological stress."
+    ],
+    "prevention": [
+      "Eradicate H. pylori",
+      "minimize unprescribed NSAID use",
+      "co-prescribe gastroprotection (PPIs) when chronic NSAIDs are required",
+      "avoid smoking."
+    ],
+    "generalGuidance": [
+      "Antibiotic eradication therapy for H. pylori, proton pump inhibitors, mucosal protective agents, avoiding mucosal irritants."
+    ],
+    "redFlags": [
+      "Coffee-ground vomiting or hematemesis",
+      "Black tarry stools (melena)",
+      "Rigid involuntary abdominal guarding"
+    ],
+    "whenToSeekCare": "Seek immediate emergency evaluation for vomiting frank blood or coffee-ground emesis, black tarry stools, or sudden acute abdominal pain.",
+    "differentiatingFeatures": "Differentiated by relation to meals, stool characteristics, and localized peritoneal signs.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "gastroenteritis",
+    "name": "Gastroenteritis",
+    "category": "Gastrointestinal",
+    "symptoms": [
+      "fever",
+      "nausea",
+      "vomiting",
+      "abdominal_pain",
+      "diarrhea"
+    ],
+    "commonSymptoms": [
+      "fever",
+      "nausea",
+      "vomiting"
+    ],
+    "lessCommonSymptoms": [
+      "abdominal_pain",
+      "diarrhea"
+    ],
+    "description": "An acute inflammation of the gastrointestinal tract mucous membranes, involving both stomach and small intestine.",
+    "causes": "Viral pathogens (Norovirus, Rotavirus), bacterial toxins (Salmonella, Campylobacter, E. coli), or parasitic protozoa.",
+    "riskFactors": [
+      "Consumption of contaminated water or unpasteurized food",
+      "poor hand hygiene",
+      "crowded living conditions",
+      "international travel."
+    ],
+    "prevention": [
+      "Meticulous hand washing with soap and water",
+      "hygienic food storage and preparation",
+      "drinking clean treated water",
+      "rotavirus vaccination."
+    ],
+    "generalGuidance": [
+      "Oral rehydration therapy with balanced electrolyte solutions, gradual reintroduction of bland diet, zinc supplementation, antiemetics if needed."
+    ],
+    "redFlags": [
+      "Coffee-ground vomiting or hematemesis",
+      "Black tarry stools (melena)",
+      "Rigid involuntary abdominal guarding"
+    ],
+    "whenToSeekCare": "Seek urgent care if signs of dehydration emerge (sunken eyes, dizziness, absence of urination), bloody stool, or inability to tolerate liquids.",
+    "differentiatingFeatures": "Differentiated by relation to meals, stool characteristics, and localized peritoneal signs.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "irritable-bowel-syndrome-ibs",
+    "name": "Irritable Bowel Syndrome (IBS)",
+    "category": "Gastrointestinal",
+    "symptoms": [
+      "abdominal_pain",
+      "diarrhea",
+      "constipation",
+      "bloating"
+    ],
+    "commonSymptoms": [
+      "abdominal_pain",
+      "diarrhea",
+      "constipation"
+    ],
+    "lessCommonSymptoms": [
+      "bloating"
+    ],
+    "description": "A common disorder of the brain-gut interaction characterized by recurrent abdominal pain related to defecation or changes in bowel habits.",
+    "causes": "Visceral hypersensitivity, altered gut-brain communication, gastrointestinal dysmotility, post-infectious inflammation, altered gut microbiome.",
+    "riskFactors": [
+      "Female sex",
+      "severe preceding bacterial gastroenteritis",
+      "chronic psychological stress",
+      "early adverse life events."
+    ],
+    "prevention": [
+      "Stress reduction",
+      "identifying individual food triggers",
+      "regular meal patterns",
+      "adequate dietary fiber and hydration."
+    ],
+    "generalGuidance": [
+      "Low-FODMAP dietary trial, soluble fiber (psyllium), antispasmodics, neuromodulators, gut-directed cognitive behavioral therapy."
+    ],
+    "redFlags": [
+      "Coffee-ground vomiting or hematemesis",
+      "Black tarry stools (melena)",
+      "Rigid involuntary abdominal guarding"
+    ],
+    "whenToSeekCare": "Seek medical assessment for \"red flag\" symptoms: nocturnal symptoms, unintended weight loss, rectal bleeding, or onset after age 50.",
+    "differentiatingFeatures": "Differentiated by relation to meals, stool characteristics, and localized peritoneal signs.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "chronic-constipation",
+    "name": "Chronic Constipation",
+    "category": "Gastrointestinal",
+    "symptoms": [
+      "abdominal_pain",
+      "constipation",
+      "bloating"
+    ],
+    "commonSymptoms": [
+      "abdominal_pain",
+      "constipation",
+      "bloating"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "A functional gastrointestinal condition marked by infrequent, difficult, or incomplete evacuation of dry, hardened stool.",
+    "causes": "Inadequate dietary fiber, insufficient hydration, pelvic floor dyssynergia, slow transit colonic motility, side effect of medications.",
+    "riskFactors": [
+      "Low-fiber diet",
+      "sedentary lifestyle",
+      "suppressing the urge to defecate",
+      "medications (opioids",
+      "calcium channel blockers",
+      "iron supplements)."
+    ],
+    "prevention": [
+      "High-fiber diet (25-35 grams/day)",
+      "plentiful fluid intake",
+      "regular physical activity",
+      "establishing consistent toilet routines."
+    ],
+    "generalGuidance": [
+      "Bulk-forming laxatives (psyllium), osmotic laxatives (polyethylene glycol), pelvic floor physical therapy, biofeedback."
+    ],
+    "redFlags": [
+      "Coffee-ground vomiting or hematemesis",
+      "Black tarry stools (melena)",
+      "Rigid involuntary abdominal guarding"
+    ],
+    "whenToSeekCare": "Consult a physician if constipation is accompanied by severe abdominal distension, vomiting, rectal bleeding, or sudden onset in older adults.",
+    "differentiatingFeatures": "Differentiated by relation to meals, stool characteristics, and localized peritoneal signs.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "chronic-diarrhea",
+    "name": "Chronic Diarrhea",
+    "category": "Gastrointestinal",
+    "symptoms": [
+      "fatigue",
+      "nausea",
+      "abdominal_pain",
+      "diarrhea"
+    ],
+    "commonSymptoms": [
+      "fatigue",
+      "nausea",
+      "abdominal_pain"
+    ],
+    "lessCommonSymptoms": [
+      "diarrhea"
+    ],
+    "description": "Frequent loose, watery stools persisting continuously or intermittently for greater than four weeks in duration.",
+    "causes": "Inflammatory bowel disease (Crohn's/Colitis), celiac disease, malabsorption syndromes, chronic parasitic infection, microscopic colitis.",
+    "riskFactors": [
+      "Autoimmune history",
+      "family history of IBD or celiac disease",
+      "prior gastrointestinal surgeries",
+      "chronic antibiotic or metformin use."
+    ],
+    "prevention": [
+      "Prompt investigation of dietary intolerances (gluten",
+      "lactose)",
+      "hygienic water sources during travel",
+      "cautious antibiotic usage."
+    ],
+    "generalGuidance": [
+      "Etiology-specific treatment (gluten-free diet for celiac, anti-inflammatory therapy for IBD), electrolyte replenishment, anti-diarrheal agents."
+    ],
+    "redFlags": [
+      "Coffee-ground vomiting or hematemesis",
+      "Black tarry stools (melena)",
+      "Rigid involuntary abdominal guarding"
+    ],
+    "whenToSeekCare": "Seek thorough clinical evaluation for chronic diarrhea accompanied by unintended weight loss, fever, anemia, or visible blood in stool.",
+    "differentiatingFeatures": "Differentiated by relation to meals, stool characteristics, and localized peritoneal signs.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "gallstones",
+    "name": "Gallstones",
+    "category": "Gastrointestinal",
+    "symptoms": [
+      "right_upper_quadrant_pain",
+      "nausea",
+      "vomiting",
+      "abdominal_pain"
+    ],
+    "commonSymptoms": [
+      "right_upper_quadrant_pain",
+      "nausea",
+      "vomiting"
+    ],
+    "lessCommonSymptoms": [
+      "abdominal_pain"
+    ],
+    "description": "Hardened mineral deposits formed inside the gallbladder, predominantly composed of crystallized cholesterol or bilirubin pigments.",
+    "causes": "Supersaturation of bile with cholesterol, gallbladder hypomotility, excessive biliary bilirubin secretion.",
+    "riskFactors": [
+      "Female sex",
+      "age > 40",
+      "multiparity",
+      "rapid weight loss",
+      "obesity",
+      "high-fat diet",
+      "hemolytic blood disorders."
+    ],
+    "prevention": [
+      "Maintain a healthy body weight gradually (avoid crash starvation diets)",
+      "eat a balanced fiber-rich diet with healthy unsaturated fats."
+    ],
+    "generalGuidance": [
+      "Observation for asymptomatic stones; laparoscopic cholecystectomy for symptomatic recurrent biliary colic or acute cholecystitis."
+    ],
+    "redFlags": [
+      "Coffee-ground vomiting or hematemesis",
+      "Black tarry stools (melena)",
+      "Rigid involuntary abdominal guarding"
+    ],
+    "whenToSeekCare": "Seek emergency medical evaluation for severe right upper quadrant pain radiating to shoulder, fever, persistent vomiting, or jaundice.",
+    "differentiatingFeatures": "Differentiated by relation to meals, stool characteristics, and localized peritoneal signs.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "tension-headache",
+    "name": "Tension Headache",
+    "category": "Neurological",
+    "symptoms": [
+      "headache",
+      "fatigue",
+      "muscle_pain"
+    ],
+    "commonSymptoms": [
+      "headache",
+      "fatigue",
+      "muscle_pain"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "The most prevalent type of primary headache, presenting as mild-to-moderate dull, band-like tightening pressure across the head and neck.",
+    "causes": "Myofascial trigger points, pericranial muscle tenderness, central pain sensitization, prolonged emotional stress.",
+    "riskFactors": [
+      "Chronic emotional or occupational stress",
+      "poor ergonomic posture",
+      "ocular strain",
+      "clenching jaw/teeth",
+      "sleep deprivation."
+    ],
+    "prevention": [
+      "Regular ergonomic breaks",
+      "adequate nocturnal sleep",
+      "stress management",
+      "hydration",
+      "stretching of cervical and shoulder muscles."
+    ],
+    "generalGuidance": [
+      "Over-the-counter analgesics (acetaminophen, NSAIDs), physical therapy, stress management techniques, tricyclic antidepressants for chronic cases."
+    ],
+    "redFlags": [
+      "Sudden thunderclap headache",
+      "Focal neurological deficits (facial droop, arm weakness)",
+      "Seizures lasting > 5 minutes"
+    ],
+    "whenToSeekCare": "Seek evaluation for sudden severe \"thunderclap\" headache, new headaches after age 50, or associated focal neurological deficits.",
+    "differentiatingFeatures": "Differentiated by neurological exam and temporal symptom onset.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "peripheral-neuropathy",
+    "name": "Peripheral Neuropathy",
+    "category": "Neurological",
+    "symptoms": [
+      "fatigue",
+      "muscle_pain",
+      "numbness_tingling"
+    ],
+    "commonSymptoms": [
+      "fatigue",
+      "muscle_pain",
+      "numbness_tingling"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "Damage to the peripheral nervous system leading to weakness, numbness, tingling, or burning sensations primarily in hands and feet.",
+    "causes": "Diabetic microvascular axonal damage, chronic alcoholism, vitamin B12 deficiency, chemotherapy toxicity, autoimmune disorders.",
+    "riskFactors": [
+      "Poorly controlled diabetes mellitus",
+      "heavy alcohol consumption",
+      "chemotherapy treatments",
+      "nutritional deficiencies",
+      "renal disease."
+    ],
+    "prevention": [
+      "Strict blood glucose control in diabetes",
+      "moderation of alcohol",
+      "adequate nutritional vitamin B12 intake",
+      "foot protective care."
+    ],
+    "generalGuidance": [
+      "Optimization of underlying cause, neuropathic pain agents (gabapentin, pregabalin, duloxetine), physical therapy, daily foot inspections."
+    ],
+    "redFlags": [
+      "Sudden thunderclap headache",
+      "Focal neurological deficits (facial droop, arm weakness)",
+      "Seizures lasting > 5 minutes"
+    ],
+    "whenToSeekCare": "Seek medical attention for progressive numbness spreading upward, unhealed foot ulcers, or difficulty with balance and walking.",
+    "differentiatingFeatures": "Differentiated by neurological exam and temporal symptom onset.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "kidney-stones",
+    "name": "Kidney Stones",
+    "category": "Renal / Urological",
+    "symptoms": [
+      "flank_pain",
+      "dysuria",
+      "nausea",
+      "blood_in_urine"
+    ],
+    "commonSymptoms": [
+      "flank_pain",
+      "dysuria",
+      "nausea"
+    ],
+    "lessCommonSymptoms": [
+      "blood_in_urine"
+    ],
+    "description": "Solid mineral and acid salt crystalline aggregations that form within renal calyces and pass into the urinary tract.",
+    "causes": "Supersaturation of urine with calcium, oxalate, phosphate, or uric acid coupled with inadequate urinary fluid volume.",
+    "riskFactors": [
+      "Low fluid intake",
+      "high dietary sodium/animal protein",
+      "family history of nephrolithiasis",
+      "hyperparathyroidism",
+      "gout."
+    ],
+    "prevention": [
+      "Drink 2.5 to 3 liters of water daily to maintain clear dilute urine",
+      "limit sodium and excess animal protein",
+      "ensure normal calcium intake."
+    ],
+    "generalGuidance": [
+      "Adequate hydration, alpha-blockers (tamsulosin) to aid stone passage, oral analgesia, shock-wave lithotripsy or ureteroscopy for large stones."
+    ],
+    "redFlags": [
+      "Complete inability to pass urine (anuria)",
+      "High fever with severe flank rigors",
+      "Visible gross hematuria"
+    ],
+    "whenToSeekCare": "Seek immediate emergency care for intractable flank pain, persistent vomiting, inability to urinate, or high fever with chills.",
+    "differentiatingFeatures": "Differentiated by urinalysis and renal function indices.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "kidney-infection-pyelonephritis",
+    "name": "Kidney Infection (Pyelonephritis)",
+    "category": "Renal / Urological",
+    "symptoms": [
+      "fever",
+      "chills",
+      "flank_pain",
+      "dysuria"
+    ],
+    "commonSymptoms": [
+      "fever",
+      "chills",
+      "flank_pain"
+    ],
+    "lessCommonSymptoms": [
+      "dysuria"
+    ],
+    "description": "An acute bacterial infection of the renal parenchyma and renal pelvis, usually ascending from the lower urinary tract.",
+    "causes": "Ascending spread of uropathogenic bacteria (primarily Escherichia coli) from cystitis through ureters into the kidney.",
+    "riskFactors": [
+      "Untreated or recurrent lower urinary tract infections",
+      "female anatomy",
+      "urinary catheterization",
+      "kidney stones",
+      "pregnancy",
+      "diabetes."
+    ],
+    "prevention": [
+      "Prompt",
+      "complete treatment of bladder infections",
+      "generous hydration",
+      "post-coital urination",
+      "proper perineal hygiene."
+    ],
+    "generalGuidance": [
+      "Empirical and culture-directed oral or intravenous antibiotics for 7-14 days, antipyretics, adequate oral or IV fluid hydration."
+    ],
+    "redFlags": [
+      "Complete inability to pass urine (anuria)",
+      "High fever with severe flank rigors",
+      "Visible gross hematuria"
+    ],
+    "whenToSeekCare": "Seek emergency medical care immediately for high fever, severe flank pain, shaking chills, nausea, or confusion.",
+    "differentiatingFeatures": "Differentiated by urinalysis and renal function indices.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "acne-vulgaris",
+    "name": "Acne Vulgaris",
+    "category": "Dermatological",
+    "symptoms": [
+      "skin_rash",
+      "acne_breakouts"
+    ],
+    "commonSymptoms": [
+      "skin_rash",
+      "acne_breakouts"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "A chronic inflammatory dermatological disorder of the pilosebaceous units characterized by comedones, papules, pustules, or cysts.",
+    "causes": "Excess sebum production, follicular hyperkeratinization, Cutibacterium acnes bacterial proliferation, and inflammatory mediator release.",
+    "riskFactors": [
+      "Adolescent hormonal surges",
+      "androgen excess",
+      "family history",
+      "high-glycemic index diets",
+      "comedogenic cosmetic products."
+    ],
+    "prevention": [
+      "Gentle non-abrasive facial cleansing twice daily",
+      "avoiding picking or squeezing lesions",
+      "non-comedogenic oil-free skincare."
+    ],
+    "generalGuidance": [
+      "Topical retinoids, benzoyl peroxide, topical/oral antibiotics, salicylic acid, hormonal therapies (oral contraceptives, spironolactone), oral isotretinoin."
+    ],
+    "redFlags": [
+      "Rapidly expanding erythema with systemic high fever",
+      "Mucosal involvement or widespread blistering",
+      "Asymmetrical lesion with jagged borders"
+    ],
+    "whenToSeekCare": "Seek dermatological consultation for painful deep cysts, scarring acne lesions, or lack of response to non-prescription remedies.",
+    "differentiatingFeatures": "Differentiated by lesion morphology, distribution, and epidermal barrier changes.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "eczema-atopic-dermatitis",
+    "name": "Eczema (Atopic Dermatitis)",
+    "category": "Dermatological",
+    "symptoms": [
+      "skin_rash",
+      "itching",
+      "skin_flaking"
+    ],
+    "commonSymptoms": [
+      "skin_rash",
+      "itching",
+      "skin_flaking"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "A chronic, pruritic inflammatory skin condition characterized by defective epidermal barrier function and immune dysregulation.",
+    "causes": "Genetic mutations in the filaggrin (FLG) gene, epidermal skin barrier disruption, Th2-skewed immune hyperreactivity.",
+    "riskFactors": [
+      "Personal or family history of atopy (asthma",
+      "allergic rhinitis)",
+      "dry climates",
+      "frequent bathing with harsh soaps",
+      "environmental irritants."
+    ],
+    "prevention": [
+      "Frequent skin moisturization with bland thick emollient ointments",
+      "lukewarm brief baths",
+      "fragrance-free detergents",
+      "avoiding wool clothing."
+    ],
+    "generalGuidance": [
+      "Liberal emollient moisturizers, topical corticosteroids, topical calcineurin inhibitors, phototherapy, biologic therapies (dupilumab)."
+    ],
+    "redFlags": [
+      "Rapidly expanding erythema with systemic high fever",
+      "Mucosal involvement or widespread blistering",
+      "Asymmetrical lesion with jagged borders"
+    ],
+    "whenToSeekCare": "Seek prompt medical attention if eczema lesions exhibit signs of bacterial superinfection (honey-colored crusting, pustules, severe pain).",
+    "differentiatingFeatures": "Differentiated by lesion morphology, distribution, and epidermal barrier changes.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "psoriasis",
+    "name": "Psoriasis",
+    "category": "Dermatological",
+    "symptoms": [
+      "joint_pain",
+      "skin_rash",
+      "skin_flaking"
+    ],
+    "commonSymptoms": [
+      "joint_pain",
+      "skin_rash",
+      "skin_flaking"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "A chronic autoimmune inflammatory dermatosis characterized by well-demarcated erythematous plaques covered with silvery micaceous scales.",
+    "causes": "Immune-mediated acceleration of epidermal keratinocyte turnover driven by the IL-23/IL-17 cytokine signaling pathway.",
+    "riskFactors": [
+      "Genetic susceptibility (HLA-Cw6)",
+      "physiological or psychological stress",
+      "streptococcal pharyngeal infection",
+      "smoking",
+      "obesity",
+      "alcohol."
+    ],
+    "prevention": [
+      "Stress reduction",
+      "avoiding skin trauma/friction (Koebner phenomenon)",
+      "maintaining healthy body weight",
+      "avoiding smoking and heavy drinking."
+    ],
+    "generalGuidance": [
+      "Topical corticosteroids, topical vitamin D analogs, phototherapy (narrowband UVB), systemic methotrexate, biologic targeted agents."
+    ],
+    "redFlags": [
+      "Rapidly expanding erythema with systemic high fever",
+      "Mucosal involvement or widespread blistering",
+      "Asymmetrical lesion with jagged borders"
+    ],
+    "whenToSeekCare": "Consult a dermatologist for extensive cutaneous involvement, severe discomfort, or associated joint pain (psoriatic arthritis).",
+    "differentiatingFeatures": "Differentiated by lesion morphology, distribution, and epidermal barrier changes.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "contact-dermatitis",
+    "name": "Contact Dermatitis",
+    "category": "Dermatological",
+    "symptoms": [
+      "skin_rash",
+      "itching",
+      "localized_swelling"
+    ],
+    "commonSymptoms": [
+      "skin_rash",
+      "itching",
+      "localized_swelling"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "An acute or chronic cutaneous inflammatory reaction elicited by direct contact with an external chemical, allergen, or physical irritant.",
+    "causes": "Either direct cytotoxic irritant injury (Irritant Contact Dermatitis) or delayed Type IV cell-mediated allergy (Allergic Contact Dermatitis).",
+    "riskFactors": [
+      "Occupational chemical exposure (hairdressers",
+      "healthcare",
+      "cleaners)",
+      "nickel jewelry",
+      "poison ivy/oak",
+      "fragrance ingredients",
+      "topical neomycin."
+    ],
+    "prevention": [
+      "Identify and rigorously avoid contact with causative allergens or irritants",
+      "wear protective barrier gloves",
+      "wash skin immediately after accidental exposure."
+    ],
+    "generalGuidance": [
+      "Cool wet compresses, topical corticosteroid creams, oral antihistamines for pruritus, barrier repair creams."
+    ],
+    "redFlags": [
+      "Rapidly expanding erythema with systemic high fever",
+      "Mucosal involvement or widespread blistering",
+      "Asymmetrical lesion with jagged borders"
+    ],
+    "whenToSeekCare": "Seek care if dermatitis affects eyes, face, or genitalia, spreads rapidly, or develops secondary bacterial pustules or cellulitis.",
+    "differentiatingFeatures": "Differentiated by lesion morphology, distribution, and epidermal barrier changes.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "fungal-skin-infection",
+    "name": "Fungal Skin Infection",
+    "category": "Dermatological",
+    "symptoms": [
+      "skin_rash",
+      "itching",
+      "skin_flaking"
+    ],
+    "commonSymptoms": [
+      "skin_rash",
+      "itching",
+      "skin_flaking"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "Superficial fungal colonization of the keratinized layer of skin, hair, or nails caused by dermatophytes or yeasts.",
+    "causes": "Dermatophyte fungi (Trichophyton, Microsporum, Epidermophyton) or Candida albicans yeast proliferating in warm, humid skin folds.",
+    "riskFactors": [
+      "Warm humid environments",
+      "excessive perspiration",
+      "occlusive footwear",
+      "communal showers/gyms",
+      "diabetes mellitus",
+      "compromised immunity."
+    ],
+    "prevention": [
+      "Keep skin clean and dry",
+      "wear breathable cotton clothing",
+      "dry thoroughly after bathing",
+      "wear sandals in public locker rooms and showers."
+    ],
+    "generalGuidance": [
+      "Topical antifungal creams (clotrimazole, terbinafine, miconazole) applied for 2-4 weeks, oral antifungals for widespread or nail infections."
+    ],
+    "redFlags": [
+      "Rapidly expanding erythema with systemic high fever",
+      "Mucosal involvement or widespread blistering",
+      "Asymmetrical lesion with jagged borders"
+    ],
+    "whenToSeekCare": "Seek medical consultation if fungal rash does not improve after 2 weeks of over-the-counter treatment or spreads extensively.",
+    "differentiatingFeatures": "Differentiated by lesion morphology, distribution, and epidermal barrier changes.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "urticaria-hives",
+    "name": "Urticaria (Hives)",
+    "category": "Dermatological",
+    "symptoms": [
+      "itching",
+      "hives_welts",
+      "localized_swelling"
+    ],
+    "commonSymptoms": [
+      "itching",
+      "hives_welts",
+      "localized_swelling"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "A transient vascular reaction of the dermis characterized by intensely pruritic, raised, erythematous wheals with surrounding flare.",
+    "causes": "Mast cell and basophil degranulation with rapid release of histamine and vasodilatory mediators triggered by allergens, infections, or physical stimuli.",
+    "riskFactors": [
+      "Viral infections",
+      "food allergies (nuts",
+      "shellfish)",
+      "medications (NSAIDs",
+      "antibiotics)",
+      "insect stings",
+      "physical stimuli (heat",
+      "cold",
+      "pressure)."
+    ],
+    "prevention": [
+      "Identify and avoid known specific triggering allergens",
+      "minimize physical skin friction",
+      "avoid unneeded NSAIDs during acute flares."
+    ],
+    "generalGuidance": [
+      "Second-generation H1-antihistamines (cetirizine, fexofenadine, loratadine), H2-blockers, cool compresses, oral corticosteroids for severe flares."
+    ],
+    "redFlags": [
+      "Rapidly expanding erythema with systemic high fever",
+      "Mucosal involvement or widespread blistering",
+      "Asymmetrical lesion with jagged borders"
+    ],
+    "whenToSeekCare": "Seek immediate emergency care if hives occur with facial/lip/tongue swelling (angioedema), difficulty breathing, or dizziness (anaphylaxis).",
+    "differentiatingFeatures": "Differentiated by lesion morphology, distribution, and epidermal barrier changes.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "osteoarthritis",
+    "name": "Osteoarthritis",
+    "category": "Musculoskeletal",
+    "symptoms": [
+      "joint_pain",
+      "joint_stiffness"
+    ],
+    "commonSymptoms": [
+      "joint_pain",
+      "joint_stiffness"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "A progressive degenerative joint disease characterized by breakdown of articular cartilage, subchondral bone remodeling, and osteophyte formation.",
+    "causes": "Biomechanical joint stress, age-related chondrocyte senescence, repetitive mechanical microtrauma, low-grade joint inflammation.",
+    "riskFactors": [
+      "Advanced age",
+      "female sex",
+      "obesity (excess load on weight-bearing joints)",
+      "prior traumatic joint injury",
+      "repetitive occupational joint stress."
+    ],
+    "prevention": [
+      "Maintain healthy body weight to reduce knee/hip mechanical loading",
+      "engage in low-impact aerobic exercise (swimming",
+      "cycling)",
+      "avoid joint trauma."
+    ],
+    "generalGuidance": [
+      "Physical therapy, quadriceps muscle strengthening, weight loss, acetaminophen or topical NSAIDs, intra-articular injections, joint replacement surgery."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Consult an orthopedic specialist for progressive joint pain limiting ambulation or daily self-care activities.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "rheumatoid-arthritis",
+    "name": "Rheumatoid Arthritis",
+    "category": "Musculoskeletal",
+    "symptoms": [
+      "joint_pain",
+      "fatigue",
+      "localized_swelling",
+      "joint_stiffness"
+    ],
+    "commonSymptoms": [
+      "joint_pain",
+      "fatigue",
+      "localized_swelling"
+    ],
+    "lessCommonSymptoms": [
+      "joint_stiffness"
+    ],
+    "description": "A chronic, systemic autoimmune disease characterized by symmetric inflammatory polyarthritis, synovial proliferation, and progressive joint destruction.",
+    "causes": "Autoimmune targeting of synovial tissue by autoantibodies (Rheumatoid Factor, anti-CCP), leading to chronic pannus formation and cartilage erosion.",
+    "riskFactors": [
+      "Female sex",
+      "genetic predisposition (HLA-DRB1 alleles)",
+      "cigarette smoking",
+      "family history of autoimmune disease."
+    ],
+    "prevention": [
+      "Smoking cessation",
+      "maintaining optimal dental hygiene",
+      "early diagnostic assessment upon onset of symmetric joint swelling."
+    ],
+    "generalGuidance": [
+      "Disease-modifying antirheumatic drugs (DMARDs, e.g. methotrexate), biologic TNF/IL-6 inhibitors, short-term corticosteroids, physical therapy."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Seek urgent rheumatology evaluation within weeks of developing persistent symmetric joint swelling, morning stiffness > 1 hour, or hand deformities.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "osteoporosis",
+    "name": "Osteoporosis",
+    "category": "Musculoskeletal",
+    "symptoms": [
+      "joint_pain",
+      "back_pain"
+    ],
+    "commonSymptoms": [
+      "joint_pain",
+      "back_pain"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "A systemic skeletal disease characterized by low bone mineral density and microarchitectural deterioration, resulting in heightened bone fragility.",
+    "causes": "Imbalance between osteoclastic bone resorption and osteoblastic bone formation, accelerated by postmenopausal estrogen decline or aging.",
+    "riskFactors": [
+      "Postmenopausal female status",
+      "advanced age",
+      "low body weight",
+      "calcium/vitamin D deficiency",
+      "glucocorticoid therapy",
+      "sedentary lifestyle",
+      "smoking."
+    ],
+    "prevention": [
+      "Adequate dietary calcium and vitamin D",
+      "regular weight-bearing and resistance training exercises",
+      "fall prevention strategies",
+      "smoking cessation."
+    ],
+    "generalGuidance": [
+      "Antiresorptive medications (bisphosphonates, denosumab), anabolic agents (teriparatide), calcium and vitamin D supplementation, DEXA scans."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Seek medical care following any low-trauma fall resulting in severe bone/hip pain, or progressive height loss and dorsal kyphosis.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "gout",
+    "name": "Gout",
+    "category": "Musculoskeletal",
+    "symptoms": [
+      "joint_pain",
+      "skin_rash",
+      "localized_swelling"
+    ],
+    "commonSymptoms": [
+      "joint_pain",
+      "skin_rash",
+      "localized_swelling"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "A painful form of inflammatory crystal arthritis caused by the deposition of monosodium urate monohydrate crystals within articular and periarticular tissues.",
+    "causes": "Persistent hyperuricemia exceeding the saturation threshold due to renal urate underexcretion or excessive purine metabolism.",
+    "riskFactors": [
+      "Male sex",
+      "high-purine diet (red meat",
+      "seafood",
+      "beer",
+      "distilled spirits)",
+      "high-fructose corn syrup",
+      "obesity",
+      "hypertension",
+      "diuretics."
+    ],
+    "prevention": [
+      "Limit high-purine foods",
+      "eliminate beer and sweetened beverages",
+      "maintain high daily hydration",
+      "manage weight",
+      "avoid crash dieting."
+    ],
+    "generalGuidance": [
+      "Acute flare: NSAIDs, colchicine, or corticosteroids. Long-term management: urate-lowering therapy (allopurinol, febuxostat) targeting uric acid < 6 mg/dL."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Seek prompt care for acute, excruciating monoarticular joint swelling (commonly the first metatarsophalangeal big toe joint).",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "muscle-strain",
+    "name": "Muscle Strain",
+    "category": "Musculoskeletal",
+    "symptoms": [
+      "localized_swelling",
+      "muscle_pain",
+      "back_pain"
+    ],
+    "commonSymptoms": [
+      "localized_swelling",
+      "muscle_pain",
+      "back_pain"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "An acute or repetitive stretch injury causing tearing of muscle fibers or their associated myotendinous junctions.",
+    "causes": "Overstretching, excessive eccentric muscular load, sudden violent contraction, or repetitive ergonomic fatigue without adequate warm-up.",
+    "riskFactors": [
+      "Poor muscle flexibility",
+      "muscular fatigue",
+      "inadequate pre-exercise warm-up",
+      "prior muscle injury",
+      "sudden resumption of vigorous exertion."
+    ],
+    "prevention": [
+      "Thorough dynamic warm-up before athletic activity",
+      "gradual progression of workout intensity",
+      "core muscle strengthening",
+      "ergonomic lifting form."
+    ],
+    "generalGuidance": [
+      "R.I.C.E. protocol (Rest, Ice, Compression, Elevation) initially, brief course of oral NSAIDs, gentle progressive stretching, physical therapy."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Seek medical evaluation for an audible muscle \"pop\", severe inability to bear weight, visible muscular defect, or significant hematoma.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "vitamin-b12-deficiency",
+    "name": "Vitamin B12 Deficiency",
+    "category": "Hematological",
+    "symptoms": [
+      "memory_loss",
+      "fatigue",
+      "dizziness",
+      "numbness_tingling"
+    ],
+    "commonSymptoms": [
+      "memory_loss",
+      "fatigue",
+      "dizziness"
+    ],
+    "lessCommonSymptoms": [
+      "numbness_tingling"
+    ],
+    "description": "A nutritional hematological and neurological disorder caused by insufficient cobalamin levels, leading to megaloblastic anemia and neuropathy.",
+    "causes": "Pernicious anemia (autoimmune destruction of gastric parietal cells / lack of intrinsic factor), strict vegan diet without supplementation, malabsorption.",
+    "riskFactors": [
+      "Strict vegetarian/vegan diets",
+      "age > 65",
+      "chronic proton pump inhibitor or metformin use",
+      "prior gastric bypass or ileal resection",
+      "celiac disease."
+    ],
+    "prevention": [
+      "Incorporate B12-rich foods (eggs",
+      "dairy",
+      "fortified cereals) or take regular oral cobalamin supplements if adhering to plant-based diets."
+    ],
+    "generalGuidance": [
+      "Oral high-dose vitamin B12 (1000 mcg daily) or intramuscular cyanocobalamin/hydroxocobalamin injections until stores are replenished."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Seek medical evaluation for persistent numbness in extremities, unsteady gait, cognitive changes, or unexplained fatigue and pale skin.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "vitamin-d-deficiency",
+    "name": "Vitamin D Deficiency",
+    "category": "Hematological",
+    "symptoms": [
+      "joint_pain",
+      "fatigue",
+      "muscle_pain",
+      "depressed_mood"
+    ],
+    "commonSymptoms": [
+      "joint_pain",
+      "fatigue",
+      "muscle_pain"
+    ],
+    "lessCommonSymptoms": [
+      "depressed_mood"
+    ],
+    "description": "A systemic nutritional insufficiency resulting from inadequate synthesis or dietary intake of calciferol, impairing calcium and bone homeostasis.",
+    "causes": "Limited cutaneous synthesis from sunlight exposure, low dietary intake, malabsorption, renal/hepatic conversion impairments, pigmented skin.",
+    "riskFactors": [
+      "Living in northern latitudes",
+      "limited outdoor sun exposure",
+      "extensive sunscreen use",
+      "darker skin pigmentation",
+      "obesity",
+      "malabsorptive bowel disease."
+    ],
+    "prevention": [
+      "Sensible sun exposure",
+      "consuming vitamin D-fortified milk/cereals and fatty fish",
+      "routine daily supplementation of 800-2000 IU/day."
+    ],
+    "generalGuidance": [
+      "High-dose oral ergocalciferol (D2) or cholecalciferol (D3) therapy, followed by long-term maintenance supplementation and serum 25(OH)D monitoring."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Seek healthcare consultation for persistent diffuse musculoskeletal aching, proximal muscle weakness, or recurrent bone stress fractures.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "sickle-cell-disease",
+    "name": "Sickle Cell Disease",
+    "category": "Hematological",
+    "symptoms": [
+      "shortness_of_breath",
+      "fever",
+      "joint_pain",
+      "fatigue"
+    ],
+    "commonSymptoms": [
+      "shortness_of_breath",
+      "fever",
+      "joint_pain"
+    ],
+    "lessCommonSymptoms": [
+      "fatigue"
+    ],
+    "description": "An inherited genetic hemoglobinopathy caused by a point mutation in the beta-globin gene, resulting in abnormal sickle-shaped red blood cells.",
+    "causes": "Homozygous inheritance of the HbS allele (glutamic acid substituted by valine at position 6 of the beta-globin chain).",
+    "riskFactors": [
+      "African",
+      "Mediterranean",
+      "Middle Eastern",
+      "or South Asian ancestral descent; positive parental sickle cell carrier status."
+    ],
+    "prevention": [
+      "Genetic counseling and carrier screening",
+      "avoiding cold exposure",
+      "preventing dehydration",
+      "avoiding high-altitude hypoxic triggers."
+    ],
+    "generalGuidance": [
+      "Hydroxyurea to boost fetal hemoglobin, routine vaccinations, prophylactic penicillin in children, hydration, multimodal pain crisis protocols."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Seek immediate emergency medical care for acute vaso-occlusive pain crises, acute chest syndrome (chest pain/fever/cough), or stroke symptoms.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "generalized-anxiety",
+    "name": "Generalized Anxiety",
+    "category": "Psychological",
+    "symptoms": [
+      "palpitations",
+      "muscle_pain",
+      "anxiety_nervousness",
+      "sleep_disturbance"
+    ],
+    "commonSymptoms": [
+      "palpitations",
+      "muscle_pain",
+      "anxiety_nervousness"
+    ],
+    "lessCommonSymptoms": [
+      "sleep_disturbance"
+    ],
+    "description": "An educational screening category for persistent, excessive, and uncontrollable worry regarding various everyday life events and activities.",
+    "causes": "Dysregulation of amygdala-prefrontal neurocircuitry, neurotransmitter imbalances (GABA, serotonin, norepinephrine), chronic psychosocial stress.",
+    "riskFactors": [
+      "Family history of anxiety",
+      "major chronic life stress",
+      "personality traits (neuroticism)",
+      "chronic physical illnesses",
+      "substance use."
+    ],
+    "prevention": [
+      "Cognitive reframing",
+      "regular aerobic physical activity",
+      "consistent sleep hygiene",
+      "minimizing caffeine and stimulant consumption",
+      "mindfulness."
+    ],
+    "generalGuidance": [
+      "Evidence-based cognitive behavioral therapy (CBT), mindfulness-based stress reduction, SSRI or SNRI medications under psychiatric guidance."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Seek urgent mental health evaluation if anxiety causes panic attacks, severe functional impairment, or suicidal thoughts.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "depressive-symptoms",
+    "name": "Depressive Symptoms",
+    "category": "Psychological",
+    "symptoms": [
+      "fatigue",
+      "weight_loss",
+      "depressed_mood",
+      "sleep_disturbance"
+    ],
+    "commonSymptoms": [
+      "fatigue",
+      "weight_loss",
+      "depressed_mood"
+    ],
+    "lessCommonSymptoms": [
+      "sleep_disturbance"
+    ],
+    "description": "An educational screening category for persistent depressed mood, loss of interest or pleasure, low energy, and feelings of worthlessness.",
+    "causes": "Interactions between genetic vulnerability, neurochemical alterations, neuroendocrine dysregulation (HPA axis), and adverse life events.",
+    "riskFactors": [
+      "Family history of mood disorders",
+      "chronic illness",
+      "severe interpersonal losses or trauma",
+      "chronic lack of social support",
+      "sleep disruption."
+    ],
+    "prevention": [
+      "Regular cardiovascular physical activity",
+      "maintaining social connection",
+      "structured daily routines",
+      "balanced nutrition",
+      "exposure to morning daylight."
+    ],
+    "generalGuidance": [
+      "Psychotherapy (CBT, interpersonal therapy), structured exercise programs, antidepressant pharmacotherapy (SSRIs) supervised by clinicians."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Seek immediate emergency support or call a crisis lifeline (988 in the US) if experiencing thoughts of self-harm or suicide.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "chronic-stress-&-burnout",
+    "name": "Chronic Stress & Burnout",
+    "category": "Psychological",
+    "symptoms": [
+      "headache",
+      "fatigue",
+      "anxiety_nervousness",
+      "sleep_disturbance"
+    ],
+    "commonSymptoms": [
+      "headache",
+      "fatigue",
+      "anxiety_nervousness"
+    ],
+    "lessCommonSymptoms": [
+      "sleep_disturbance"
+    ],
+    "description": "A state of chronic physical and psychological exhaustion coupled with emotional depletion caused by prolonged unmanaged stress.",
+    "causes": "Sustained activation of the sympathetic-adreno-medullary and hypothalamic-pituitary-adrenal (HPA) axes without adequate recovery phases.",
+    "riskFactors": [
+      "High workload environments",
+      "lack of perceived autonomy",
+      "caregiver demands",
+      "perfectionism",
+      "chronic financial strain",
+      "insufficient sleep."
+    ],
+    "prevention": [
+      "Clear personal and professional boundaries",
+      "scheduled restorative downtime",
+      "peer support systems",
+      "regular physical movement",
+      "mindfulness."
+    ],
+    "generalGuidance": [
+      "Workplace/lifestyle restructuring, stress reduction coaching, sleep optimization, mindfulness-based stress reduction (MBSR), clinical counseling."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Seek professional psychological consultation if burnout leads to chronic depressive feelings, severe insomnia, or panic attacks.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "insomnia-&-sleep-disorder",
+    "name": "Insomnia & Sleep Disorder",
+    "category": "Psychological",
+    "symptoms": [
+      "headache",
+      "fatigue",
+      "sleep_disturbance"
+    ],
+    "commonSymptoms": [
+      "headache",
+      "fatigue",
+      "sleep_disturbance"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "A condition characterized by persistent difficulty initiating, consolidating, or maintaining restorative sleep despite adequate opportunity.",
+    "causes": "Hyperarousal states of the central nervous system, circadian rhythm misalignment, poor sleep ergonomics, psychological distress.",
+    "riskFactors": [
+      "Irregular sleep schedules",
+      "shift work",
+      "blue light screen use in bed",
+      "excessive caffeine/alcohol",
+      "chronic anxiety",
+      "sleep apnea."
+    ],
+    "prevention": [
+      "Strict sleep hygiene: consistent sleep-wake schedule",
+      "dark/cool/quiet bedroom",
+      "avoiding screens 1 hour before bed",
+      "limiting caffeine after midday."
+    ],
+    "generalGuidance": [
+      "Cognitive Behavioral Therapy for Insomnia (CBT-I) as first-line gold standard, stimulus control, sleep restriction therapy, short-term sleep aids."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Consult a sleep specialist or physician if sleep disruption persists over 3 months, causes daytime sleepiness, or is accompanied by loud snoring/gasping.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "metabolic-syndrome",
+    "name": "Metabolic Syndrome",
+    "category": "Endocrine",
+    "symptoms": [
+      "high_blood_sugar",
+      "high_blood_pressure",
+      "fatigue",
+      "weight_gain"
+    ],
+    "commonSymptoms": [
+      "high_blood_sugar",
+      "high_blood_pressure",
+      "fatigue"
+    ],
+    "lessCommonSymptoms": [
+      "weight_gain"
+    ],
+    "description": "A clustering of at least three concurrent cardiometabolic risk factors including central obesity, hypertension, hypertriglyceridemia, low HDL, and impaired fasting glucose.",
+    "causes": "Visceral adiposity-induced chronic low-grade inflammation, adipokine dysregulation, and systemic peripheral insulin resistance.",
+    "riskFactors": [
+      "Sedentary lifestyle",
+      "high-carbohydrate refined diet",
+      "visceral abdominal obesity",
+      "advancing age",
+      "genetic predisposition."
+    ],
+    "prevention": [
+      "Structured Mediterranean-style nutrition",
+      "150 minutes/week moderate aerobic exercise plus resistance training",
+      "maintaining waist circumference < 40 in (men) or < 35 in (women)."
+    ],
+    "generalGuidance": [
+      "Intensive therapeutic lifestyle intervention, targeted pharmacological management of individual risk factors (statins, antihypertensives, metformin)."
+    ],
+    "redFlags": [
+      "Severe lethargy with fruity acetone breath odor",
+      "Blood glucose > 300 mg/dL",
+      "Extreme unquenchable thirst and dehydration"
+    ],
+    "whenToSeekCare": "Consult your primary healthcare provider for comprehensive cardiometabolic blood panel screening and personalized prevention planning.",
+    "differentiatingFeatures": "Differentiated by glycemic and hormonal biomarker laboratory panels.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "fever",
+    "name": "Fever",
+    "category": "General Health",
+    "symptoms": [
+      "fever",
+      "chills",
+      "headache",
+      "fatigue",
+      "sweats"
+    ],
+    "commonSymptoms": [
+      "fever",
+      "chills",
+      "headache"
+    ],
+    "lessCommonSymptoms": [
+      "fatigue",
+      "sweats"
+    ],
+    "description": "A temporary elevation in body temperature above normal (typically > 38\u00b0C or 100.4\u00b0F), often serving as an adaptive physiological defense against infection.",
+    "causes": "Viral infections (influenza, common cold, COVID-19), bacterial pathogens (strep, urinary infections), inflammatory conditions, or immunization responses.",
+    "riskFactors": [
+      "Exposure to infectious agents",
+      "weakened immune defenses",
+      "close contact with sick individuals",
+      "extreme physical exertion in hot environments."
+    ],
+    "prevention": [
+      "Frequent hand hygiene",
+      "routine vaccinations",
+      "avoiding close contact with sick persons",
+      "preparing food safely",
+      "and maintaining hydration."
+    ],
+    "generalGuidance": [
+      "Adequate fluid replenishment, rest, antipyretics (acetaminophen or ibuprofen if clinically suitable), light clothing, and room temperature control."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Seek emergency care for temperature > 39.4\u00b0C (103\u00b0F), fever lasting > 3 days, stiff neck, confusion, breathing difficulty, or persistent vomiting.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "dehydration",
+    "name": "Dehydration",
+    "category": "General Health",
+    "symptoms": [
+      "headache",
+      "fatigue",
+      "nausea",
+      "dizziness"
+    ],
+    "commonSymptoms": [
+      "headache",
+      "fatigue",
+      "nausea"
+    ],
+    "lessCommonSymptoms": [
+      "dizziness"
+    ],
+    "description": "A deficit in total body water resulting from fluid loss exceeding intake, disrupting vital cellular and metabolic electrolyte homeostasis.",
+    "causes": "Inadequate fluid intake, profuse perspiration from heat or exertion, prolonged vomiting, diarrhea, high fever, or untreated diabetes mellitus.",
+    "riskFactors": [
+      "Extreme age (infants and elderly)",
+      "intense physical labor",
+      "hot humid weather",
+      "chronic illnesses",
+      "diuretic medications",
+      "febrile illnesses."
+    ],
+    "prevention": [
+      "Drink clean fluids regularly throughout the day",
+      "increase intake during exercise or hot weather",
+      "consume electrolyte solutions during illness."
+    ],
+    "generalGuidance": [
+      "Oral rehydration therapy with balanced oral electrolyte solutions; severe cases require intravenous isotonic crystalloid hydration."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Seek emergency medical evaluation for severe dizziness, confusion, inability to keep liquids down, absence of urination > 8 hours, or fainting.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "fatigue",
+    "name": "Fatigue",
+    "category": "General Health",
+    "symptoms": [
+      "fatigue",
+      "depressed_mood",
+      "sleep_disturbance"
+    ],
+    "commonSymptoms": [
+      "fatigue",
+      "depressed_mood",
+      "sleep_disturbance"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "A persistent, overwhelming feeling of physical or mental exhaustion that is not relieved by normal sleep and impairs daily functional capacity.",
+    "causes": "Chronic sleep deficiency, anemia, hypothyroidism, major depression, fibromyalgia, chronic infections, poor nutrition, or underlying systemic disease.",
+    "riskFactors": [
+      "High chronic stress",
+      "sleep apnea",
+      "sedentary lifestyle",
+      "poor diet",
+      "shift work",
+      "chronic medical conditions",
+      "nutritional deficiencies."
+    ],
+    "prevention": [
+      "Establish consistent 7-9 hour sleep routines",
+      "engage in daily moderate physical exercise",
+      "consume nutrient-dense foods",
+      "manage psychological stress."
+    ],
+    "generalGuidance": [
+      "Investigate and address underlying systemic causes, cognitive behavioral sleep therapy, balanced nutrition, graded physical exercise."
+    ],
+    "redFlags": [
+      "High fever exceeding 103\u00b0F (39.4\u00b0C)",
+      "Sudden unexplained collapse",
+      "Severe disorientation or altered mental status"
+    ],
+    "whenToSeekCare": "Seek prompt medical evaluation if fatigue is accompanied by unexplained weight loss, shortness of breath, chest pain, or swollen lymph nodes.",
+    "differentiatingFeatures": "Differentiated by clinical progression and systemic examination.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "coronary-artery-disease",
+    "name": "Coronary Artery Disease",
+    "category": "Cardiovascular",
+    "symptoms": [
+      "chest_pain",
+      "shortness_of_breath",
+      "fatigue",
+      "palpitations"
+    ],
+    "commonSymptoms": [
+      "chest_pain",
+      "shortness_of_breath",
+      "fatigue"
+    ],
+    "lessCommonSymptoms": [
+      "palpitations"
+    ],
+    "description": "Impairment of blood flow through coronary arteries caused by progressive atherosclerotic plaque buildup, restricting myocardial oxygenation.",
+    "causes": "Atherosclerosis initiated by endothelial injury, lipid accumulation, and chronic vascular inflammation.",
+    "riskFactors": [
+      "Elevated LDL cholesterol",
+      "hypertension",
+      "cigarette smoking",
+      "diabetes mellitus",
+      "obesity",
+      "sedentary lifestyle",
+      "family history of early heart disease."
+    ],
+    "prevention": [
+      "Adopt heart-healthy Mediterranean diet",
+      "engage in 150 mins/week aerobic activity",
+      "maintain healthy blood pressure and lipid levels",
+      "quit smoking."
+    ],
+    "generalGuidance": [
+      "Statins, antiplatelet therapy (aspirin), beta-blockers, ACE inhibitors, cardiac rehabilitation, and percutaneous coronary intervention when indicated."
+    ],
+    "redFlags": [
+      "Crushing chest pressure radiating to arm or jaw",
+      "Loss of consciousness / syncope",
+      "Extreme diaphoresis and breathlessness"
+    ],
+    "whenToSeekCare": "Seek emergency care immediately for crushing chest pain, pain radiating to jaw or left arm, cold sweats, or sudden shortness of breath.",
+    "differentiatingFeatures": "Characterized by exertional triggers and cardiac biomarker changes.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "stroke",
+    "name": "Stroke",
+    "category": "Neurological",
+    "symptoms": [
+      "headache",
+      "dizziness",
+      "numbness_tingling",
+      "blurred_vision"
+    ],
+    "commonSymptoms": [
+      "headache",
+      "dizziness",
+      "numbness_tingling"
+    ],
+    "lessCommonSymptoms": [
+      "blurred_vision"
+    ],
+    "description": "Acute neurological deficit caused by disrupted cerebral perfusion (ischemic stroke, 87%) or intracranial vascular rupture (hemorrhagic stroke).",
+    "causes": "Thromboembolism from large-artery atherosclerosis, cardiac emboli (atrial fibrillation), or cerebral aneurysm/arteriovenous malformation rupture.",
+    "riskFactors": [
+      "Chronic hypertension",
+      "atrial fibrillation",
+      "smoking",
+      "diabetes",
+      "carotid stenosis",
+      "dyslipidemia",
+      "advanced age",
+      "previous transient ischemic attack (TIA)."
+    ],
+    "prevention": [
+      "Strict blood pressure control",
+      "anticoagulation for atrial fibrillation",
+      "smoking cessation",
+      "cholesterol management",
+      "healthy body weight."
+    ],
+    "generalGuidance": [
+      "Immediate emergency thrombolysis (IV rtPA) within 4.5 hours, mechanical endovascular thrombectomy, neurointensive monitoring, rehabilitation."
+    ],
+    "redFlags": [
+      "Sudden thunderclap headache",
+      "Focal neurological deficits (facial droop, arm weakness)",
+      "Seizures lasting > 5 minutes"
+    ],
+    "whenToSeekCare": "CALL EMERGENCY IMMEDIATELY upon any FAST sign: Face drooping, Arm weakness, Speech difficulty, Time to call emergency.",
+    "differentiatingFeatures": "Differentiated by neurological exam and temporal symptom onset.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "melanoma",
+    "name": "Melanoma",
+    "category": "Skin",
+    "symptoms": [
+      "skin_rash",
+      "itching",
+      "skin_flaking"
+    ],
+    "commonSymptoms": [
+      "skin_rash",
+      "itching",
+      "skin_flaking"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "The most aggressive form of skin cancer arising from malignant transformation of melanocytes, capable of rapid metastatic dissemination if untreated.",
+    "causes": "DNA damage primarily induced by solar ultraviolet (UV) radiation (especially intermittent sunburns) and genetic mutations (BRAF, CDKN2A).",
+    "riskFactors": [
+      "Fair skin that burns easily",
+      "history of blistering sunburns",
+      "high mole count (>50)",
+      "atypical dysplastic nevi",
+      "family history of melanoma",
+      "tanning bed use."
+    ],
+    "prevention": [
+      "Broad-spectrum SPF 30+ sunscreen daily",
+      "seeking shade during peak UV hours (10 AM - 4 PM)",
+      "protective clothing",
+      "avoiding artificial tanning beds."
+    ],
+    "generalGuidance": [
+      "Wide local surgical excision, sentinel lymph node biopsy, targeted molecular therapies (BRAF/MEK inhibitors), immune checkpoint inhibitors (PD-1)."
+    ],
+    "redFlags": [
+      "Rapidly expanding erythema with systemic high fever",
+      "Mucosal involvement or widespread blistering",
+      "Asymmetrical lesion with jagged borders"
+    ],
+    "whenToSeekCare": "Consult a dermatologist promptly for any mole exhibiting ABCDE warning signs (Asymmetry, Border irregularity, Color variegation, Diameter >6mm, Evolving).",
+    "differentiatingFeatures": "Differentiated by lesion morphology, distribution, and epidermal barrier changes.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "basal-cell-carcinoma",
+    "name": "Basal Cell Carcinoma",
+    "category": "Skin",
+    "symptoms": [
+      "skin_rash",
+      "skin_flaking"
+    ],
+    "commonSymptoms": [
+      "skin_rash",
+      "skin_flaking"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "The most prevalent cutaneous malignancy worldwide, arising from basal keratinocytes, characterized by slow growth and rare distant metastasis.",
+    "causes": "Cumulative chronic ultraviolet (UVB/UVA) radiation exposure damaging PTCH1 and p53 tumor suppressor genes.",
+    "riskFactors": [
+      "Light skin phototypes (Fitzpatrick I-II)",
+      "cumulative lifetime sun exposure",
+      "age over 50",
+      "immune suppression",
+      "prior radiation exposure."
+    ],
+    "prevention": [
+      "Daily application of broad-spectrum sunscreen",
+      "wearing wide-brimmed hats and UV-blocking sunglasses",
+      "routine annual skin screenings."
+    ],
+    "generalGuidance": [
+      "Surgical excision, Mohs micrographic surgery for facial lesions, curettage and electrodesiccation, topical imiquimod, or targeted Hedgehog inhibitors."
+    ],
+    "redFlags": [
+      "Rapidly expanding erythema with systemic high fever",
+      "Mucosal involvement or widespread blistering",
+      "Asymmetrical lesion with jagged borders"
+    ],
+    "whenToSeekCare": "Seek dermatological evaluation for pearly pink bumps with rolled edges, non-healing sores that bleed easily, or persistent scaly patches.",
+    "differentiatingFeatures": "Differentiated by lesion morphology, distribution, and epidermal barrier changes.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  },
+  {
+    "id": "actinic-keratosis",
+    "name": "Actinic Keratosis",
+    "category": "Skin",
+    "symptoms": [
+      "skin_rash",
+      "skin_flaking"
+    ],
+    "commonSymptoms": [
+      "skin_rash",
+      "skin_flaking"
+    ],
+    "lessCommonSymptoms": [],
+    "description": "A pre-malignant cutaneous lesion caused by chronic ultraviolet damage, presenting as rough, scaly or gritty patches that may progress to squamous cell carcinoma.",
+    "causes": "Cumulative lifetime ultraviolet radiation inducing TP53 mutations in epidermal keratinocytes.",
+    "riskFactors": [
+      "Older age",
+      "fair skin",
+      "bald scalp",
+      "outdoor occupations",
+      "extensive solar exposure",
+      "immunosuppressed status."
+    ],
+    "prevention": [
+      "Rigorous sun protection (SPF 50+)",
+      "wearing UV protective hats and clothing",
+      "avoiding peak mid-day sun",
+      "routine dermatological exams."
+    ],
+    "generalGuidance": [
+      "Cryotherapy with liquid nitrogen, topical 5-fluorouracil (5-FU), imiquimod cream, photodynamic therapy (PDT), field directed therapies."
+    ],
+    "redFlags": [
+      "Rapidly expanding erythema with systemic high fever",
+      "Mucosal involvement or widespread blistering",
+      "Asymmetrical lesion with jagged borders"
+    ],
+    "whenToSeekCare": "Consult a dermatologist for rough, sandpaper-like or crusty skin spots that persist, enlarge, become tender, or develop indurated bases.",
+    "differentiatingFeatures": "Differentiated by lesion morphology, distribution, and epidermal barrier changes.",
+    "source": "CDC Clinical Practice Guidelines / WHO Disease Reference / Mayo Clinic Clinical Review"
+  }
+]

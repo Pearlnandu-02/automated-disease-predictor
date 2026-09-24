@@ -145,140 +145,52 @@ function call_symptom_prediction($symptoms_array) {
     return simulate_symptom_prediction($symptoms_array);
 }
 
+require_once __DIR__ . '/../services/symptom_prediction.php';
+
 function simulate_symptom_prediction($symptoms_array) {
-    if (empty($symptoms_array) || count($symptoms_array) < 2) {
+    $res = SymptomPredictionService::matchSymptoms($symptoms_array);
+    if (($res['status'] ?? '') === 'insufficient_information' || empty($res['conditions'])) {
         return [
             'status' => 'insufficient_information',
             'prediction' => 'Insufficient Information',
             'probability' => 0.0,
+            'match_level' => 'None',
             'runner_ups' => [],
+            'conditions' => [],
             'influencing_symptoms' => array_map(function($s) { return ucwords(str_replace('_', ' ', $s)); }, $symptoms_array),
             'symptoms_analyzed' => count($symptoms_array),
-            'model_used' => 'Multi-Symptom Random Forest Classifier',
-            'model_version' => 'Multi-Disease Prediction Model v2',
-            'supported_classes' => 65,
-            'message' => 'Insufficient symptoms provided for a meaningful prediction. Please select at least two specific symptoms to receive an educational assessment.',
-            'disclaimer' => 'These results are educational predictions based on the information provided and are not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment.'
+            'model_used' => 'Explainable Clinical Feature Co-Occurrence Engine',
+            'model_version' => 'Multi-Disease Match Engine v2',
+            'supported_classes' => 73,
+            'message' => 'Insufficient symptoms provided for a meaningful educational analysis. Please select at least two specific symptoms to receive an educational assessment.',
+            'disclaimer' => SymptomPredictionService::getDisclaimer()
         ];
     }
 
-    $map = [
-        'high_blood_sugar' => ['Diabetes', 'Prediabetes', 'Metabolic Syndrome'],
-        'frequent_urination' => ['Diabetes', 'Prediabetes', 'Urinary Tract Infection (UTI)', 'Chronic Kidney Disease'],
-        'high_blood_pressure' => ['Hypertension', 'Heart Disease', 'Metabolic Syndrome', 'Chronic Kidney Disease'],
-        'chest_pain' => ['Heart Disease', 'Angina Pectoris', 'Arrhythmia', 'Pneumonia'],
-        'shortness_of_breath' => ['Asthma', 'Heart Disease', 'Heart Failure', 'COPD', 'Pneumonia', 'Anemia'],
-        'cough_with_sputum' => ['Pneumonia', 'Bronchitis', 'Tuberculosis', 'Sinusitis', 'COPD'],
-        'hemoptysis' => ['Tuberculosis'],
-        'fever' => ['COVID-19', 'Influenza', 'Dengue', 'Malaria', 'Typhoid', 'Pneumonia', 'Gastroenteritis', 'Kidney Infection (Pyelonephritis)'],
-        'chills' => ['Malaria', 'Influenza', 'Kidney Infection (Pyelonephritis)', 'Pneumonia'],
-        'joint_pain' => ['Osteoarthritis', 'Rheumatoid Arthritis', 'Gout', 'Dengue', 'Influenza', 'Osteoporosis', 'Vitamin D Deficiency'],
-        'headache' => ['Migraine', 'Tension Headache', 'Hypertension', 'Sinusitis', 'Dengue', 'Influenza'],
-        'seizures' => ['Epilepsy'],
-        'resting_tremor' => ["Parkinson's Disease"],
-        'memory_loss' => ["Alzheimer's Disease", "Vitamin B12 Deficiency"],
-        'wheezing' => ['Asthma', 'COPD'],
-        'heartburn' => ['GERD (Acid Reflux)', 'Gastritis', 'Peptic Ulcer Disease'],
-        'jaundice' => ['Hepatitis', 'Gallstones', 'Fatty Liver Disease'],
-        'right_upper_quadrant_pain' => ['Gallstones', 'Fatty Liver Disease', 'Hepatitis'],
-        'flank_pain' => ['Kidney Stones', 'Kidney Infection (Pyelonephritis)', 'Chronic Kidney Disease'],
-        'dysuria' => ['Urinary Tract Infection (UTI)', 'Kidney Stones', 'Kidney Infection (Pyelonephritis)'],
-        'fatigue' => ['Anemia', 'Hypothyroidism', 'Diabetes', 'Chronic Kidney Disease', 'Heart Failure', 'Chronic Stress & Burnout', 'Depressive Symptoms'],
-        'cold_intolerance' => ['Hypothyroidism', 'Anemia'],
-        'heat_intolerance' => ['Hyperthyroidism'],
-        'palpitations' => ['Arrhythmia', 'Hyperthyroidism', 'Heart Failure', 'Generalized Anxiety'],
-        'weight_loss' => ['Diabetes', 'Hyperthyroidism', 'Tuberculosis', 'Depressive Symptoms'],
-        'sweats' => ['Tuberculosis', 'Malaria', 'Hyperthyroidism'],
-        'nausea' => ['Gastritis', 'Peptic Ulcer Disease', 'Gastroenteritis', 'Migraine', 'Gallstones'],
-        'vomiting' => ['Gastroenteritis', 'Peptic Ulcer Disease', 'Migraine', 'Gallstones'],
-        'dizziness' => ['Hypertension', 'Anemia', 'Arrhythmia', 'Peripheral Neuropathy', 'Migraine'],
-        'abdominal_pain' => ['Peptic Ulcer Disease', 'Gastroenteritis', 'Irritable Bowel Syndrome (IBS)', 'Gastritis', 'Gallstones', 'Chronic Diarrhea'],
-        'runny_nose' => ['Common Cold', 'Allergic Rhinitis'],
-        'sneezing' => ['Common Cold', 'Allergic Rhinitis'],
-        'sore_throat' => ['Common Cold', 'Bronchitis', 'GERD (Acid Reflux)'],
-        'dry_cough' => ['Common Cold', 'Asthma'],
-        'nasal_congestion' => ['Sinusitis', 'Allergic Rhinitis'],
-        'loss_of_smell' => ['COVID-19'],
-        'diarrhea' => ['Gastroenteritis', 'Irritable Bowel Syndrome (IBS)', 'Chronic Diarrhea', 'Typhoid'],
-        'constipation' => ['Chronic Constipation', 'Irritable Bowel Syndrome (IBS)'],
-        'bloating' => ['Irritable Bowel Syndrome (IBS)', 'Chronic Constipation'],
-        'skin_rash' => ['Eczema (Atopic Dermatitis)', 'Psoriasis', 'Contact Dermatitis', 'Fungal Skin Infection', 'Acne Vulgaris', 'Dengue'],
-        'itching' => ['Eczema (Atopic Dermatitis)', 'Contact Dermatitis', 'Fungal Skin Infection', 'Urticaria (Hives)', 'Allergic Rhinitis'],
-        'skin_flaking' => ['Psoriasis', 'Eczema (Atopic Dermatitis)', 'Fungal Skin Infection'],
-        'acne_breakouts' => ['Acne Vulgaris', 'Polycystic Ovary Syndrome (PCOS)'],
-        'hives_welts' => ['Urticaria (Hives)'],
-        'localized_swelling' => ['Gout', 'Rheumatoid Arthritis', 'Urticaria (Hives)', 'Muscle Strain'],
-        'muscle_pain' => ['Muscle Strain', 'Tension Headache', 'Peripheral Artery Disease', 'Generalized Anxiety', 'Vitamin D Deficiency'],
-        'back_pain' => ['Osteoporosis', 'Muscle Strain'],
-        'joint_stiffness' => ['Rheumatoid Arthritis', 'Osteoarthritis'],
-        'numbness_tingling' => ['Peripheral Neuropathy', 'Peripheral Artery Disease', 'Vitamin B12 Deficiency'],
-        'blurred_vision' => ['Diabetes'],
-        'excessive_hunger' => ['Diabetes'],
-        'weight_gain' => ['Hypothyroidism', 'Obesity', 'Polycystic Ovary Syndrome (PCOS)', 'Metabolic Syndrome'],
-        'hair_thinning' => ['Hypothyroidism', 'Polycystic Ovary Syndrome (PCOS)'],
-        'anxiety_nervousness' => ['Generalized Anxiety', 'Chronic Stress & Burnout'],
-        'depressed_mood' => ['Depressive Symptoms', 'Vitamin D Deficiency'],
-        'sleep_disturbance' => ['Insomnia & Sleep Disorder', 'Generalized Anxiety', 'Chronic Stress & Burnout'],
-        'leg_swelling' => ['Heart Failure', 'Chronic Kidney Disease'],
-        'blood_in_urine' => ['Kidney Stones', 'Urinary Tract Infection (UTI)']
-    ];
-
-    $scores = [];
-    foreach ($symptoms_array as $sym) {
-        if (isset($map[$sym])) {
-            foreach ($map[$sym] as $dis) {
-                $scores[$dis] = ($scores[$dis] ?? 0) + 1;
-            }
-        }
-    }
-
-    if (empty($scores)) {
-        return [
-            'status' => 'insufficient_information',
-            'prediction' => 'Insufficient Information',
-            'probability' => 0.0,
-            'runner_ups' => [],
-            'influencing_symptoms' => array_map(function($s) { return ucwords(str_replace('_', ' ', $s)); }, $symptoms_array),
-            'symptoms_analyzed' => count($symptoms_array),
-            'model_used' => 'Multi-Symptom Random Forest Classifier',
-            'model_version' => 'Multi-Disease Prediction Model v2',
-            'supported_classes' => 65,
-            'message' => 'The selected symptoms did not match a recognized pattern across our 65 condition categories. Please consult a qualified healthcare provider.',
-            'disclaimer' => 'These results are educational predictions based on the information provided and are not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment.'
-        ];
-    }
-
-    arsort($scores);
-    $top_disease = array_key_first($scores);
-    $top_score = $scores[$top_disease];
-    $total_score = array_sum($scores);
-
-    $top_prob = round(($top_score / $total_score) * 100, 1);
-    if ($top_prob < 50) $top_prob = 68.5;
-
+    $top = $res['conditions'][0];
     $runner_ups = [];
-    $i = 0;
-    foreach ($scores as $dis => $sc) {
-        if ($dis === $top_disease) continue;
-        $prob = round(($sc / $total_score) * 100, 1);
-        $runner_ups[] = ['disease' => $dis, 'probability' => $prob];
-        $i++;
-        if ($i >= 3) break;
+    for ($i = 1; $i < count($res['conditions']); $i++) {
+        $runner_ups[] = [
+            'disease' => $res['conditions'][$i]['name'],
+            'probability' => (float)$res['conditions'][$i]['score'],
+            'match_level' => $res['conditions'][$i]['match_level']
+        ];
     }
-
-    $influencing = array_map(function($s) { return ucwords(str_replace('_', ' ', $s)); }, $symptoms_array);
 
     return [
         'status' => 'success',
-        'prediction' => $top_disease,
-        'probability' => $top_prob,
+        'prediction' => $top['name'],
+        'probability' => (float)$top['score'],
+        'match_level' => $top['match_level'],
+        'conditions' => $res['conditions'],
         'runner_ups' => $runner_ups,
-        'influencing_symptoms' => $influencing,
+        'influencing_symptoms' => array_map(function($s) { return ucwords(str_replace('_', ' ', $s)); }, $top['matched_symptoms']),
         'symptoms_analyzed' => count($symptoms_array),
-        'model_used' => 'Multi-Symptom Random Forest Classifier',
-        'model_version' => 'Multi-Disease Prediction Model v2',
-        'supported_classes' => 65,
-        'disclaimer' => 'These results are educational predictions based on the information provided and are not a medical diagnosis. Symptoms can have many causes. Please consult a qualified healthcare professional for proper diagnosis and treatment.'
+        'model_used' => 'Explainable Clinical Feature Co-Occurrence Engine',
+        'model_version' => 'Multi-Disease Match Engine v2',
+        'supported_classes' => 73,
+        'emergency_signs' => $res['emergency_signs'] ?? [],
+        'disclaimer' => SymptomPredictionService::getDisclaimer()
     ];
 }
 

@@ -1,327 +1,255 @@
 <?php
+// prevention.php - Prevention Center (Section 11)
 require_once __DIR__ . '/includes/functions.php';
-$page_title = 'MediSense AI | Prevention';
+$page_title = 'MediSense AI | Prevention Center';
 require_once __DIR__ . '/includes/header.php';
 
-// Structured Healthy Lifestyle Pillars
-$lifestyle_pillars = [
+// The 10 Primary Prevention Domains specified in Section 11
+$prevention_domains = [
     [
-        'icon' => 'bi-egg-fried',
-        'title' => 'Nutritional Balance',
-        'badge' => 'Diet & Fuel',
-        'color' => 'text-success',
-        'explanation' => 'A diverse, nutrient-rich diet forms the fundamental biochemical foundation of immune defense, cellular repair, and cardiovascular vitality.',
-        'tip' => 'Prioritize whole grains, colorful vegetables, legumes, lean proteins, and unsaturated fats while minimizing ultra-processed sugars and excessive dietary sodium (<2,300 mg/day).'
-    ],
-    [
-        'icon' => 'bi-lightning-charge-fill',
-        'title' => 'Physical Activity',
-        'badge' => 'Movement',
-        'color' => 'text-warning',
-        'explanation' => 'Consistent daily movement enhances insulin sensitivity, improves endothelial vascular function, and promotes neuroplasticity.',
-        'tip' => 'Target at least 150 minutes of moderate-intensity aerobic exercise (brisk walking, cycling) or 75 minutes of vigorous activity weekly, supplemented by muscle-strengthening twice a week.'
-    ],
-    [
-        'icon' => 'bi-moon-stars-fill',
-        'title' => 'Restorative Sleep',
-        'badge' => 'Recovery',
-        'color' => 'text-info',
-        'explanation' => 'Adequate sleep facilitates glymphatic waste clearance in the brain, hormonal equilibrium, memory consolidation, and tissue regeneration.',
-        'tip' => 'Aim for 7 to 9 hours of uninterrupted nocturnal sleep in a cool, dark room. Establish a consistent sleep schedule and limit stimulating blue screens 60 minutes before bedtime.'
-    ],
-    [
-        'icon' => 'bi-droplet-fill',
-        'title' => 'Optimal Hydration',
-        'badge' => 'Vital Fluids',
-        'color' => 'text-primary',
-        'explanation' => 'Water is essential for renal excretion of metabolic wastes, joint lubrication, cognitive focus, and body temperature regulation.',
-        'tip' => 'Consume approximately 2 to 3 liters of water daily based on activity level and climate. Rely primarily on fresh water rather than sugar-sweetened beverages or energy drinks.'
-    ],
-    [
-        'icon' => 'bi-heart-half',
-        'title' => 'Stress Management',
-        'badge' => 'Nervous System',
-        'color' => 'text-danger',
-        'explanation' => 'Chronic psychological stress causes sustained cortisol and sympathetic elevation, promoting systemic vascular inflammation and immune suppression.',
-        'tip' => 'Integrate evidence-based mindfulness, diaphragmatic breathing exercises, nature immersion, or regular therapeutic hobbies to down-regulate sympathetic fight-or-flight states.'
-    ],
-    [
-        'icon' => 'bi-shield-shaded',
-        'title' => 'Personal & Domestic Hygiene',
-        'badge' => 'Sanitation',
-        'color' => 'text-success',
-        'explanation' => 'Infection control stops pathogenic bacteria, viruses, and parasites before they can establish colonization within mucous membranes.',
-        'tip' => 'Wash hands with soap and water for at least 20 seconds before eating, after using restrooms, and after public transit. Practice safe food handling and surface disinfection.'
-    ],
-    [
-        'icon' => 'bi-capsule',
-        'title' => 'Vaccination Awareness',
-        'badge' => 'Immunization',
-        'color' => 'text-info',
-        'explanation' => 'Immunizations stimulate adaptive immunological memory, conferring strong systemic protection against life-threatening bacterial and viral illnesses.',
-        'tip' => 'Keep routine immunizations up-to-date, including seasonal influenza vaccines, COVID-19 boosters, tetanus toxoid every 10 years, and pneumococcal or shingles vaccines as clinically advised.'
-    ],
-    [
-        'icon' => 'bi-clipboard2-pulse',
-        'title' => 'Regular Health Screenings',
-        'badge' => 'Proactive Care',
-        'color' => 'text-warning',
-        'explanation' => 'Many critical chronic illnesses—including hypertension, pre-diabetes, and hyperlipidemia—remain asymptomatic during their earliest, most reversible stages.',
-        'tip' => 'Schedule an annual preventive physical examination with your primary physician to monitor blood pressure, lipid profile, fasting blood glucose, and age-recommended cancer screenings.'
-    ]
-];
-
-// Chronic Disease Prevention Focus Areas Across 10 Clinical Domains
-$chronic_prevention = [
-    [
-        'icon' => 'bi-heart-pulse',
-        'title' => 'Heart Health & Circulation',
-        'badge' => 'Cardiovascular',
-        'explanation' => 'Preventing atherosclerotic coronary artery disease, hypertensive vascular remodeling, heart failure, and arrhythmias.',
-        'tip' => 'Engage in 150 mins/week moderate aerobic activity, adopt the low-sodium DASH diet (<2,300 mg/day), eliminate tobacco/vaping, and maintain blood pressure < 120/80 mmHg.'
-    ],
-    [
+        'id' => 'diabetes',
+        'title' => 'Diabetes Prevention',
+        'badge' => 'Metabolic / Endocrine',
         'icon' => 'bi-droplet-half',
-        'title' => 'Diabetes Prevention & Metabolic Care',
-        'badge' => 'Endocrine',
-        'explanation' => 'Protecting pancreatic beta-cell insulin secretion and preventing peripheral insulin resistance, obesity, and metabolic syndrome.',
-        'tip' => 'Replace refined starches and sweetened drinks with high-fiber whole foods. A sustained 5–7% weight loss reduces progression from prediabetes to Type 2 diabetes by up to 58%.'
+        'color' => 'text-primary',
+        'overview' => 'Type 2 Diabetes mellitus is driven by progressive peripheral insulin resistance and relative pancreatic beta-cell fatigue. Over 80% of cases are preventable through evidence-based dietary and movement interventions.',
+        'strategies' => [
+            'Target a sustained 5% to 7% reduction in body weight if overweight, which lowers progression risk by up to 58%.',
+            'Replace ultra-refined carbohydrates, white bread, and sweetened beverages with complex low-glycemic whole grains, lentils, and legumes.',
+            'Incorporate at least 150 minutes of moderate-intensity exercise weekly, which directly enhances insulin-mediated glucose disposal into muscle cells.',
+            'Ask for an annual fasting plasma glucose or HbA1c screening if aged 35+ or with a family history of diabetes.'
+        ],
+        'action_tip' => 'A 15-minute post-meal walk significantly blunts postprandial glucose spikes by directing glucose directly to working muscle tissue.'
     ],
     [
-        'icon' => 'bi-lungs',
-        'title' => 'Respiratory Health & Airway Care',
+        'id' => 'heart',
+        'title' => 'Heart Health & Cardiovascular Care',
+        'badge' => 'Cardiovascular',
+        'icon' => 'bi-heart-pulse-fill',
+        'color' => 'text-danger',
+        'overview' => 'Atherosclerosis and coronary heart disease develop silently over decades. Controlling vascular endothelial inflammation, blood pressure, and circulating apolipoprotein B is essential to lifelong heart health.',
+        'strategies' => [
+            'Follow the DASH or Mediterranean eating plan rich in potassium, magnesium, and dietary fiber while keeping sodium under 2,300 mg/day.',
+            'Eliminate all forms of tobacco smoking, vaping, and secondhand exposure; vascular endothelial recovery begins within hours of cessation.',
+            'Maintain resting blood pressure under 120/80 mm Hg and manage LDL cholesterol through unsaturated plant fats (olive oil, avocados, nuts).',
+            'Engage in regular aerobic cardiovascular training to improve cardiac output, stroke volume, and arterial compliance.'
+        ],
+        'action_tip' => 'Replacing saturated animal fats with monounsaturated olive oil and omega-3 rich fatty fish reduces major adverse cardiovascular events by up to 30%.'
+    ],
+    [
+        'id' => 'respiratory',
+        'title' => 'Respiratory Health & Airway Defense',
         'badge' => 'Respiratory',
-        'explanation' => 'Protecting delicate bronchial passages and pulmonary alveoli from chronic inflammation, asthma flares, and chronic obstructive pulmonary disease.',
-        'tip' => 'Avoid tobacco smoke and indoor biomass combustion fumes. Maintain household ventilation, use HEPA air filtration during high pollen/particulate alerts, and practice respiratory hygiene.'
+        'icon' => 'bi-lungs-fill',
+        'color' => 'text-info',
+        'overview' => 'Pulmonary alveoli and bronchial mucosa are vulnerable to oxidative airborne particles, tobacco toxins, and occupational irritants leading to COPD and chronic asthma.',
+        'strategies' => [
+            'Maintain smoke-free indoor living environments and avoid wood-burning stove or biomass smoke inhalation.',
+            'Use HEPA air filtration during days with high particulate air pollution (PM2.5) or severe pollen counts.',
+            'Practice deep diaphragmatic breathing and stay physically active to preserve vital lung capacity and functional residual volume.',
+            'Receive seasonal influenza and pneumococcal immunizations to prevent secondary bacterial pneumonia in vulnerable airways.'
+        ],
+        'action_tip' => 'Ensure proper indoor ventilation and replace HVAC furnace filters every 90 days to minimize indoor mold spores and fine particulates.'
     ],
     [
-        'icon' => 'bi-fire',
-        'title' => 'Digestive & Gastrointestinal Health',
-        'badge' => 'Digestive',
-        'explanation' => 'Preserving gastric mucosal integrity, gut microbiota balance, and preventing GERD acid reflux, peptic ulcers, and functional bowel disorders.',
-        'tip' => 'Consume 25-35 grams of daily dietary fiber, stay well-hydrated, avoid late-night heavy meals, and limit unmonitored NSAID pain relievers that irritate stomach lining.'
-    ],
-    [
-        'icon' => 'bi-water',
-        'title' => 'Kidney & Urinary Tract Protection',
-        'badge' => 'Urinary',
-        'explanation' => 'Preserving glomerular filtration rate and preventing nephrolithiasis (kidney stones) and ascending urinary tract infections.',
-        'tip' => 'Drink 2 to 3 liters of water daily to maintain clear dilute urine, limit excess dietary sodium and animal purines, and manage blood pressure and blood glucose tightly.'
-    ],
-    [
-        'icon' => 'bi-shield-shaded',
-        'title' => 'Skin Health & Cutaneous Barrier Care',
+        'id' => 'skin',
+        'title' => 'Skin Health & UV Protection',
         'badge' => 'Dermatological',
-        'explanation' => 'Maintaining epidermal barrier integrity, preventing eczema flares, acne breakouts, and fungal colonization in cutaneous folds.',
-        'tip' => 'Apply broad-spectrum SPF 30+ sunscreen daily, moisturize with fragrance-free ceramides after bathing, wear breathable cotton fabrics, and avoid harsh mechanical facial scrubs.'
+        'icon' => 'bi-sun-fill',
+        'color' => 'text-warning',
+        'overview' => 'Solar ultraviolet radiation (UVA and UVB) causes cumulative DNA mutations in keratinocytes and melanocytes, accelerating photo-aging and triggering skin malignancies.',
+        'strategies' => [
+            'Apply broad-spectrum water-resistant sunscreen (SPF 30 or higher) daily to all sun-exposed skin, re-applying every 2 hours during outdoor activity.',
+            'Seek shade during peak ultraviolet intensity hours between 10:00 AM and 4:00 PM.',
+            'Wear protective wide-brimmed hats, UV-blocking sunglasses, and tightly woven sun-protective clothing.',
+            'Perform monthly head-to-toe skin self-examinations using the ABCDE criteria (Asymmetry, Border, Color, Diameter, Evolving) for suspicious pigmented lesions.'
+        ],
+        'action_tip' => 'Never use indoor ultraviolet tanning beds; a single indoor tanning session before age 35 increases melanoma risk by 75%.'
     ],
     [
-        'icon' => 'bi-diagram-3',
-        'title' => 'Musculoskeletal Strength & Joint Preservation',
-        'badge' => 'Musculoskeletal',
-        'explanation' => 'Preserving articular cartilage, bone mineral density, and preventing osteoarthritic wear, gout flares, and osteoporotic fractures.',
-        'tip' => 'Incorporate weight-bearing and resistance exercises twice weekly, maintain optimal dietary calcium and vitamin D levels, and limit high-purine foods and beer.'
+        'id' => 'nutrition',
+        'title' => 'Nutrition & Whole-Food Eating',
+        'badge' => 'Nutritional Health',
+        'icon' => 'bi-egg-fried',
+        'color' => 'text-success',
+        'overview' => 'Nutrient-dense nutrition provides essential amino acids, micronutrients, polyphenols, and soluble fibers that nourish the gut microbiome and suppress chronic low-grade inflammation.',
+        'strategies' => [
+            'Fill half your plate with diverse colorful vegetables and whole fruits at every main meal to maximize antioxidant intake.',
+            'Consume 25 to 35 grams of dietary fiber daily from oats, chia seeds, beans, lentils, and whole grains to support healthy lipid metabolism.',
+            'Minimize ultra-processed packaged snacks, industrial trans fats, and artificial preservatives.',
+            'Prioritize lean protein sources (legumes, tofu, poultry, fish, eggs) to maintain skeletal muscle mass across all age groups.'
+        ],
+        'action_tip' => 'Drinking a glass of water 20 minutes before meals and eating slowly promotes natural satiety signaling via gastrointestinal peptide hormones.'
     ],
     [
+        'id' => 'activity',
+        'title' => 'Physical Activity & Fitness',
+        'badge' => 'Musculoskeletal / Vitality',
+        'icon' => 'bi-bicycle',
+        'color' => 'text-primary',
+        'overview' => 'Prolonged physical inactivity is an independent risk factor for metabolic decline, osteopenia, cardiovascular disease, and depression. Movement is biological medicine.',
+        'strategies' => [
+            'Accumulate at least 150 minutes of moderate aerobic activity (e.g. brisk walking) or 75 minutes of vigorous activity weekly.',
+            'Perform progressive resistance training targeting major muscle groups at least 2 days per week to preserve metabolic bone density.',
+            'Break up prolonged sitting every 30 to 45 minutes with brief 2-minute standing or stretching breaks.',
+            'Incorporate daily mobility, balance, and flexibility exercises to prevent musculoskeletal strains and lower fall risk with aging.'
+        ],
+        'action_tip' => 'Even short bouts of exercise (three 10-minute walks spread throughout the day) offer cardiovascular benefits comparable to one continuous 30-minute session.'
+    ],
+    [
+        'id' => 'sleep',
+        'title' => 'Sleep Hygiene & Restorative Rest',
+        'badge' => 'Neuro-Recovery',
+        'icon' => 'bi-moon-stars-fill',
+        'color' => 'text-info',
+        'overview' => 'During deep non-REM and REM sleep cycles, the brain undergoes glymphatic waste clearance, cellular repair takes place, and cardiovascular stress is minimized.',
+        'strategies' => [
+            'Aim for 7 to 9 hours of uninterrupted nocturnal sleep on a regular circadian schedule (same sleep and wake times daily).',
+            'Keep bedroom temperatures cool (around 18°C / 65°F), completely dark, and quiet to support melatonin secretion.',
+            'Eliminate blue-light emitting smartphones, tablets, and computers at least 60 minutes before bedtime.',
+            'Limit caffeine consumption after 2:00 PM and avoid heavy alcoholic nightcaps, which fragment restorative REM sleep architecture.'
+        ],
+        'action_tip' => 'Viewing 15 to 30 minutes of natural outdoor sunlight within an hour of waking sets your internal master circadian clock for better nocturnal sleep onset.'
+    ],
+    [
+        'id' => 'stress',
+        'title' => 'Stress Management & Mental Health',
+        'badge' => 'Psychological Wellbeing',
+        'icon' => 'bi-emoji-smile-fill',
+        'color' => 'text-warning',
+        'overview' => 'Chronic psychological stress causes sustained sympathetic nervous system activation and elevated cortisol, driving systemic vascular inflammation, visceral fat gain, and digestive distress.',
+        'strategies' => [
+            'Practice evidence-based diaphragmatic breathing (e.g., 4-7-8 breathing or box breathing) to stimulate the vagus nerve and parasympathetic relaxation.',
+            'Set healthy occupational and digital boundaries; schedule intentional screen-free downtime daily.',
+            'Maintain meaningful social connections with friends, family, or community groups to foster emotional resilience.',
+            'Engage in regular outdoor nature walks, journaling, or mindfulness meditation to lower sympathetic baseline arousal.'
+        ],
+        'action_tip' => 'A five-minute physiological sigh (two quick nasal inhales followed by one long, slow oral exhale) rapidly resets autonomic heart rate variability.'
+    ],
+    [
+        'id' => 'infection',
+        'title' => 'Infection Prevention & Hygiene',
+        'badge' => 'Immune Protection',
         'icon' => 'bi-shield-plus',
-        'title' => 'Infection Prevention & Tropical Defense',
-        'badge' => 'Infectious',
-        'explanation' => 'Guarding against seasonal viral transmission (influenza, COVID-19) and mosquito-borne tropical infections (dengue, malaria).',
-        'tip' => 'Keep routine vaccinations up-to-date, wash hands with soap for 20 seconds, eliminate domestic standing water to prevent mosquito breeding, and use bednets in endemic zones.'
+        'color' => 'text-success',
+        'overview' => 'Pathogenic bacteria, viruses, and fungi exploit mucous membranes and compromised skin barriers. Basic antiseptic and barrier practices prevent transmission.',
+        'strategies' => [
+            'Wash hands thoroughly with soap and clean running water for at least 20 seconds before eating, after using restrooms, and after public transit.',
+            'Keep routine adult vaccinations up to date (seasonal influenza, tetanus boosters every 10 years, COVID-19, and shingles vaccines where indicated).',
+            'Practice safe food hygiene: separate raw poultry and meats, cook to safe internal temperatures, and refrigerate leftovers promptly.',
+            'Clean and dress minor cuts, scratches, or abrasions promptly with mild soap and protective bandages to prevent secondary bacterial cellulitis.'
+        ],
+        'action_tip' => 'Alcohol-based hand sanitizer (at least 60% alcohol) is an effective alternative when soap and potable water are temporarily unavailable.'
     ],
     [
-        'icon' => 'bi-droplet',
-        'title' => 'Blood & Nutritional Vitality',
-        'badge' => 'Hematological',
-        'explanation' => 'Ensuring adequate red blood cell synthesis, hemoglobin concentration, and preventing micronutrient deficiencies (iron, B12, vitamin D).',
-        'tip' => 'Eat a diverse diet with iron-rich foods paired with vitamin C for absorption, supplement vitamin B12 if adhering to plant-based diets, and get safe sensible sunlight exposure.'
-    ],
-    [
-        'icon' => 'bi-puzzle',
-        'title' => 'Neurological & Mental Health Longevity',
-        'badge' => 'Neurological & Mind',
-        'explanation' => 'Nurturing neuroplasticity, cognitive reserve, emotional resilience, and lifelong autonomic nervous system equilibrium.',
-        'tip' => 'Prioritize 7-9 hours of restorative sleep, engage in lifelong intellectual learning, foster supportive social networks, and practice daily mindfulness for stress mitigation.'
+        'id' => 'general',
+        'title' => 'General Preventive Care & Screenings',
+        'badge' => 'Clinical Guidance',
+        'icon' => 'bi-clipboard-check',
+        'color' => 'text-primary',
+        'overview' => 'Many critical chronic illnesses—including hypertension, high cholesterol, pre-diabetes, and early cancers—develop without overt warning symptoms.',
+        'strategies' => [
+            'Schedule an annual comprehensive preventive physical examination with your primary healthcare provider.',
+            'Monitor baseline blood pressure at least annually (or more frequently if readings exceed 120/80 mm Hg).',
+            'Complete regular fasting lipid panels (total cholesterol, HDL, LDL, triglycerides) and glycemic tests (HbA1c).',
+            'Follow age-appropriate evidence-based cancer screening guidelines (mammograms, colonoscopies, cervical cytology, dermatological exams).'
+        ],
+        'action_tip' => 'Maintain an updated digital record of your family medical history, routine immunizations, and annual lab trends to share with your physician.'
     ]
 ];
 ?>
 
 <div class="row py-3">
     <div class="col-lg-12 text-center mb-4">
-        <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-2">PREVENTATIVE HEALTH GUIDELINES</span>
-        <h1 class="display-5 fw-extrabold mb-2">Health Awareness & Disease Prevention</h1>
-        <p class="lead text-muted mx-auto" style="max-width: 780px;">
-            Evidence-based preventative practices, lifestyle foundations, and organ-specific risk reduction strategies designed to support lifelong wellness and early clinical detection.
+        <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-2">PREVENTIVE HEALTHCARE</span>
+        <h1 class="display-5 fw-extrabold mb-2">Prevention Center</h1>
+        <p class="lead text-muted mx-auto" style="max-width: 820px;">
+            Evidence-based educational guidelines across 10 vital health pillars to optimize longevity, protect organ function, and minimize chronic disease vulnerability.
         </p>
     </div>
 </div>
 
-<!-- SECTION 1: Healthy Lifestyle Foundations -->
-<div class="mb-5">
-    <div class="d-flex align-items-center mb-4">
-        <div class="p-2 bg-info bg-opacity-20 text-info rounded-circle me-3">
-            <i class="bi bi-compass fs-4"></i>
-        </div>
-        <div>
-            <h3 class="fw-bold mb-0">Foundations of Healthy Living</h3>
-            <p class="small text-muted mb-0">Core daily behaviors that cultivate baseline physiological health and resilience</p>
-        </div>
-    </div>
+<!-- Category Jump Navigation (Section 11) -->
+<div class="d-flex flex-wrap justify-content-center gap-2 mb-5">
+    <?php foreach ($prevention_domains as $domain): ?>
+        <a href="#<?= $domain['id'] ?>" class="btn btn-sm btn-outline-info rounded-pill px-3 py-2">
+            <i class="bi <?= $domain['icon'] ?> me-1"></i> <?= sanitize($domain['title']) ?>
+        </a>
+    <?php endforeach; ?>
+</div>
 
-    <div class="row g-4">
-        <?php foreach ($lifestyle_pillars as $pillar): ?>
-            <div class="col-md-6 col-lg-3">
-                <div class="card-custom p-4 h-100 d-flex flex-column justify-content-between hover-elevate">
-                    <div>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div class="p-3 bg-card-subtle rounded-3 <?= $pillar['color'] ?>">
-                                <i class="bi <?= $pillar['icon'] ?> fs-3"></i>
-                            </div>
-                            <span class="badge bg-secondary bg-opacity-25 text-info border border-info border-opacity-25 small">
-                                <?= sanitize($pillar['badge']) ?>
-                            </span>
+<!-- 10 Primary Prevention Domains Grid (Section 11) -->
+<div class="row g-4 mb-5">
+    <?php foreach ($prevention_domains as $idx => $d): ?>
+        <div class="col-lg-6" id="<?= $d['id'] ?>">
+            <div class="card-custom p-4 p-md-5 h-100 d-flex flex-column justify-content-between hover-lift">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="p-3 rounded-circle bg-info bg-opacity-15 <?= $d['color'] ?> fs-3">
+                            <i class="bi <?= $d['icon'] ?>"></i>
                         </div>
-                        <h5 class="fw-bold mb-2"><?= sanitize($pillar['title']) ?></h5>
-                        <p class="small text-muted mb-3" style="line-height: 1.6;">
-                            <?= sanitize($pillar['explanation']) ?>
-                        </p>
+                        <span class="badge bg-secondary-subtle text-secondary border px-3 py-1 rounded-pill small">
+                            <?= sanitize($d['badge']) ?>
+                        </span>
                     </div>
-                    <div class="p-3 bg-card-subtle rounded-3 border mt-2">
-                        <strong class="text-info d-block small mb-1">
-                            <i class="bi bi-lightbulb-fill me-1"></i> Practical Action Tip:
-                        </strong>
-                        <p class="small text-muted mb-0" style="font-size: 0.85rem;">
-                            <?= sanitize($pillar['tip']) ?>
-                        </p>
-                    </div>
+
+                    <h4 class="fw-bold mb-2 text-body"><?= ($idx + 1) ?>. <?= sanitize($d['title']) ?></h4>
+                    <p class="small text-muted mb-3" style="line-height: 1.6;">
+                        <?= sanitize($d['overview']) ?>
+                    </p>
+
+                    <h6 class="fw-bold small text-uppercase text-info mb-2">
+                        <i class="bi bi-shield-check me-1"></i> Evidence-Based Strategies:
+                    </h6>
+                    <ul class="small text-muted ps-3 mb-4">
+                        <?php foreach ($d['strategies'] as $strat): ?>
+                            <li class="mb-2"><?= sanitize($strat) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+
+                <div class="p-3 rounded-3 border bg-card-subtle mt-2">
+                    <strong class="d-block small text-success mb-1">
+                        <i class="bi bi-lightning-charge-fill me-1"></i> Actionable Habit:
+                    </strong>
+                    <p class="small text-muted mb-0"><?= sanitize($d['action_tip']) ?></p>
                 </div>
             </div>
-        <?php endforeach; ?>
+        </div>
+    <?php endforeach; ?>
+</div>
+
+<!-- Prevention Checklist & Tools Banner -->
+<div class="card-custom p-4 p-md-5 mb-5 hero-banner">
+    <div class="row align-items-center">
+        <div class="col-lg-8">
+            <span class="badge hero-badge px-3 py-1 mb-2 fw-bold">Interactive Tools</span>
+            <h3 class="fw-bold hero-heading mb-2">Ready to evaluate your current risk level?</h3>
+            <p class="hero-lead mb-3">
+                Pair prevention strategies with real-time biometric risk calculations and symptom evaluation tools.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="risk_calculator.php" class="btn btn-primary-custom rounded-pill px-4">
+                    <i class="bi bi-calculator me-1"></i> Run Health Risk Calculator
+                </a>
+                <a href="prediction.php" class="btn btn-outline-info rounded-pill px-4">
+                    <i class="bi bi-cpu me-1"></i> AI Symptom Checker
+                </a>
+                <a href="health_assistant.php" class="btn btn-outline-success rounded-pill px-4">
+                    <i class="bi bi-chat-heart me-1"></i> Ask AI Assistant
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 text-center mt-3 mt-lg-0">
+            <i class="bi bi-heart-pulse-fill display-1 text-info opacity-50"></i>
+        </div>
     </div>
 </div>
 
-<!-- SECTION 2: Chronic Disease Prevention -->
-<div class="mb-5">
-    <div class="d-flex align-items-center mb-4">
-        <div class="p-2 bg-warning bg-opacity-20 text-warning rounded-circle me-3">
-            <i class="bi bi-shield-check fs-4"></i>
-        </div>
-        <div>
-            <h3 class="fw-bold mb-0">Chronic Disease Prevention</h3>
-            <p class="small text-muted mb-0">Targeted organ-system protection against widespread non-communicable conditions</p>
-        </div>
-    </div>
-
-    <div class="row g-4">
-        <?php foreach ($chronic_prevention as $item): ?>
-            <div class="col-md-6 col-lg-4">
-                <div class="card-custom p-4 h-100 d-flex flex-column justify-content-between">
-                    <div>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div class="p-3 bg-card-subtle text-warning rounded-3">
-                                <i class="bi <?= $item['icon'] ?> fs-3"></i>
-                            </div>
-                            <span class="badge bg-secondary bg-opacity-25 text-warning border border-warning border-opacity-25 small">
-                                <?= sanitize($item['badge']) ?>
-                            </span>
-                        </div>
-                        <h5 class="fw-bold mb-2"><?= sanitize($item['title']) ?></h5>
-                        <p class="small text-muted mb-3" style="line-height: 1.6;">
-                            <?= sanitize($item['explanation']) ?>
-                        </p>
-                    </div>
-                    <div class="p-3 bg-card-subtle rounded-3 border mt-2">
-                        <strong class="text-warning d-block small mb-1">
-                            <i class="bi bi-check-circle-fill me-1"></i> Preventative Recommendation:
-                        </strong>
-                        <p class="small text-muted mb-0" style="font-size: 0.85rem;">
-                            <?= sanitize($item['tip']) ?>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
+<!-- Medical Disclaimer -->
+<div class="alert alert-secondary py-3 px-4 rounded-3 border text-center small">
+    <i class="bi bi-shield-exclamation text-warning me-1"></i>
+    <strong>Disclaimer:</strong> Preventive guidance provided by MediSense AI is based on general health guidelines and clinical consensus. It does not replace individualized clinical advice from your physician or licensed specialist.
 </div>
 
-<!-- SECTION 3: Emergency Warning Signs & Triage -->
-<div class="card-custom p-4 p-md-5 my-5 border-danger" style="border-width: 2px;">
-    <div class="d-flex align-items-center mb-3">
-        <div class="p-3 bg-danger bg-opacity-20 text-danger rounded-circle me-3">
-            <i class="bi bi-exclamation-octagon-fill fs-2"></i>
-        </div>
-        <div>
-            <h3 class="fw-bold text-danger mb-1">When to Seek Immediate Emergency Medical Attention</h3>
-            <p class="small text-muted mb-0">Severe physiological red flags requiring prompt emergency hospital evaluation (Dial 911 / 112)</p>
-        </div>
-    </div>
-
-    <div class="row g-4 mt-1">
-        <div class="col-md-6 col-lg-3">
-            <div class="p-3 bg-card-subtle rounded-3 border border-danger border-opacity-25 h-100">
-                <div class="text-danger fw-bold mb-2 d-flex align-items-center">
-                    <i class="bi bi-heart-pulse-fill me-2 fs-5"></i> Cardiac Emergencies
-                </div>
-                <ul class="text-muted small mb-0 ps-3">
-                    <li>Crushing, squeezing chest pressure or fullness</li>
-                    <li>Pain radiating to the jaw, neck, back, or left arm</li>
-                    <li>Sudden cold sweats, shortness of breath, or nausea</li>
-                </ul>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-            <div class="p-3 bg-card-subtle rounded-3 border border-danger border-opacity-25 h-100">
-                <div class="text-danger fw-bold mb-2 d-flex align-items-center">
-                    <i class="bi bi-wind me-2 fs-5"></i> Respiratory Crises
-                </div>
-                <ul class="text-muted small mb-0 ps-3">
-                    <li>Severe air hunger or inability to speak full sentences</li>
-                    <li>Bluish or pale discoloration of lips or fingertips (cyanosis)</li>
-                    <li>Audible stridor or sudden airway obstruction</li>
-                </ul>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-            <div class="p-3 bg-card-subtle rounded-3 border border-danger border-opacity-25 h-100">
-                <div class="text-danger fw-bold mb-2 d-flex align-items-center">
-                    <i class="bi bi-person-exclamation me-2 fs-5"></i> Neurological Emergencies
-                </div>
-                <ul class="text-muted small mb-0 ps-3">
-                    <li>Sudden facial drooping, arm weakness, or slurred speech (FAST stroke signs)</li>
-                    <li>Sudden severe "thunderclap" headache</li>
-                    <li>Involuntary convulsions or seizure lasting > 5 minutes</li>
-                </ul>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-            <div class="p-3 bg-card-subtle rounded-3 border border-danger border-opacity-25 h-100">
-                <div class="text-danger fw-bold mb-2 d-flex align-items-center">
-                    <i class="bi bi-virus me-2 fs-5"></i> Severe Systemic Sepsis
-                </div>
-                <ul class="text-muted small mb-0 ps-3">
-                    <li>Extremely high fever (>103°F) with acute confusion</li>
-                    <li>Severe drenching rigors and uncontrollable shivering</li>
-                    <li>Rapid heart rate coupled with plummeting blood pressure</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="p-3 bg-danger bg-opacity-10 border border-danger border-opacity-25 rounded-3 mt-4 text-center">
-        <span class="text-danger fw-bold small">
-            <i class="bi bi-telephone-fill me-1"></i> If you or someone near you experiences any of these red-flag symptoms, do not use web tools—seek emergency medical attention or contact emergency services immediately.
-        </span>
-    </div>
-</div>
-
-<!-- Educational Disclaimer -->
-<div class="disclaimer-banner mb-5 p-4 text-start">
-    <h5 class="fw-bold mb-2 text-warning"><i class="bi bi-info-circle-fill me-2"></i> Educational Notice</h5>
-    <p class="small text-muted mb-0">
-        The preventative health strategies and general tips provided on this platform are for broad educational and informational purposes only. They do not constitute personalized medical advice, diagnosis, or prescription. Always consult a qualified, licensed medical professional regarding individual health concerns or treatment plans.
-    </p>
-</div>
-
-<?php
-require_once __DIR__ . '/includes/footer.php';
-?>
+<?php require_once __DIR__ . '/includes/footer.php'; ?>

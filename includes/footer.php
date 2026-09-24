@@ -35,16 +35,20 @@
                     <h6 class="mb-3 fw-bold text-primary-theme">Clinical Tools</h6>
                     <ul class="list-unstyled small">
                         <li class="mb-2"><a href="assessment.php">Clinical Risk Assessment</a></li>
+                        <li class="mb-2"><a href="risk_calculator.php">Health Risk Calculator</a></li>
+                        <li class="mb-2"><a href="prediction.php">AI Symptom Checker</a></li>
                         <li class="mb-2"><a href="simulator.php">Health Simulator</a></li>
-                        <li class="mb-2"><a href="assessment.php?type=diabetes">Diabetes Assessment</a></li>
+                        <li class="mb-2"><a href="report.php">Health Reports</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3 col-6 col-sm-4">
                     <h6 class="mb-3 fw-bold text-primary-theme">Health Library</h6>
                     <ul class="list-unstyled small">
-                        <li class="mb-2"><a href="diseases.php">Diseases Library</a></li>
+                        <li class="mb-2"><a href="diseases.php">Disease Library</a></li>
                         <li class="mb-2"><a href="symptoms_guide.php">Symptoms Guide</a></li>
-                        <li class="mb-2"><a href="prevention.php">Prevention</a></li>
+                        <li class="mb-2"><a href="prevention.php">Prevention Center</a></li>
+                        <li class="mb-2"><a href="education.php">Health Education Hub</a></li>
+                        <li class="mb-2"><a href="emergency.php" class="text-danger fw-semibold"><i class="bi bi-exclamation-triangle me-1"></i>Emergency Guide</a></li>
                     </ul>
                 </div>
             </div>
@@ -55,6 +59,47 @@
             </div>
         </div>
     </footer>
+
+    <!-- Global Search Modal (Section 14) -->
+    <div class="modal fade" id="globalSearchModal" tabindex="-1" aria-labelledby="globalSearchModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg" style="background: var(--card-bg, #1e293b); color: var(--text-primary, #f8fafc); border-radius: 20px;">
+                <div class="modal-header border-bottom border-secondary border-opacity-25 px-4 pt-4 pb-3">
+                    <div class="input-group input-group-lg w-100">
+                        <span class="input-group-text bg-transparent border-0 text-info ps-0">
+                            <i class="bi bi-search fs-4"></i>
+                        </span>
+                        <input type="text" id="globalSearchInput" class="form-control bg-transparent border-0 text-body fs-5 shadow-none" placeholder="Search diseases, symptoms, clinical tools, prevention..." aria-label="Search">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="modal-body p-4" style="max-height: 60vh; overflow-y: auto;">
+                    <div id="searchQuickPills" class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="small text-muted me-1 align-self-center">Quick Suggestions:</span>
+                        <button type="button" class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 quick-search-chip" data-term="Diabetes">Diabetes</button>
+                        <button type="button" class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 quick-search-chip" data-term="Hypertension">Hypertension</button>
+                        <button type="button" class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 quick-search-chip" data-term="Chest Pain">Chest Pain</button>
+                        <button type="button" class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 quick-search-chip" data-term="Fever">Fever</button>
+                        <button type="button" class="btn btn-sm btn-outline-info rounded-pill py-0 px-2 quick-search-chip" data-term="Risk Calculator">Risk Calculator</button>
+                    </div>
+                    <div id="searchResultsContainer">
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-search fs-1 opacity-25 d-block mb-2"></i>
+                            Type at least 2 characters to search across MediSense AI...
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top border-secondary border-opacity-25 px-4 py-2 d-flex justify-content-between small text-muted">
+                    <div>
+                        <span class="badge bg-secondary-subtle text-secondary me-1">ESC</span> to close
+                    </div>
+                    <div>
+                        <a href="diseases.php" class="text-info text-decoration-none">Browse all conditions &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Bootstrap 5 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

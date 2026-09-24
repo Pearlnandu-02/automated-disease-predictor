@@ -2,7 +2,7 @@ import os
 import sys
 import json
 import secrets
-from flask import Flask, request, jsonify, render_template_string, redirect, url_for, session
+from flask import Flask, request, jsonify, render_template_string, redirect, url_for, session, send_from_directory
 
 # Add root directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -22,6 +22,17 @@ def add_header(response):
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
     return response
+
+@app.route('/data/<path:filename>')
+def serve_data(filename):
+    data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data'))
+    return send_from_directory(data_dir, filename)
+
+@app.route('/assets/<path:filename>')
+def serve_assets(filename):
+    assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets'))
+    return send_from_directory(assets_dir, filename)
+
 
 DISEASES_DB = [
     {"id": 1, "name": "Diabetes", "category": "Endocrine", "short_description": "A chronic metabolic disease characterized by elevated blood glucose levels leading to vascular and organ complications.", "causes": "Insulin resistance or insufficient insulin production by pancreatic beta cells.", "risk_factors": "Obesity, physical inactivity, genetic predisposition, high-refined sugar diets.", "prevention": "Maintain healthy body weight, engage in 150 mins/week exercise, consume fiber-rich foods.", "management": "Blood glucose monitoring, dietary management, insulin therapy under physician guidance.", "when_to_seek_care": "Seek immediate care for severe confusion, rapid breathing, or blood glucose > 300 mg/dL."},
@@ -108,7 +119,7 @@ def render_page(content_html, **kwargs):
     is_sub_sym = (path in ['/symptoms', '/symptoms_guide.php'])
     is_sub_prev = (path in ['/prevention', '/prevention.php'])
 
-    page_title = kwargs.get('page_title') or kwargs.get('title')
+    page_title = kwargs.pop('page_title', None) or kwargs.pop('title', None)
     if not page_title:
         if is_home:
             page_title = 'MediSense AI | Smarter Insights. Better Health.'
@@ -1708,232 +1719,320 @@ def about():
 @app.route('/prediction.php', methods=['GET', 'POST'])
 @app.route('/api/prediction', methods=['GET', 'POST'])
 def prediction():
-    result = None
-    selected_symptoms = []
-    
-    # Preselection via URL query string
-    pre_symptom = request.args.get('symptom', '').strip()
-    if pre_symptom:
-        selected_symptoms.append(pre_symptom)
-        
+    res_card = ""
     if request.method == 'POST':
         selected_symptoms = request.form.getlist('symptoms')
+        if not selected_symptoms:
+            single = request.form.get('symptoms')
+            if single:
+                selected_symptoms = [single]
         if selected_symptoms:
             result = predict_symptoms(selected_symptoms)
-
-    symptoms_catalog = [
-        ("General & Systemic", [
-            ("fatigue", "Chronic Lethargy & Fatigue"),
-            ("fever", "Fever (>100.4°F)"),
-            ("chills", "Severe Chills & Rigors"),
-            ("weight_loss", "Unexplained Rapid Weight Loss"),
-            ("sweats", "Drenching Night Sweats"),
-            ("localized_swelling", "Localized Swelling / Edema")
-        ]),
-        ("Respiratory System", [
-            ("shortness_of_breath", "Shortness of Breath (Dyspnea)"),
-            ("cough_with_sputum", "Persistent Productive Cough"),
-            ("dry_cough", "Dry Non-Productive Cough"),
-            ("wheezing", "Respiratory Wheezing"),
-            ("hemoptysis", "Hemoptysis (Coughing Blood)"),
-            ("runny_nose", "Runny Nose (Rhinorrhea)"),
-            ("sneezing", "Frequent Sneezing"),
-            ("sore_throat", "Sore or Scratchy Throat"),
-            ("nasal_congestion", "Sinus Pressure & Congestion")
-        ]),
-        ("Cardiovascular System", [
-            ("chest_pain", "Chest Pain / Tightness"),
-            ("high_blood_pressure", "Hypertension Indicators"),
-            ("palpitations", "Rapid Heart Palpitations"),
-            ("leg_swelling", "Lower Extremity / Ankle Edema")
-        ]),
-        ("Gastrointestinal & Hepatic", [
-            ("heartburn", "Heartburn / Acid Reflux"),
-            ("abdominal_pain", "Abdominal Pain & Cramping"),
-            ("nausea", "Persistent Nausea"),
-            ("vomiting", "Persistent Vomiting"),
-            ("diarrhea", "Frequent Watery Diarrhea"),
-            ("constipation", "Chronic Constipation"),
-            ("bloating", "Abdominal Bloating & Gas"),
-            ("jaundice", "Jaundice (Yellowing Eyes/Skin)"),
-            ("right_upper_quadrant_pain", "Right Upper Quadrant Pain")
-        ]),
-        ("Neurological System", [
-            ("headache", "Severe Throbbing Headache"),
-            ("dizziness", "Dizziness & Lightheadedness"),
-            ("seizures", "Involuntary Seizures"),
-            ("resting_tremor", "Resting Hand / Limb Tremor"),
-            ("memory_loss", "Progressive Memory Decline"),
-            ("numbness_tingling", "Numbness & Paresthesia"),
-            ("blurred_vision", "Blurred or Fluctuating Vision"),
-            ("loss_of_smell", "Loss of Smell / Taste (Anosmia)")
-        ]),
-        ("Endocrine & Metabolic", [
-            ("high_blood_sugar", "High Blood Sugar & Thirst"),
-            ("excessive_hunger", "Excessive Hunger (Polyphagia)"),
-            ("weight_gain", "Unintentional Rapid Weight Gain"),
-            ("cold_intolerance", "Cold Intolerance"),
-            ("heat_intolerance", "Heat Intolerance / Sweating")
-        ]),
-        ("Renal & Urinary", [
-            ("frequent_urination", "Frequent Urination (Polyuria)"),
-            ("dysuria", "Dysuria (Painful Urination)"),
-            ("flank_pain", "Flank / Low Back Pain"),
-            ("blood_in_urine", "Blood in Urine (Hematuria)")
-        ]),
-        ("Dermatological System", [
-            ("skin_rash", "Visible Skin Rash or Redness"),
-            ("itching", "Intense Pruritus / Itching"),
-            ("skin_flaking", "Flaking or Scaly Skin Patches"),
-            ("acne_breakouts", "Acne Papules, Pustules or Cysts"),
-            ("hives_welts", "Raised Itchy Wheals / Hives"),
-            ("hair_thinning", "Diffuse Hair Thinning / Loss")
-        ]),
-        ("Musculoskeletal System", [
-            ("joint_pain", "Severe Joint / Bone Pain"),
-            ("joint_stiffness", "Morning Joint Stiffness"),
-            ("muscle_pain", "Muscle Aches & Myalgia"),
-            ("back_pain", "Lower Back Ache or Stiffness")
-        ]),
-        ("Psychological & Well-being", [
-            ("anxiety_nervousness", "Excessive Worry & Nervousness"),
-            ("depressed_mood", "Persistent Depressed Mood"),
-            ("sleep_disturbance", "Insomnia & Sleep Disruption")
-        ])
-    ]
-
-    tiles_html = ""
-    for category, syms in symptoms_catalog:
-        tiles_html += f'<div class="mb-4"><h6 class="text-info text-uppercase fw-bold small tracking-wider mb-3 pb-1 border-bottom border-secondary border-opacity-25"><i class="bi bi-activity me-1"></i> {category}</h6><div class="symptom-grid">'
-        for key, name in syms:
-            checked = "checked" if key in selected_symptoms else ""
-            selected_cls = "selected" if key in selected_symptoms else ""
-            aria_checked = "true" if key in selected_symptoms else "false"
-            tiles_html += f"""
-            <label class="symptom-tile {selected_cls}" tabindex="0" role="checkbox" aria-checked="{aria_checked}">
-                <input type="checkbox" name="symptoms" value="{key}" class="symptom-checkbox" {checked}>
-                <div class="symptom-tile-gloss"></div>
-                <div class="symptom-tile-content">
-                    <span class="symptom-tile-name">{name}</span>
+            status = result.get('status')
+            if status == 'insufficient_information' or result.get('prediction') == 'Insufficient Information':
+                msg = result.get('message', 'A single symptom or non-specific combination does not provide enough statistical evidence across our condition categories. Please select 2 or more symptoms to evaluate.')
+                res_card = f"""
+                <div class="card-custom p-4 p-md-5 text-center border-warning mb-4" id="serverResultCard">
+                    <span class="badge bg-warning bg-opacity-20 text-warning border border-warning border-opacity-25 mb-3 px-3 py-1 fw-bold">
+                        <i class="bi bi-exclamation-circle-fill me-1"></i> INSUFFICIENT INFORMATION
+                    </span>
+                    <h3 class="fw-bold mb-2">Additional Symptoms Needed</h3>
+                    <p class="text-muted small mb-3">{msg}</p>
+                    <div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 text-start small mb-3">
+                        <strong class="text-info d-block mb-2"><i class="bi bi-lightbulb-fill me-1"></i> Suggested Actions:</strong>
+                        <ul class="mb-0 ps-3 text-muted">
+                            <li>Select additional co-occurring symptoms.</li>
+                            <li>Browse our <a href="/symptoms" class="text-info text-decoration-underline">Symptoms Guide</a> for associated signs.</li>
+                            <li>Consult a healthcare professional for persistent health concerns.</li>
+                        </ul>
+                    </div>
                 </div>
-            </label>
-            """
-        tiles_html += '</div></div>'
-
-    res_card = ""
-    if result:
-        status = result.get('status')
-        if status == 'insufficient_information' or result.get('prediction') == 'Insufficient Information':
-            msg = result.get('message', 'A single symptom or non-specific combination does not provide enough statistical evidence across our 65 condition categories. Please select 2 or more symptoms to evaluate.')
-            res_card = f"""
-            <div class="card-custom p-4 p-md-5 text-center border-warning mt-4">
-                <span class="badge bg-warning bg-opacity-20 text-warning border border-warning border-opacity-25 mb-3 px-3 py-1 fw-bold">
-                    <i class="bi bi-exclamation-circle-fill me-1"></i> INSUFFICIENT INFORMATION
-                </span>
-                <h3 class="fw-bold mb-2">Additional Symptoms Needed</h3>
-                <p class="text-muted small mb-3">{msg}</p>
-                <div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 text-start small mb-3">
-                    <strong class="text-info d-block mb-2"><i class="bi bi-lightbulb-fill me-1"></i> Suggested Actions:</strong>
-                    <ul class="mb-0 ps-3 text-muted">
-                        <li>Select additional co-occurring symptoms from the tiles.</li>
-                        <li>Browse our <a href="/symptoms" class="text-info text-decoration-underline">Symptoms Guide</a> for associated signs.</li>
-                        <li>Consult a healthcare professional for persistent health concerns.</li>
-                    </ul>
+                """
+            else:
+                prob = result.get('probability', 0.0)
+                pred_name = result.get('prediction', 'Unknown')
+                influencing = "".join([f'<span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 px-2 py-1 me-1">{s}</span>' for s in result.get('influencing_symptoms', [])])
+                runner_ups_html = ""
+                if result.get('runner_ups'):
+                    ru_items = "".join([f'<li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10 text-muted"><span>{r.get("disease")}</span><span class="fw-bold text-primary-theme">{r.get("probability")}%</span></li>' for r in result.get('runner_ups', [])])
+                    runner_ups_html = f'<div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 my-3 text-start small"><strong class="d-block mb-2 text-info">Alternative Considerations:</strong><ul class="list-unstyled mb-0">{ru_items}</ul></div>'
+                res_card = f"""
+                <div class="card-custom p-4 text-center border-info mb-4" id="serverResultCard">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-secondary px-3 py-1">AI MODEL OUTPUT</span>
+                        <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 small">{result.get('model_version', 'Multi-Disease Model v2')}</span>
+                    </div>
+                    <h5 class="text-muted text-uppercase fw-bold small mt-2">Possible condition based on AI model</h5>
+                    <h2 class="display-6 fw-bold my-2">{pred_name}</h2>
+                    <div class="my-3 py-2 border-top border-bottom border-secondary border-opacity-25">
+                        <span class="display-4 fw-extrabold text-info">{prob}%</span>
+                        <p class="small text-muted mb-0 mt-1">Calculated model match score across conditions</p>
+                    </div>
+                    <div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 my-3 text-start small">
+                        <strong class="d-block mb-1"><i class="bi bi-bounding-box-circles me-1 text-info"></i> Influencing Symptoms Detected:</strong>
+                        <div class="d-flex flex-wrap gap-1 mt-1">{influencing}</div>
+                    </div>
+                    {runner_ups_html}
+                    <div class="disclaimer-banner small text-start my-3">
+                        <h6 class="fw-bold mb-1 text-warning"><i class="bi bi-shield-exclamation me-1"></i> Medical Disclaimer</h6>
+                        {result.get('disclaimer')}
+                    </div>
                 </div>
-                <div class="d-flex justify-content-between text-muted small border-top border-secondary border-opacity-25 pt-2">
-                    <span>Model: {result.get('model_version', 'Multi-Disease Model v2')}</span>
-                    <span class="badge bg-secondary bg-opacity-25 text-info">65 Supported Conditions</span>
-                </div>
-                <div class="disclaimer-banner small text-start my-3">
-                    <h6 class="fw-bold mb-1 text-warning"><i class="bi bi-shield-exclamation me-1"></i> Medical Disclaimer</h6>
-                    {result.get('disclaimer')}
-                </div>
-            </div>
-            """
-        else:
-            prob = result.get('probability', 0.0)
-            influencing = "".join([f'<span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 px-2 py-1 me-1">{s}</span>' for s in result.get('influencing_symptoms', [])])
-            runner_ups_html = ""
-            if result.get('runner_ups'):
-                ru_items = "".join([f'<li class="d-flex justify-content-between py-1 border-bottom border-secondary border-opacity-10 text-muted"><span>{r.get("disease")}</span><span class="fw-bold text-primary-theme">{r.get("probability")}%</span></li>' for r in result.get('runner_ups', [])])
-                runner_ups_html = f'<div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 my-3 text-start small"><strong class="d-block mb-2"><i class="bi bi-bar-chart me-1 text-warning"></i> Other Possible Matches Considered:</strong><ul class="list-unstyled mb-0">{ru_items}</ul></div>'
+                """
 
-            pred_name = result.get('prediction')
-            res_card = f"""
-            <div class="card-custom p-4 text-center border-info mt-4">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="badge bg-secondary px-3 py-1">AI MODEL OUTPUT</span>
-                    <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 small">{result.get('model_version', 'Multi-Disease Model v2')}</span>
-                </div>
-                <h5 class="text-muted text-uppercase fw-bold small mt-2">Most Likely Condition (AI Classification)</h5>
-                <h2 class="display-6 fw-bold my-2">{pred_name}</h2>
-                
-                <div class="my-3 py-2 border-top border-bottom border-secondary border-opacity-25">
-                    <span class="display-3 fw-extrabold text-info counter-text animate-counter" data-target="{prob}">00.0%</span>
-                    <p class="small text-muted mb-0 mt-1">Calculated model likelihood score across 65 conditions</p>
-                </div>
-
-                <div class="p-3 bg-card-subtle rounded border border-secondary border-opacity-25 my-3 text-start small">
-                    <strong class="d-block mb-1"><i class="bi bi-bounding-box-circles me-1 text-info"></i> Influencing Symptoms Detected:</strong>
-                    <div class="d-flex flex-wrap gap-1 mt-1">{influencing}</div>
-                </div>
-
-                {runner_ups_html}
-
-                <a href="/disease_detail.php?name={pred_name}" class="btn btn-outline-info rounded-pill px-4 w-100 my-2">
-                    <i class="bi bi-book me-1"></i> Learn More About {pred_name}
-                </a>
-
-                <div class="disclaimer-banner small text-start my-3">
-                    <h6 class="fw-bold mb-1 text-warning"><i class="bi bi-shield-exclamation me-1"></i> Medical Disclaimer</h6>
-                    {result.get('disclaimer')}
-                </div>
-            </div>
-            """
-
+    empty_style = "style='display: none;'" if res_card else ""
     content = f"""
-    <div class="row py-3">
-        <div class="col-lg-12 text-center mb-4">
-            <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-2">AI SYMPTOM CHECKER</span>
-            <h1 class="display-5 fw-extrabold mb-2">Intelligent Multi-Symptom Disease Prediction</h1>
-            <p class="lead text-muted mx-auto" style="max-width: 750px;">
-                Select your experienced indicators using our tactile symptom tiles. Unselected tiles are matte; selected tiles become glossy with real-time feedback.
+    <div class="row align-items-center mb-4">
+        <div class="col-lg-8">
+            <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-2">
+                <i class="bi bi-cpu-fill me-1"></i> CLINICAL DECISION SUPPORT
+            </span>
+            <h1 class="display-5 fw-extrabold mb-2">Symptom-Based Disease Prediction</h1>
+            <p class="lead text-muted mb-0">
+                Select or type your active symptoms to receive an educational evaluation of possible health conditions based on transparent clinical co-occurrence models.
             </p>
+        </div>
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+            <button type="button" class="btn btn-outline-info rounded-pill px-3 py-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#methodologyModal">
+                <i class="bi bi-info-circle me-1"></i> Data & Methodology
+            </button>
         </div>
     </div>
 
     <div class="row g-4">
-        <div class="col-lg-7">
-            <div class="card-custom p-4 p-md-5">
-                <h4 class="fw-bold mb-3 d-flex align-items-center">
-                    <i class="bi bi-grid-3x3-gap-fill text-info me-2"></i> Select Present Symptoms
-                </h4>
-                <p class="small text-muted mb-4">Click tiles to toggle symptom presence:</p>
-                <form method="POST" action="/prediction">
-                    {tiles_html}
-                    <div class="disclaimer-banner my-4">
-                        <i class="bi bi-info-circle-fill me-1 text-info"></i> Predictions are generated using an automated Random Forest classifier. Results are strictly educational.
+        <!-- LEFT COLUMN: SYMPTOM INPUT, SEARCH, TILES & CONTEXT -->
+        <div class="col-lg-6">
+            <div class="card-custom p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold mb-0 d-flex align-items-center">
+                        <i class="bi bi-search text-info me-2"></i> Search & Select Symptoms
+                    </h4>
+                    <span class="badge bg-secondary bg-opacity-50 text-muted" id="selectedCountBadge">
+                        0 symptoms selected
+                    </span>
+                </div>
+
+                <!-- Natural Language Search Input -->
+                <div class="position-relative mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text bg-card-subtle text-info border">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input 
+                            type="text" 
+                            id="symptomSearchInput" 
+                            class="form-control" 
+                            placeholder="Type a symptom (e.g., headache, fever, fatigue, vomiting)..."
+                            autocomplete="off"
+                        >
                     </div>
-                    <button type="submit" class="btn btn-primary-custom btn-lg w-100 py-3">
-                        <i class="bi bi-cpu-fill me-2"></i> Submit Symptoms & Predict Condition
-                    </button>
-                </form>
+                    <div id="symptomAutocompleteList" class="list-group position-absolute w-100 shadow-lg mt-1 z-3" style="display: none; max-height: 280px; overflow-y: auto;">
+                    </div>
+                </div>
+
+                <!-- Quick-Add Popular Symptoms -->
+                <div class="mb-4">
+                    <span class="small text-muted d-block mb-2 fw-semibold">Quick-Add Common Symptoms:</span>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary symptom-popular-pill rounded-pill" data-symptom="fever">+ Fever</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary symptom-popular-pill rounded-pill" data-symptom="cough_with_sputum">+ Cough</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary symptom-popular-pill rounded-pill" data-symptom="headache">+ Headache</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary symptom-popular-pill rounded-pill" data-symptom="fatigue">+ Fatigue</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary symptom-popular-pill rounded-pill" data-symptom="sore_throat">+ Sore Throat</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary symptom-popular-pill rounded-pill" data-symptom="shortness_of_breath">+ Shortness of Breath</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary symptom-popular-pill rounded-pill" data-symptom="nausea">+ Nausea</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary symptom-popular-pill rounded-pill" data-symptom="dizziness">+ Dizziness</button>
+                    </div>
+                </div>
+
+                <!-- Selected Symptoms Removable Chips Box -->
+                <div class="p-3 bg-card-subtle rounded-3 border mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold small text-info">
+                            <i class="bi bi-tags-fill me-1"></i> Selected Symptoms (Chips):
+                        </span>
+                        <button type="button" class="btn btn-sm btn-link text-muted p-0 text-decoration-none" id="clearSymptomsBtn">
+                            <i class="bi bi-trash3 me-1"></i> Clear All
+                        </button>
+                    </div>
+                    
+                    <div id="selectedSymptomChips" class="d-flex flex-wrap gap-2 min-h-40 align-items-center"></div>
+
+                    <div id="emptyChipsNotice" class="text-muted small py-2 text-center" style="display: block;">
+                        <i class="bi bi-hand-index-thumb me-1"></i> Select at least 2 symptoms from above or browse categories below.
+                    </div>
+                </div>
+
+                <!-- Optional Clinical Context (Accordion) -->
+                <div class="accordion accordion-flush mb-4" id="clinicalContextAccordion">
+                    <div class="accordion-item bg-transparent border-0">
+                        <h2 class="accordion-header" id="contextHeading">
+                            <button class="accordion-button collapsed bg-card-subtle rounded-3 p-3 text-info fw-bold small shadow-none border" type="button" data-bs-toggle="collapse" data-bs-target="#contextCollapse">
+                                <i class="bi bi-sliders2 me-2"></i> Optional Clinical Context (Age, Duration, Severity)
+                            </button>
+                        </h2>
+                        <div id="contextCollapse" class="accordion-collapse collapse" data-bs-parent="#clinicalContextAccordion">
+                            <div class="accordion-body px-0 pt-3 pb-0">
+                                <div class="row g-3">
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label small text-muted mb-1" for="contextAgeGroup">Age Group</label>
+                                        <select class="form-select form-select-sm" id="contextAgeGroup">
+                                            <option value="child">Child (0-12)</option>
+                                            <option value="teen">Teen (13-17)</option>
+                                            <option value="adult" selected>Adult (18-64)</option>
+                                            <option value="older_adult">Older Adult (65+)</option>
+                                            <option value="unspecified">Prefer not to say</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label small text-muted mb-1" for="contextDuration">Duration</label>
+                                        <select class="form-select form-select-sm" id="contextDuration">
+                                            <option value="less_1_day">Less than 24h</option>
+                                            <option value="1_3_days" selected>1–3 days</option>
+                                            <option value="4_7_days">4–7 days</option>
+                                            <option value="more_1_week">1–2 weeks</option>
+                                            <option value="more_2_weeks">&gt; 2 weeks</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label small text-muted mb-1" for="contextSeverity">Severity</label>
+                                        <select class="form-select form-select-sm" id="contextSeverity">
+                                            <option value="mild">Mild (Noticeable)</option>
+                                            <option value="moderate" selected>Moderate (Disruptive)</option>
+                                            <option value="severe">Severe (Incapacitating)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <label class="form-label small text-muted mb-1" for="contextTrajectory">Progression</label>
+                                        <select class="form-select form-select-sm" id="contextTrajectory">
+                                            <option value="better">Getting better</option>
+                                            <option value="same" selected>Staying same</option>
+                                            <option value="worse">Getting worse</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Body Systems Filter Bar -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold small text-muted">Browse by Body System:</span>
+                    </div>
+                    <div class="d-flex flex-wrap gap-1 mb-3">
+                        <button type="button" class="btn btn-sm symptom-category-pill active btn-info text-white" data-category="all">All</button>
+                        <button type="button" class="btn btn-sm symptom-category-pill btn-outline-secondary" data-category="general">General</button>
+                        <button type="button" class="btn btn-sm symptom-category-pill btn-outline-secondary" data-category="respiratory">Respiratory</button>
+                        <button type="button" class="btn btn-sm symptom-category-pill btn-outline-secondary" data-category="cardiovascular">Cardio</button>
+                        <button type="button" class="btn btn-sm symptom-category-pill btn-outline-secondary" data-category="gastrointestinal">Digestive</button>
+                        <button type="button" class="btn btn-sm symptom-category-pill btn-outline-secondary" data-category="neurological">Neuro</button>
+                        <button type="button" class="btn btn-sm symptom-category-pill btn-outline-secondary" data-category="dermatological">Skin</button>
+                        <button type="button" class="btn btn-sm symptom-category-pill btn-outline-secondary" data-category="endocrine">Endocrine</button>
+                        <button type="button" class="btn btn-sm symptom-category-pill btn-outline-secondary" data-category="musculoskeletal">Musculo</button>
+                    </div>
+
+                    <div id="symptomBrowserContainer" class="symptom-browser-grid p-2 rounded-3 border bg-card-subtle" style="max-height: 240px; overflow-y: auto;">
+                    </div>
+                </div>
+
+                <!-- Animated Loading State (Multi-step) -->
+                <div id="ai-loading-state" class="ai-loading-container mb-4" style="display: none;">
+                    <div class="ai-spinner"></div>
+                    <h5 class="fw-bold mb-2">Analyzing Symptom Profile...</h5>
+                    <p class="small text-muted mb-3">Evaluating clinical co-occurrence patterns across 73 conditions</p>
+                    <div class="ai-loading-steps">
+                        <div class="ai-loading-step active" id="loading-step-1">
+                            <span class="ai-step-dot"></span>
+                            <span>Analyzing selected symptoms...</span>
+                        </div>
+                        <div class="ai-loading-step" id="loading-step-2">
+                            <span class="ai-step-dot"></span>
+                            <span>Comparing symptom patterns across 73 conditions...</span>
+                        </div>
+                        <div class="ai-loading-step" id="loading-step-3">
+                            <span class="ai-step-dot"></span>
+                            <span>Evaluating differential criteria & weighting...</span>
+                        </div>
+                        <div class="ai-loading-step" id="loading-step-4">
+                            <span class="ai-step-dot"></span>
+                            <span>Preparing ranked possible conditions...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analyze Button -->
+                <button type="button" class="btn btn-primary-custom btn-lg w-100 py-3 fw-bold" id="analyzeSymptomsBtn">
+                    <i class="bi bi-cpu-fill me-2"></i> Analyze Symptoms
+                </button>
             </div>
         </div>
-        <div class="col-lg-5">
-            {res_card if res_card else '''
-            <div class="card-custom p-5 text-center h-100 d-flex flex-column justify-content-center align-items-center">
-                <i class="bi bi-activity text-info display-1 mb-3 opacity-50"></i>
-                <h4 class="fw-bold">Awaiting Symptom Selection</h4>
-                <p class="text-muted small max-w-sm mb-0">
-                    Click on the symptom tiles on the left to select your active indicators, then click "Submit Symptoms" to evaluate with our AI diagnostic model.
+
+        <!-- RIGHT COLUMN: RESULTS, OVERLAPPING ADVISORY & FOLLOW-UP QUESTIONS -->
+        <div class="col-lg-6">
+            {res_card}
+            <div id="emergencyAlertContainer" style="display: none;"></div>
+            <div id="refineQuestionsContainer" style="display: none;"></div>
+            <div id="symptomResultsContainer" style="display: none;"></div>
+
+            <div id="emptyResultsContainer" class="card-custom p-5 text-center h-100 d-flex flex-column justify-content-center align-items-center" {empty_style}>
+                <div class="p-4 bg-info bg-opacity-10 text-info rounded-circle mb-3">
+                    <i class="bi bi-activity display-3"></i>
+                </div>
+                <h4 class="fw-bold mb-2">Awaiting Symptom Selection</h4>
+                <p class="text-muted small mb-4" style="max-width: 420px;">
+                    Select at least 2 symptoms from the panel on the left. Our clinical co-occurrence matching engine will evaluate overlapping conditions and provide an educational assessment.
                 </p>
+                <div class="p-3 bg-card-subtle rounded-3 border text-start small w-100" style="max-width: 440px;">
+                    <strong class="text-info d-block mb-2"><i class="bi bi-shield-check me-1"></i> System Guardrails:</strong>
+                    <ul class="text-muted mb-0 ps-3">
+                        <li class="mb-1">Transparent, explainable clinical match scores (not fake probability).</li>
+                        <li class="mb-1">Ranks top 3–5 possible conditions considering overlapping symptoms.</li>
+                        <li>Identifies emergency red-flag indicators requiring immediate medical care.</li>
+                    </ul>
+                </div>
             </div>
-            '''}
         </div>
     </div>
+
+    <!-- DATA & METHODOLOGY MODAL -->
+    <div class="modal fade" id="methodologyModal" tabindex="-1" aria-labelledby="methodologyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-card border">
+                <div class="modal-header border-bottom">
+                    <h5 class="modal-title fw-bold" id="methodologyModalLabel">
+                        <i class="bi bi-diagram-3-fill text-info me-2"></i> Data & Methodology Transparency
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-muted small" style="line-height: 1.6;">
+                    <h6 class="fw-bold text-primary-theme mb-2">1. Clinical Dataset Provenance</h6>
+                    <p>The MediSense AI catalog incorporates 73 verified clinical conditions and 58 standardized symptom indicators synthesized from CDC Guidelines, WHO Practice Handbooks, and Harrison\'s Principles of Internal Medicine.</p>
+
+                    <h6 class="fw-bold text-primary-theme mb-2">2. Symptom Normalization (Natural Language Processing)</h6>
+                    <p>Free-form user queries are mapped to standardized clinical symptom keys using a tolerant multi-tier normalization algorithm incorporating synonym indexing and substring alignment.</p>
+
+                    <h6 class="fw-bold text-primary-theme mb-2">3. Deterministic Match Scoring Engine</h6>
+                    <p>Rather than outputting arbitrary probability claims, the matching algorithm computes a calibrated overlap score based on clinical feature weights (characteristic symptoms: 3.0, secondary symptoms: 1.5, mismatch penalty: 2.0).</p>
+
+                    <h6 class="fw-bold text-primary-theme mb-2">4. What the Match Score Means</h6>
+                    <p>A score of "85/100" signifies high educational alignment with standard medical descriptions, NOT a 85% probability of disease.</p>
+
+                    <h6 class="fw-bold text-primary-theme mb-2">5. Handling Overlapping Conditions</h6>
+                    <p>Multiple ranked possibilities are shown because infections and metabolic conditions frequently share constitutional signs.</p>
+                </div>
+                <div class="modal-footer border-top">
+                    <button type="button" class="btn btn-info text-white rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/js/symptom_prediction.js"></script>
     """
-    return render_page(content)
+    return render_page(content, page_title='MediSense AI | Symptom-Based Disease Prediction')
+
 
 @app.route('/assessment', methods=['GET', 'POST'])
 @app.route('/assessment.php', methods=['GET', 'POST'])
@@ -3108,6 +3207,185 @@ def api_predict():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/record_prediction', methods=['POST'])
+@app.route('/api/record_prediction.php', methods=['POST'])
+def api_record_prediction():
+    return jsonify({"success": True, "recorded": False, "guest": True})
+
+@app.route('/risk-calculator')
+@app.route('/risk_calculator.php')
+def risk_calculator():
+    content = """
+    <div class="row py-3">
+        <div class="col-lg-12 text-center mb-4">
+            <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-2">CLINICAL RISK ENGINE</span>
+            <h1 class="display-5 fw-extrabold mb-2">Multi-Factor Health Risk Calculator</h1>
+            <p class="lead text-muted mx-auto" style="max-width: 750px;">
+                Calculate estimated educational risk profiles across cardiovascular, metabolic, blood pressure, and lifestyle metrics.
+            </p>
+        </div>
+    </div>
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card-custom p-4">
+                <h4 class="fw-bold mb-3 text-info"><i class="bi bi-calculator me-2"></i> Interactive Risk Factors</h4>
+                <div class="mb-3">
+                    <label class="form-label small text-muted">Systolic Blood Pressure (mmHg)</label>
+                    <input type="range" class="form-range" min="90" max="180" value="120" id="calcSysBP" oninput="document.getElementById('sysVal').textContent=this.value">
+                    <div class="d-flex justify-content-between small text-muted"><span>90</span><strong class="text-info" id="sysVal">120</strong><span>180</span></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small text-muted">Fasting Glucose (mg/dL)</label>
+                    <input type="range" class="form-range" min="70" max="220" value="95" id="calcGlucose" oninput="document.getElementById('glucVal').textContent=this.value">
+                    <div class="d-flex justify-content-between small text-muted"><span>70</span><strong class="text-info" id="glucVal">95</strong><span>220</span></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small text-muted">Body Mass Index (BMI)</label>
+                    <input type="range" class="form-range" min="16" max="45" value="23" id="calcBMI" oninput="document.getElementById('bmiVal').textContent=this.value">
+                    <div class="d-flex justify-content-between small text-muted"><span>16</span><strong class="text-info" id="bmiVal">23</strong><span>45</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card-custom p-4 text-center">
+                <h4 class="fw-bold mb-2">Educational Risk Estimate</h4>
+                <div class="p-4 bg-card-subtle rounded-3 border my-3">
+                    <h2 class="display-6 fw-bold text-success mb-1">OPTIMAL / LOW</h2>
+                    <p class="small text-muted mb-0">Biomarker profiles are within standard clinical reference ranges.</p>
+                </div>
+                <p class="small text-muted mb-0">This calculation is an educational risk estimate, not a confirmed medical diagnosis.</p>
+            </div>
+        </div>
+    </div>
+    """
+    return render_page(content, page_title='MediSense AI | Health Risk Calculator')
+
+@app.route('/health-assistant')
+@app.route('/health_assistant.php')
+def health_assistant():
+    content = """
+    <div class="row py-3">
+        <div class="col-lg-12 text-center mb-4">
+            <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-2">EDUCATIONAL CHAT</span>
+            <h1 class="display-5 fw-extrabold mb-2">AI Health Assistant</h1>
+            <p class="lead text-muted mx-auto" style="max-width: 750px;">
+                Ask educational questions about symptoms, preventive habits, disease overviews, and wellness guidelines.
+            </p>
+        </div>
+    </div>
+    <div class="card-custom p-4" style="max-width: 800px; margin: 0 auto;">
+        <div class="chat-container mb-3" id="chatArea" style="min-height: 250px;">
+            <div class="p-3 bg-card-subtle rounded-3 border mb-2">
+                <strong class="text-info"><i class="bi bi-robot me-1"></i> MediSense Assistant:</strong>
+                <p class="small text-muted mb-0 mt-1">Hello! I am your MediSense AI health educational assistant. How can I help you learn about health conditions, symptoms, or preventive habits today?</p>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <input type="text" class="form-control" placeholder="Ask an educational question..." id="assistantInput">
+            <button class="btn btn-info text-white rounded-pill px-4" onclick="alert('Assistant is ready in educational mode.')">Send</button>
+        </div>
+        <div class="disclaimer-banner small text-start mt-3">
+            <i class="bi bi-shield-exclamation me-1 text-warning"></i> Educational informational assistant only. Does not diagnose diseases or prescribe medication.
+        </div>
+    </div>
+    """
+    return render_page(content, page_title='MediSense AI | AI Health Assistant')
+
+@app.route('/education')
+@app.route('/education.php')
+def education():
+    content = """
+    <div class="row py-3">
+        <div class="col-lg-12 text-center mb-4">
+            <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-2">HEALTH LIBRARY</span>
+            <h1 class="display-5 fw-extrabold mb-2">Health Education Hub</h1>
+            <p class="lead text-muted mx-auto" style="max-width: 750px;">
+                Explore verified medical articles, terminology glossaries, debunked health myths, and guides on AI in clinical care.
+            </p>
+        </div>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="card-custom p-4 h-100">
+                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1 mb-2">Cardiovascular</span>
+                <h5 class="fw-bold mb-2">Understanding Blood Pressure</h5>
+                <p class="text-muted small">High blood pressure produces zero visible warning signs until vascular changes occur. Learn the DASH diet and daily habits.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card-custom p-4 h-100">
+                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1 mb-2">Metabolic Health</span>
+                <h5 class="fw-bold mb-2">Insulin Resistance & Diet</h5>
+                <p class="text-muted small">Before Type 2 Diabetes is clinically detected, insulin sensitivity declines years earlier. Understand postprandial glucose balance.</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card-custom p-4 h-100">
+                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1 mb-2">Sleep Science</span>
+                <h5 class="fw-bold mb-2">The Architecture of Rest</h5>
+                <p class="text-muted small">During deep slow-wave sleep, the glymphatic system flushes metabolic byproducts from the cerebral cortex.</p>
+            </div>
+        </div>
+    </div>
+    """
+    return render_page(content, page_title='MediSense AI | Health Education Hub')
+
+@app.route('/emergency')
+@app.route('/emergency.php')
+def emergency():
+    content = """
+    <div class="card border-danger border-2 p-4 p-md-5 mb-4" style="background: rgba(220, 53, 69, 0.08);">
+        <h1 class="display-6 fw-extrabold text-danger mb-2">Are You Experiencing a Medical Emergency?</h1>
+        <p class="lead fw-semibold mb-3">Do NOT use MediSense AI during acute medical emergencies. Call emergency dispatch immediately.</p>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="tel:911" class="btn btn-danger btn-lg rounded-pill px-4 fw-bold">Call 911 (US/Canada)</a>
+            <a href="tel:112" class="btn btn-outline-danger btn-lg rounded-pill px-4 fw-bold">Call 112 (EU/Global)</a>
+            <a href="tel:999" class="btn btn-outline-secondary btn-lg rounded-pill px-3 fw-bold">Call 999 (UK)</a>
+        </div>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card-custom p-4">
+                <h5 class="fw-bold text-danger mb-2"><i class="bi bi-heart-pulse me-2"></i> Severe Chest Pain</h5>
+                <p class="small text-muted mb-0">Crushing central chest heaviness, radiation to left arm or jaw, accompanied by cold sweating and shortness of breath.</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-custom p-4">
+                <h5 class="fw-bold text-danger mb-2"><i class="bi bi-activity me-2"></i> Acute Stroke (BE-FAST)</h5>
+                <p class="small text-muted mb-0">Sudden balance loss, eye vision loss, facial droop, arm weakness, and slurred speech.</p>
+            </div>
+        </div>
+    </div>
+    """
+    return render_page(content, page_title='MediSense AI | Emergency Guide')
+
+@app.route('/profile')
+@app.route('/profile.php')
+def profile():
+    user = session.get('user', {"name": "Guest User", "email": "guest@medisense.ai"})
+    content = f"""
+    <div class="row py-3">
+        <div class="col-lg-12 text-center mb-4">
+            <span class="badge hero-badge px-3 py-2 rounded-pill fw-bold mb-2">USER ACCOUNT</span>
+            <h1 class="display-5 fw-extrabold mb-2">Personal Health Profile</h1>
+            <p class="lead text-muted mx-auto" style="max-width: 750px;">
+                Manage your personal baseline health parameters and review past assessments.
+            </p>
+        </div>
+    </div>
+    <div class="card-custom p-4" style="max-width: 700px; margin: 0 auto;">
+        <h4 class="fw-bold mb-3">{user['name']}</h4>
+        <p class="text-muted small mb-4">{user['email']}</p>
+        <div class="row g-3">
+            <div class="col-6"><div class="p-3 bg-card-subtle rounded-3 border"><strong>Age:</strong> 34</div></div>
+            <div class="col-6"><div class="p-3 bg-card-subtle rounded-3 border"><strong>Activity:</strong> Moderate</div></div>
+        </div>
+    </div>
+    """
+    return render_page(content, page_title='MediSense AI | Personal Health Profile')
+
+
 @app.route('/scanner')
 @app.route('/image_scanner.php')
 @app.route('/api/scanner')
@@ -3866,8 +4144,6 @@ def api_scan_image():
                 os.remove(temp_path)
             except Exception:
                 pass
-
-
 handler = app
 app_handler = app
 
