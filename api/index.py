@@ -961,6 +961,7 @@ def render_page(content_html, **kwargs):
         .badge-category-rash { background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.35); }
         .badge-category-swelling { background: rgba(13, 148, 136, 0.15); color: #0d9488; border: 1px solid rgba(13, 148, 136, 0.35); }
         .badge-category-unable { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.35); }
+        .badge-category-concerning { background: rgba(225, 29, 72, 0.15); color: #f43f5e; border: 1px solid rgba(225, 29, 72, 0.35); }
         .metric-pill-card {
             background: var(--bg-secondary);
             border: 1px solid var(--card-border);
@@ -3182,10 +3183,11 @@ def scanner_page():
                     <div class="mt-3 text-muted small">
                         <span class="badge bg-secondary-subtle text-secondary me-1">JPG</span>
                         <span class="badge bg-secondary-subtle text-secondary me-1">PNG</span>
-                        <span class="badge bg-secondary-subtle text-secondary">WEBP</span>
+                        <span class="badge bg-secondary-subtle text-secondary me-1">WEBP</span>
+                        <span class="badge bg-secondary-subtle text-secondary">AVIF</span>
                         <span class="ms-2">Max 8 MB</span>
                     </div>
-                    <input type="file" id="imageFileInput" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="d-none">
+                    <input type="file" id="imageFileInput" accept=".jpg,.jpeg,.png,.webp,.avif,image/jpeg,image/png,image/webp,image/avif" class="d-none">
                     <input type="file" id="cameraFileInput" accept="image/*" capture="environment" class="d-none">
                 </div>
 
@@ -3238,9 +3240,14 @@ def scanner_page():
                         <p class="small text-muted mb-3" id="outOfScopeReason">
                             Visual features did not meet the statistical confidence threshold for supported categories.
                         </p>
-                        <button type="button" class="btn btn-outline-info w-100 rounded-3 py-2" id="btnScopeRetake">
-                            <i class="bi bi-arrow-repeat me-1"></i> Scan Another Image
-                        </button>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="button" class="btn btn-outline-info flex-fill rounded-3 py-2" id="btnScopeRetake">
+                                <i class="bi bi-arrow-repeat me-1"></i> Upload Another Image
+                            </button>
+                            <a href="/clinical_tools" class="btn btn-primary-custom flex-fill rounded-3 py-2 text-center text-decoration-none">
+                                <i class="bi bi-hospital me-1"></i> Consider Professional Evaluation
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -3312,6 +3319,27 @@ def scanner_page():
                         <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
                             Current scanner is rule-based and does not contain a validated disease classification model. Diagnostic percentage scores are not generated.
                         </small>
+                    </div>
+
+                    <!-- Potentially Concerning Skin Lesion Alert (Section 4 & 15) -->
+                    <div id="resultLesionAlert" class="alert alert-danger border-0 bg-danger bg-opacity-10 my-3 small p-3 rounded-3 d-none">
+                        <strong class="d-block mb-1 text-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i> Potentially Concerning Skin Lesion Notice:</strong>
+                        Visual characteristics in this image may warrant professional medical evaluation. <strong>This AI-assisted assessment cannot confirm whether a lesion is cancerous.</strong>
+                        <p class="mb-0 mt-2 text-danger-emphasis">
+                            <strong>Recommended action:</strong> Consider evaluation by a qualified dermatologist or healthcare professional, particularly if the lesion is new, changing, bleeding, painful, or otherwise concerning.
+                        </p>
+                    </div>
+
+                    <!-- ABCDE Guide for concerning lesion -->
+                    <div id="resultAbcdeContainer" class="mb-3 p-3 rounded-3 border small d-none" style="background: var(--bg-secondary);">
+                        <strong class="d-block mb-2 text-info"><i class="bi bi-card-checklist me-1"></i> ABCDE Awareness Guide for Skin Lesions:</strong>
+                        <ul class="text-muted small ps-3 mb-0">
+                            <li class="mb-1"><strong>A - Asymmetry:</strong> One half does not match the other.</li>
+                            <li class="mb-1"><strong>B - Border:</strong> Edges are irregular, ragged, notched, or blurred.</li>
+                            <li class="mb-1"><strong>C - Color:</strong> Color is non-uniform (shades of tan, brown, black, red).</li>
+                            <li class="mb-1"><strong>D - Diameter:</strong> Larger than 6 mm (pencil eraser size).</li>
+                            <li><strong>E - Evolving:</strong> Changing in size, shape, surface elevation, color, or bleeding.</li>
+                        </ul>
                     </div>
 
                     <!-- Observed Visual Features (Step 14) -->
@@ -3442,6 +3470,8 @@ def scanner_page():
         var resultContent = document.getElementById('resultContent');
         var resultCategoryBadge = document.getElementById('resultCategoryBadge');
         var resultCategoryText = document.getElementById('resultCategoryText');
+        var resultLesionAlert = document.getElementById('resultLesionAlert');
+        var resultAbcdeContainer = document.getElementById('resultAbcdeContainer');
         var resultSummaryHeading = document.getElementById('resultSummaryHeading');
         var resultScoreText = document.getElementById('resultScoreText');
         var resultScoreBar = document.getElementById('resultScoreBar');
@@ -3732,7 +3762,18 @@ def scanner_page():
             else if (cat.includes('Minor Injury')) resultCategoryBadge.classList.add('badge-category-injury');
             else if (cat.includes('Rash')) resultCategoryBadge.classList.add('badge-category-rash');
             else if (cat.includes('Swelling')) resultCategoryBadge.classList.add('badge-category-swelling');
+            else if (cat.includes('Concerning')) resultCategoryBadge.classList.add('badge-category-concerning');
             else resultCategoryBadge.classList.add('badge-category-unable');
+
+            var isConcerning = (res.is_concerning_lesion || cat.includes('Concerning'));
+            if (resultLesionAlert) {
+                if (isConcerning) resultLesionAlert.classList.remove('d-none');
+                else resultLesionAlert.classList.add('d-none');
+            }
+            if (resultAbcdeContainer) {
+                if (isConcerning) resultAbcdeContainer.classList.remove('d-none');
+                else resultAbcdeContainer.classList.add('d-none');
+            }
 
             if (resultScoreText) {
                 resultScoreText.textContent = res.model_confidence || 'Not Applicable (Rule-Based Heuristic Prototype)';
@@ -3795,7 +3836,9 @@ def api_scan_image():
             file = request.files['image']
             if file.filename == '':
                 return jsonify({"success": False, "category": "Unable to Assess", "error": "No file selected"}), 400
-            fd, temp_path = tempfile.mkstemp(suffix='.jpg')
+            orig_name = file.filename or 'image.jpg'
+            ext = os.path.splitext(orig_name)[1].lower() or '.jpg'
+            fd, temp_path = tempfile.mkstemp(suffix=ext)
             os.close(fd)
             file.save(temp_path)
             res = compute_vision_metrics(temp_path)

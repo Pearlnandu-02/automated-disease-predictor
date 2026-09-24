@@ -1367,6 +1367,12 @@ footer .text-muted {
   border: 1px solid rgba(148, 163, 184, 0.35);
 }
 
+.badge-category-concerning {
+  background: rgba(220, 38, 38, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(220, 38, 38, 0.4);
+}
+
 /* Metric Pill Display */
 .metric-pill-card {
   background: var(--bg-card-subtle);

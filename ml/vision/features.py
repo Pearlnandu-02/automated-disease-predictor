@@ -309,8 +309,9 @@ def extract_features_from_array(rgb_arr):
 def detect_pigmented_lesion(rgb_arr, skin_mask=None, gray_arr=None):
     """
     Evaluates whether the image exhibits optical patterns characteristic of a focal
-    pigmented skin lesion (mole, nevus, melanocytic lesion, or pigmented neoplasm),
-    distinguishing it from diffuse rashes, inflammatory redness, or open mechanical wounds.
+    concerning skin lesion (atypical mole, melanocytic nevus, basal cell carcinoma,
+    squamous cell carcinoma, or nodular neoplasm), distinguishing it from diffuse rashes,
+    generalized inflammatory redness, or open mechanical wounds.
     """
     if skin_mask is None:
         skin_mask, _ = detect_skin_pixels(rgb_arr)
@@ -325,16 +326,17 @@ def detect_pigmented_lesion(rgb_arr, skin_mask=None, gray_arr=None):
     p5_lum = float(np.percentile(skin_pixels, 5))
     lum_drop = float(max(0.0, median_skin_lum - p5_lum))
 
-    # Focal hyperpigmented melanin core
-    focal_melanin_core = (lum < 108.0) & (lum < (median_skin_lum - 32.0)) & (R < 140.0) & skin_mask
+    # Focal lesion core:
+    # A focal lesion presents with darker contrast than surrounding skin (lum < 115 and lum < median_skin_lum - 24)
+    focal_core = (lum < 115.0) & (lum < (median_skin_lum - 24.0)) & skin_mask
     total_pixels = float(rgb_arr.shape[0] * rgb_arr.shape[1])
-    melanin_core_frac = float(np.sum(focal_melanin_core) / total_pixels)
+    core_frac = float(np.sum(focal_core) / total_pixels)
 
-    # Variegation
-    if np.sum(focal_melanin_core) > 40:
-        dark_R = R[focal_melanin_core]
-        dark_G = G[focal_melanin_core]
-        dark_B = B[focal_melanin_core]
+    # Intra-lesion chromatic variegation
+    if np.sum(focal_core) > 40:
+        dark_R = R[focal_core]
+        dark_G = G[focal_core]
+        dark_B = B[focal_core]
         variegation = float(np.std(dark_R - dark_G) + np.std(dark_R - dark_B))
     else:
         variegation = 0.0
@@ -352,26 +354,36 @@ def detect_pigmented_lesion(rgb_arr, skin_mask=None, gray_arr=None):
     sobel_v = (-1.0*pad[:-2, :-2] - 2.0*pad[:-2, 1:-1] - 1.0*pad[:-2, 2:] + 1.0*pad[2:, :-2] + 2.0*pad[2:, 1:-1] + 1.0*pad[2:, 2:])
     roughness = float(np.mean(np.hypot(sobel_h, sobel_v)))
 
+    chroma_diff = np.abs(R - B) + np.abs(R - G)
+    chromatic_dispersion = float(np.std(chroma_diff))
+
     skin_fraction = float(np.mean(skin_mask))
 
-    # Check if image exhibits focal pigmented skin lesion properties
-    is_pigmented = bool(
+    # Check if image exhibits focal concerning skin lesion properties:
+    # Covers both hyperpigmented (melanocytic) and atypical/nodular/variegated (BCC/SCC) patterns.
+    # Diffuse rashes do not have focal core drop (core_frac is ~0).
+    # Acute open infections have florid erythema (mean_ei > 25.0) and lack isolated intact focal lesion characteristics.
+    # Mechanical abrasions have extreme roughness (roughness > 58.0).
+    is_concerning = bool(
         skin_fraction >= 0.20 and
-        lum_drop >= 42.0 and
-        (0.005 <= melanin_core_frac <= 0.40) and
-        mean_ei < 22.0 and
-        roughness < 45.0
+        (0.005 <= core_frac <= 0.40) and
+        lum_drop >= 32.0 and
+        mean_ei < 25.0 and
+        (variegation >= 16.0 or chromatic_dispersion >= 42.0) and
+        roughness < 58.0
     )
 
     return {
-        "is_pigmented_lesion": is_pigmented,
+        "is_pigmented_lesion": is_concerning,
+        "is_concerning_lesion": is_concerning,
         "contrast_drop": round(lum_drop, 1),
-        "melanin_core_percent": round(melanin_core_frac * 100.0, 2),
+        "melanin_core_percent": round(core_frac * 100.0, 2),
         "variegation": round(variegation, 1),
         "median_skin_lum": round(median_skin_lum, 1),
         "p5_lum": round(p5_lum, 1),
         "erythema_index": round(mean_ei, 1),
-        "roughness": round(roughness, 1)
+        "roughness": round(roughness, 1),
+        "chromatic_dispersion": round(chromatic_dispersion, 1)
     }
 
 
@@ -396,8 +408,22 @@ def process_image_file(img_path):
         gray_img = ImageOps.grayscale(rgb_img)
         gray_arr = np.array(gray_img, dtype=np.float64)
 
-    except Exception as e:
-        return False, f"Invalid or corrupted image format: {str(e)}", None, None, None
+    except Exception as e_pil:
+        # Fallback for formats Pillow might not support natively (e.g. AVIF)
+        try:
+            import imagecodecs
+            with open(img_path, 'rb') as f:
+                raw_bytes = f.read()
+            decoded_arr = imagecodecs.avif_decode(raw_bytes)
+            pil_img = Image.fromarray(decoded_arr)
+            pil_img = ImageOps.exif_transpose(pil_img)
+            pil_img.thumbnail((500, 500), Image.Resampling.BILINEAR)
+            rgb_img = pil_img.convert("RGB")
+            rgb_arr = np.array(rgb_img, dtype=np.float64)
+            gray_img = ImageOps.grayscale(rgb_img)
+            gray_arr = np.array(gray_img, dtype=np.float64)
+        except Exception:
+            return False, f"Invalid or corrupted image format: {str(e_pil)}", None, None, None
 
     # Quality check
     acceptable, blur_score, brightness, quality_msg, q_details = assess_image_quality(gray_arr, rgb_arr)

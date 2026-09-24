@@ -5,8 +5,8 @@ require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/ml_bridge.php';
 
 $max_file_size = 8 * 1024 * 1024; // 8 MB
-$allowed_exts = ['jpg', 'jpeg', 'png', 'webp'];
-$allowed_mimes = ['image/jpeg', 'image/png', 'image/webp'];
+$allowed_exts = ['jpg', 'jpeg', 'png', 'webp', 'avif'];
+$allowed_mimes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
 
 $scan_result = null;
 $error_message = null;
@@ -33,11 +33,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mime_type = finfo_file($finfo, $file_tmp);
         finfo_close($finfo);
 
-        // Verification of image validity via getimagesize
+        // Verification of image validity via getimagesize or format-specific check
         $img_info = @getimagesize($file_tmp);
+        $is_valid_image = ($img_info !== false) || ($ext === 'avif' && ($mime_type === 'image/avif' || filesize($file_tmp) > 100));
 
-        if (!in_array($ext, $allowed_exts) || !in_array($mime_type, $allowed_mimes) || $img_info === false) {
-            $error_message = "Invalid or unsupported image file. Only genuine JPG, JPEG, PNG, and WebP images are accepted.";
+        if (!in_array($ext, $allowed_exts) || (!in_array($mime_type, $allowed_mimes) && $ext !== 'avif') || !$is_valid_image) {
+            $error_message = "Invalid or unsupported image file. Genuine JPG, JPEG, PNG, WebP, and AVIF images are accepted.";
         } else {
             // Ephemeral temporary processing in system temp dir
             $temp_scan_path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'scan_' . bin2hex(random_bytes(8)) . '.' . $ext;
@@ -159,12 +160,13 @@ require_once __DIR__ . '/includes/header.php';
                     <span class="badge bg-secondary-subtle text-secondary me-1">JPG</span>
                     <span class="badge bg-secondary-subtle text-secondary me-1">JPEG</span>
                     <span class="badge bg-secondary-subtle text-secondary me-1">PNG</span>
-                    <span class="badge bg-secondary-subtle text-secondary">WEBP</span>
+                    <span class="badge bg-secondary-subtle text-secondary me-1">WEBP</span>
+                    <span class="badge bg-secondary-subtle text-secondary">AVIF</span>
                     <span class="ms-2">Max 8 MB</span>
                 </div>
 
                 <!-- Hidden file inputs -->
-                <input type="file" id="imageFileInput" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="d-none">
+                <input type="file" id="imageFileInput" accept=".jpg,.jpeg,.png,.webp,.avif,image/jpeg,image/png,image/webp,image/avif" class="d-none">
                 <input type="file" id="cameraFileInput" accept="image/*" capture="environment" class="d-none">
             </div>
 
@@ -266,91 +268,38 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
             </div>
 
-            <!-- Out-of-Scope / Non-Skin / Uncertain Rejection View -->
+            <!-- Out-of-Scope / Non-Skin / Uncertain Rejection View (Section 5) -->
             <div id="outOfScopeContent" class="d-none">
                 <div class="scanner-scope-card p-4 mb-3">
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <i class="bi bi-question-circle-fill text-secondary fs-4"></i>
-                        <h5 class="fw-bold mb-0">Unable to Confidently Assess This Image</h5>
+                        <h5 class="fw-bold mb-0">Unable to Confidently Assess</h5>
                     </div>
                     <p class="text-muted small mb-3" id="outOfScopeReason">
-                        Visual features did not meet the statistical confidence threshold for supported skin categories. The image appears to be outside supported clinical categories or non-skin subject matter.
+                        The uploaded image does not contain sufficient evidence for a reliable classification by this prototype.
                     </p>
                     <div class="p-3 bg-card-subtle rounded-3 border mb-3 small">
-                        <strong>Supported Categories:</strong>
+                        <strong>Supported Visual Categories:</strong>
                         <div class="d-flex flex-wrap gap-1 mt-2">
                             <span class="badge bg-secondary-subtle text-secondary">Infection Indicators</span>
                             <span class="badge bg-secondary-subtle text-secondary">Minor Injury</span>
                             <span class="badge bg-secondary-subtle text-secondary">Rash / Skin Irritation</span>
                             <span class="badge bg-secondary-subtle text-secondary">Swelling / Contusion</span>
                             <span class="badge bg-secondary-subtle text-secondary">Inflammation / Redness</span>
+                            <span class="badge bg-secondary-subtle text-secondary">Potentially Concerning Skin Lesions</span>
                         </div>
                     </div>
                     <p class="text-muted small mb-3">
-                        Please upload a clearer, well-lit photo of the affected skin area, or seek direct in-person medical evaluation from a healthcare provider.
+                        The presentation may be ambiguous, sub-threshold, or outside current reference patterns.
                     </p>
-                    <button type="button" class="btn btn-outline-info w-100 rounded-3 py-2 fw-semibold" id="btnScopeRetake">
-                        <i class="bi bi-arrow-repeat me-1"></i> Try Different Image
-                    </button>
-                </div>
-            </div>
-
-            <!-- Unsupported Skin Lesion / Mole / Pigmented Spot View (Section 5, 11, 12, 13) -->
-            <div id="unsupportedLesionContent" class="d-none">
-                <div class="scanner-scope-card p-4 mb-3 border-warning" style="border-left: 4px solid #f59e0b;">
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <i class="bi bi-shield-exclamation text-warning fs-3"></i>
-                        <div>
-                            <h5 class="fw-bold mb-0 text-warning">Unable to Confidently Assess: Unsupported Skin Lesion</h5>
-                            <span class="badge bg-warning-subtle text-warning border border-warning border-opacity-25 mt-1">Outside Supported Acute Domain</span>
-                        </div>
+                    <div class="d-flex flex-column flex-sm-row gap-2">
+                        <button type="button" class="btn btn-outline-info flex-fill rounded-3 py-2 fw-semibold" id="btnScopeRetake">
+                            <i class="bi bi-arrow-repeat me-1"></i> Upload Another Image
+                        </button>
+                        <a href="clinical_tools.php" class="btn btn-outline-secondary flex-fill rounded-3 py-2 fw-semibold" id="btnScopeEval">
+                            <i class="bi bi-hospital me-1"></i> Consider Professional Evaluation
+                        </a>
                     </div>
-                    
-                    <div class="alert alert-warning border-0 bg-warning bg-opacity-10 my-3 small p-3 rounded-3 text-start">
-                        <strong class="d-block mb-1 text-warning"><i class="bi bi-info-circle-fill me-1"></i> Critical Scope Notice:</strong>
-                        This scanner is configured exclusively for acute superficial injury and infection screening. <strong>This scanner currently does not support reliable classification of this type of skin lesion.</strong>
-                    </div>
-
-                    <p class="small text-muted mb-3" id="lesionWhatDetected">
-                        The computer vision analyzer detected localized hyperpigmented melanin clustering with high contrast drop and chromatic variegation against surrounding skin.
-                    </p>
-
-                    <!-- Technical Image Features -->
-                    <h6 class="fw-bold small text-uppercase text-muted mb-2">Technical Image Features</h6>
-                    <div class="p-3 bg-card-subtle rounded-3 border mb-3 small" id="lesionTechFeaturesList">
-                        <!-- Populated dynamically -->
-                    </div>
-
-                    <!-- Clinical Recommendation -->
-                    <div class="p-3 bg-card-subtle rounded-3 border mb-3 small border-start border-4 border-info text-start">
-                        <strong class="text-info d-block mb-1"><i class="bi bi-person-badge-fill me-1"></i> Recommended Next Step:</strong>
-                        <p class="mb-0 text-muted" id="lesionNextStepText">
-                            Please seek evaluation by a qualified healthcare professional (such as a board-certified dermatologist) for a new, changing, bleeding, painful, or otherwise concerning lesion.
-                        </p>
-                    </div>
-
-                    <!-- ABCDE Educational Awareness Guide -->
-                    <div class="mb-3 p-3 bg-card-subtle rounded-3 border small text-start">
-                        <strong class="text-heading d-block mb-2"><i class="bi bi-card-checklist me-1 text-info"></i> ABCDE Awareness Guide for Skin Lesions:</strong>
-                        <p class="text-muted small mb-2">Dermatologists recommend monitoring suspicious skin spots using the ABCDE criteria (this guide is educational and does not constitute a diagnosis):</p>
-                        <ul class="text-muted small ps-3 mb-0">
-                            <li class="mb-1"><strong>A - Asymmetry:</strong> One half of the spot does not match the other half in shape, border, or contour.</li>
-                            <li class="mb-1"><strong>B - Border:</strong> The edges are irregular, ragged, notched, scalloped, or blurred.</li>
-                            <li class="mb-1"><strong>C - Color:</strong> Color is non-uniform; contains varying shades of tan, brown, black, red, or white.</li>
-                            <li class="mb-1"><strong>D - Diameter:</strong> Spot is larger than 6 mm (about pencil eraser size), though some can be smaller.</li>
-                            <li><strong>E - Evolving:</strong> The lesion is changing in size, shape, surface elevation, color, or bleeding/itching.</li>
-                        </ul>
-                    </div>
-
-                    <!-- Educational Disclaimer -->
-                    <div class="p-2 px-3 rounded-2 border bg-card-subtle text-muted small mb-3 text-start" style="font-size: 0.78rem;">
-                        <i class="bi bi-shield-check me-1 text-info"></i>
-                        <strong>Important Disclaimer:</strong> This AI-assisted preliminary assessment is for educational awareness and is NOT a medical diagnosis. Never ignore a changing skin spot.
-                    </div>
-
-                    <button type="button" class="btn btn-outline-info w-100 rounded-3 py-2 fw-semibold" id="btnLesionRetake">
-                        <i class="bi bi-arrow-repeat me-1"></i> Scan Another Image
-                    </button>
                 </div>
             </div>
 
@@ -376,11 +325,30 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
                     <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                         <span class="small fw-semibold text-muted">Model Confidence:</span>
-                        <span id="resultScoreText" class="badge bg-secondary-subtle text-secondary border fw-semibold">Not Applicable (Rule-Based Heuristic Prototype)</span>
+                        <span id="resultScoreText" class="badge bg-secondary-subtle text-secondary border fw-semibold">Not Applicable (Rule-Based Screening Prototype)</span>
                     </div>
                     <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
-                        Current scanner is rule-based and does not contain a validated disease classification model. Diagnostic percentage scores are not generated.
+                        This scanner is a rule-based computer-vision screening prototype. Diagnostic probability percentages are not generated.
                     </small>
+                </div>
+
+                <!-- Clinical Safety Warning Alert (Shown for Potentially Concerning Skin Lesions) -->
+                <div id="resultLesionAlert" class="alert alert-warning border-0 bg-warning bg-opacity-10 my-3 small p-3 rounded-3 text-start d-none">
+                    <strong class="d-block mb-1 text-warning"><i class="bi bi-shield-exclamation me-1"></i> Professional Medical Evaluation Recommended:</strong>
+                    Visual characteristics in this image may warrant professional medical evaluation. This AI-assisted assessment cannot confirm whether a lesion is cancerous.
+                </div>
+
+                <!-- ABCDE Awareness Guide for Skin Lesions -->
+                <div id="resultAbcdeContainer" class="mb-3 p-3 bg-card-subtle rounded-3 border small text-start d-none">
+                    <strong class="text-heading d-block mb-2"><i class="bi bi-card-checklist me-1 text-info"></i> ABCDE Awareness Guide for Skin Lesions:</strong>
+                    <p class="text-muted small mb-2">Dermatologists recommend monitoring suspicious skin spots using the ABCDE criteria (this guide is educational and does not constitute a diagnosis):</p>
+                    <ul class="text-muted small ps-3 mb-0">
+                        <li class="mb-1"><strong>A - Asymmetry:</strong> One half of the spot does not match the other half in shape, border, or contour.</li>
+                        <li class="mb-1"><strong>B - Border:</strong> Edges are irregular, ragged, notched, scalloped, or blurred.</li>
+                        <li class="mb-1"><strong>C - Color:</strong> Color is non-uniform; contains varying shades of pink, red, tan, brown, black, or white.</li>
+                        <li class="mb-1"><strong>D - Diameter:</strong> Spot is larger than 6 mm (about pencil eraser size), though lesions can be smaller.</li>
+                        <li><strong>E - Evolving:</strong> The lesion is changing in size, shape, surface elevation, color, or bleeding/itching.</li>
+                    </ul>
                 </div>
 
                 <!-- Runner-Up Pattern Container (If confidence was shared) -->
@@ -937,11 +905,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // File validation and preview loader
     function handleFileSelect(file) {
         clearError();
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/avif'];
         const maxSize = 8 * 1024 * 1024; // 8 MB
 
-        if (!allowedTypes.includes(file.type.toLowerCase()) && !file.name.match(/\.(jpg|jpeg|png|webp)$/i)) {
-            showError('<strong>Unsupported file format.</strong> Please upload a JPG, JPEG, PNG, or WebP image.');
+        if (!allowedTypes.includes(file.type.toLowerCase()) && !file.name.match(/\.(jpg|jpeg|png|webp|avif)$/i)) {
+            showError('<strong>Unsupported file format.</strong> Please upload a JPG, JPEG, PNG, WebP, or AVIF image.');
             return;
         }
 
@@ -976,6 +944,10 @@ document.addEventListener('DOMContentLoaded', function() {
         qualityFailContent.classList.add('d-none');
         outOfScopeContent.classList.add('d-none');
         if (unsupportedLesionContent) unsupportedLesionContent.classList.add('d-none');
+        const resLesionAlert = document.getElementById('resultLesionAlert');
+        const resAbcdeCont = document.getElementById('resultAbcdeContainer');
+        if (resLesionAlert) resLesionAlert.classList.add('d-none');
+        if (resAbcdeCont) resAbcdeCont.classList.add('d-none');
         idleState.classList.remove('d-none');
     }
 
@@ -1096,9 +1068,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     resetResultViews();
                 } else if (data.is_quality_failure) {
                     displayQualityFailure(data);
-                } else if (data.status === 'unsupported_lesion' || data.is_unsupported_lesion) {
-                    displayUnsupportedLesion(data);
-                } else if (data.is_out_of_scope || data.category === 'Unable to Assess') {
+                } else if (data.is_out_of_scope || data.category === 'Unable to Confidently Assess' || data.category === 'Unable to Assess') {
                     displayOutOfScope(data);
                 } else {
                     displayResult(data);
@@ -1122,7 +1092,6 @@ document.addEventListener('DOMContentLoaded', function() {
         idleState.classList.add('d-none');
         resultContent.classList.add('d-none');
         outOfScopeContent.classList.add('d-none');
-        if (unsupportedLesionContent) unsupportedLesionContent.classList.add('d-none');
         qualityFailContent.classList.remove('d-none');
 
         const reason = (res.findings && res.findings.length) ? res.findings[0] : 'Image quality is too low for reliable analysis.';
@@ -1133,17 +1102,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Display Out of Scope / Uncertain Card (Requirement 8)
+    // Display Out of Scope / Uncertain Card (Section 5)
     function displayOutOfScope(res) {
         idleState.classList.add('d-none');
         resultContent.classList.add('d-none');
         qualityFailContent.classList.add('d-none');
-        if (unsupportedLesionContent) unsupportedLesionContent.classList.add('d-none');
         outOfScopeContent.classList.remove('d-none');
 
         const reason = (res.findings && res.findings.length) 
             ? res.findings.join(' ') 
-            : 'Visual features did not meet the statistical confidence threshold for supported skin categories.';
+            : 'The uploaded image does not contain sufficient evidence for a reliable classification by this prototype.';
         outOfScopeReason.textContent = reason;
 
         if (window.innerWidth < 992) {
@@ -1151,71 +1119,52 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Display Unsupported Skin Lesion / Outside Scope Card (Section 5, 11, 12, 13)
-    function displayUnsupportedLesion(res) {
-        idleState.classList.add('d-none');
-        resultContent.classList.add('d-none');
-        qualityFailContent.classList.add('d-none');
-        outOfScopeContent.classList.add('d-none');
-        if (unsupportedLesionContent) unsupportedLesionContent.classList.remove('d-none');
-
-        if (lesionWhatDetected) {
-            lesionWhatDetected.textContent = res.what_detected || (res.findings && res.findings[0]) || 
-                'The computer vision analyzer detected localized hyperpigmented melanin clustering with high contrast drop and chromatic variegation against surrounding skin.';
-        }
-        if (lesionNextStepText && res.recommended_next_step) {
-            lesionNextStepText.textContent = res.recommended_next_step;
-        }
-
-        if (lesionTechFeaturesList) {
-            lesionTechFeaturesList.innerHTML = '';
-            const techFeats = res.technical_image_features || [];
-            if (techFeats.length) {
-                techFeats.forEach(tf => {
-                    const div = document.createElement('div');
-                    div.className = 'd-flex align-items-center mb-1 text-muted small';
-                    div.innerHTML = '<i class="bi bi-gear-fill me-2 text-warning" style="font-size: 0.75rem;"></i><span>' + tf + '</span>';
-                    lesionTechFeaturesList.appendChild(div);
-                });
-            } else {
-                const metrics = res.metrics || {};
-                const div = document.createElement('div');
-                div.className = 'text-muted small';
-                div.textContent = 'Optical Erythema Index: ' + (metrics.erythema_index ?? 'N/A') + ' | Surface Roughness: ' + (metrics.surface_roughness ?? 'N/A') + ' | Color Variance: ' + (metrics.chromatic_variance ?? 'N/A');
-                lesionTechFeaturesList.appendChild(div);
-            }
-        }
-
-        if (window.innerWidth < 992) {
-            document.getElementById('resultCardContainer').scrollIntoView({ behavior: 'smooth' });
-        }
-    }
-
-    // Display Valid Result Card (Requirements 13 & 14)
+    // Display Valid Result Card (Section 4, 14, 15, 16)
     function displayResult(res) {
         idleState.classList.add('d-none');
         qualityFailContent.classList.add('d-none');
         outOfScopeContent.classList.add('d-none');
-        if (unsupportedLesionContent) unsupportedLesionContent.classList.add('d-none');
         resultContent.classList.remove('d-none');
 
-        const category = res.prediction || res.category || 'Unable to Assess';
+        const category = res.prediction || res.category || 'Unable to Confidently Assess';
         resultCategoryText.textContent = category;
 
-        // Category Badge Colors
+        // Category Badge Colors & Icons
         resultCategoryBadge.className = 'badge-category';
-        if (category.includes('Infection')) {
+        if (category.includes('Concerning') || category.includes('Lesion')) {
+            resultCategoryBadge.classList.add('badge-category-concerning');
+            resultCategoryBadge.innerHTML = '<i class="bi bi-shield-exclamation"></i> <span>' + category + '</span>';
+        } else if (category.includes('Infection')) {
             resultCategoryBadge.classList.add('badge-category-infection');
+            resultCategoryBadge.innerHTML = '<i class="bi bi-radioactive"></i> <span>' + category + '</span>';
         } else if (category.includes('Inflammation')) {
             resultCategoryBadge.classList.add('badge-category-inflammation');
+            resultCategoryBadge.innerHTML = '<i class="bi bi-sun"></i> <span>' + category + '</span>';
         } else if (category.includes('Minor Injury')) {
             resultCategoryBadge.classList.add('badge-category-injury');
+            resultCategoryBadge.innerHTML = '<i class="bi bi-bandaid"></i> <span>' + category + '</span>';
         } else if (category.includes('Rash')) {
             resultCategoryBadge.classList.add('badge-category-rash');
+            resultCategoryBadge.innerHTML = '<i class="bi bi-flower1"></i> <span>' + category + '</span>';
         } else if (category.includes('Swelling')) {
             resultCategoryBadge.classList.add('badge-category-swelling');
+            resultCategoryBadge.innerHTML = '<i class="bi bi-water"></i> <span>' + category + '</span>';
         } else {
             resultCategoryBadge.classList.add('badge-category-unable');
+            resultCategoryBadge.innerHTML = '<i class="bi bi-question-circle"></i> <span>' + category + '</span>';
+        }
+
+        // Toggle Concerning Lesion Educational Panels
+        const isConcerning = category.includes('Concerning') || category.includes('Lesion') || res.is_concerning_lesion;
+        const resLesionAlert = document.getElementById('resultLesionAlert');
+        const resAbcdeCont = document.getElementById('resultAbcdeContainer');
+        if (resLesionAlert) {
+            if (isConcerning) resLesionAlert.classList.remove('d-none');
+            else resLesionAlert.classList.add('d-none');
+        }
+        if (resAbcdeCont) {
+            if (isConcerning) resAbcdeCont.classList.remove('d-none');
+            else resAbcdeCont.classList.add('d-none');
         }
 
         // Runner Up Pattern
